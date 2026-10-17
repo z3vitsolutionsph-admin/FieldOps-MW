@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "WorkOrder": {
+      "title": "WorkOrder",
+      "description": "Microwave installation, dismantling, or troubleshooting work order execution state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workOrderNumber": { "type": "string" },
+        "type": { "type": "string", "enum": ["INSTALLATION", "DISMANTLING", "TROUBLESHOOTING"] },
+        "siteId": { "type": "string" },
+        "siteRole": { "type": "string", "enum": ["A", "B"] },
+        "hopId": { "type": "string" },
+        "status": { "type": "string", "enum": ["DRAFT", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "APPROVED", "REJECTED", "CLOSED"] },
+        "currentStepIndex": { "type": "number" },
+        "totalSteps": { "type": "number" },
+        "assigneeIds": { "type": "array" },
+        "orgId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "workOrderNumber", "type", "siteId", "status", "orgId"]
+    },
+    "PhotoEvidence": {
+      "title": "PhotoEvidence",
+      "description": "Field photo evidence with HUD watermark metadata and offline status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sectionCode": { "type": "string" },
+        "sectionTitle": { "type": "string" },
+        "siteId": { "type": "string" },
+        "url": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "capturedBy": { "type": "string" },
+        "syncStatus": { "type": "string", "enum": ["PENDING", "SYNCED", "FAILED"] },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "sectionCode", "siteId", "url", "timestamp", "orgId"]
+    },
+    "TssrApprovalSheet": {
+      "title": "TssrApprovalSheet",
+      "description": "TSSR verification and 3-gate engineering approvals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "hopId": { "type": "string" },
+        "overallStatus": { "type": "string" },
+        "orgId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "hopId", "overallStatus", "orgId"]
+    },
+    "InventoryItem": {
+      "title": "InventoryItem",
+      "description": "Decommissioned microwave equipment with serial number and asset tag",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "siteId": { "type": "string" },
+        "equipmentType": { "type": "string" },
+        "model": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "assetTag": { "type": "string" },
+        "condition": { "type": "string" },
+        "status": { "type": "string" },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "siteId", "serialNumber", "assetTag", "orgId"]
+    },
+    "TroubleshootingTicket": {
+      "title": "TroubleshootingTicket",
+      "description": "Microwave diagnostic issue ticket",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "hopId": { "type": "string" },
+        "siteId": { "type": "string" },
+        "symptom": { "type": "string" },
+        "status": { "type": "string" },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "hopId", "siteId", "symptom", "status", "orgId"]
+    },
+    "AuditLogItem": {
+      "title": "AuditLogItem",
+      "description": "Audit trail log record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetType": { "type": "string" },
+        "details": { "type": "string" },
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "action", "targetId", "userId", "timestamp", "orgId"]
+    }
+  },
+  "firestore": {
+    "/work_orders/{workOrderId}": {
+      "schema": { "$ref": "#/entities/WorkOrder" },
+      "description": "Collection of microwave work orders"
+    },
+    "/photos/{photoId}": {
+      "schema": { "$ref": "#/entities/PhotoEvidence" },
+      "description": "Collection of TSSR and installation photo evidence"
+    },
+    "/tssr_approvals/{approvalId}": {
+      "schema": { "$ref": "#/entities/TssrApprovalSheet" },
+      "description": "Collection of TSSR approval documents"
+    },
+    "/inventory/{inventoryId}": {
+      "schema": { "$ref": "#/entities/InventoryItem" },
+      "description": "Collection of decommissioned hardware inventory items"
+    },
+    "/tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/TroubleshootingTicket" },
+      "description": "Collection of troubleshooting diagnostic tickets"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLogItem" },
+      "description": "Collection of system and operational audit logs"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "FieldOps MW",
+  "description": "Mobile-first offline PWA for telecom microwave link installation, dismantling, troubleshooting, and TSSR verification.",
+  "requestFramePermissions": ["geolocation", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
