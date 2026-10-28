@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { getAuthToken } from '../../services/authService';
+import { api } from '../../services/apiClient';
 import {
   Server,
   Database,
@@ -28,22 +30,10 @@ interface BackendCloudModalProps {
 
 interface HealthData {
   status: string;
-  service: string;
-  version: string;
-  uptimeSeconds: number;
-  environment: string;
-  nodeVersion: string;
-  memoryUsageMb: {
-    rss: number;
-    heapTotal: number;
-    heapUsed: number;
-  };
-  cloud: {
-    provider: string;
-    firestoreDatabaseId: string;
-    firestoreProjectId: string;
-    rulesActive: boolean;
-  };
+  version?: string;
+  uptimeSeconds?: number;
+  database: string;
+  aiAvailable: boolean | null;
 }
 
 export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
@@ -65,45 +55,20 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
     setLoadingHealth(true);
     const start = performance.now();
     try {
-      const res = await fetch('/api/health');
-      const data = await res.json();
+      const [healthRes, readyRes, ai] = await Promise.all([
+        fetch('/api/health').then((r) => r.json()),
+        fetch('/api/health/ready').then((r) => r.json()).catch(() => null),
+        api<{ available: boolean }>('/api/ai/status').catch(() => null),
+      ]);
       setPingLatency(Math.round(performance.now() - start));
-      if (data?.success && data?.data) {
-        setHealth(data.data);
-      } else {
-        // Fallback simulated health object if running during compile/SSR
-        setHealth({
-          status: 'HEALTHY',
-          service: 'FieldOps MW Backend Gateway',
-          version: '3.0.0',
-          uptimeSeconds: 120,
-          environment: 'development',
-          nodeVersion: 'v22.23.2',
-          memoryUsageMb: { rss: 64, heapTotal: 42, heapUsed: 28 },
-          cloud: {
-            provider: 'Google Cloud Platform (Cloud Run)',
-            firestoreDatabaseId: firebaseConfigJson.firestoreDatabaseId,
-            firestoreProjectId: firebaseConfigJson.projectId,
-            rulesActive: true,
-          },
-        });
-      }
-    } catch {
       setHealth({
-        status: 'STANDBY',
-        service: 'FieldOps MW Backend Gateway',
-        version: '3.0.0',
-        uptimeSeconds: 60,
-        environment: 'development',
-        nodeVersion: 'v22.23.2',
-        memoryUsageMb: { rss: 58, heapTotal: 38, heapUsed: 24 },
-        cloud: {
-          provider: 'Google Cloud Platform (Cloud Run)',
-          firestoreDatabaseId: firebaseConfigJson.firestoreDatabaseId,
-          firestoreProjectId: firebaseConfigJson.projectId,
-          rulesActive: true,
-        },
+        ...(healthRes?.data ?? { status: 'UNKNOWN' }),
+        database: readyRes?.data?.database ?? 'UNKNOWN',
+        aiAvailable: ai?.available ?? null,
       });
+    } catch {
+      setPingLatency(null);
+      setHealth({ status: 'UNREACHABLE', database: 'UNKNOWN', aiAvailable: null });
     } finally {
       setLoadingHealth(false);
     }
@@ -123,9 +88,10 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
     setTestMethod(method);
     const start = performance.now();
     try {
+      const token = await getAuthToken();
       const options: RequestInit = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       };
       if (body && method !== 'GET') {
         options.body = typeof body === 'string' ? body : JSON.stringify(body);
@@ -153,12 +119,12 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
 
   const endpointsList = [
     { path: '/api/health', method: 'GET', desc: 'Overall server health, memory and uptime' },
-    { path: '/api/health/db', method: 'GET', desc: 'Cloud Firestore database connectivity probe' },
-    { path: '/api/metrics', method: 'GET', desc: 'Real-time throughput, requests and sync telemetry' },
-    { path: '/api/cloud/infrastructure', method: 'GET', desc: 'Full cloud infrastructure & security specification' },
+    { path: '/api/health/ready', method: 'GET', desc: 'Readiness probe: real database round trip' },
+    { path: '/api/me', method: 'GET', desc: 'Your verified identity, role and organisation' },
+    { path: '/api/metrics', method: 'GET', desc: 'Runtime metrics (administrators only)' },
     { path: '/api/work-orders', method: 'GET', desc: 'Work orders query with RBAC assignments' },
     { path: '/api/sites', method: 'GET', desc: 'Microwave site profiles and tower heights' },
-    { path: '/api/battery-cache/NS-TER25-A035', method: 'GET', desc: '24-hour battery discharge telemetry cache' },
+    { path: '/api/battery-cache/NS-TER25-A035', method: 'GET', desc: '24-hour battery discharge curve (simulated)' },
     { path: '/api/hops', method: 'GET', desc: 'Microwave link hop path parameters' },
     { path: '/api/sync/status', method: 'GET', desc: 'Sync gateway health and replication epoch' },
     {
@@ -269,51 +235,45 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                     <span>Server Status</span>
                     <Activity className="w-3.5 h-3.5 text-emerald-400" />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-emerald-400">
-                    {health?.status || 'HEALTHY'}
+                  <div className={`text-lg font-mono font-extrabold ${health?.status === 'HEALTHY' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {loadingHealth ? '…' : health?.status ?? 'UNKNOWN'}
                   </div>
                   <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Latency: {pingLatency !== null ? `${pingLatency}ms` : '< 15ms'}
+                    Latency: {pingLatency !== null ? `${pingLatency}ms` : '—'}
                   </div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Server Runtime</span>
+                    <span>API Version</span>
                     <Cpu className="w-3.5 h-3.5 text-cyan-400" />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-white">
-                    {health?.nodeVersion || 'v22.23.2'}
-                  </div>
+                  <div className="text-lg font-mono font-extrabold text-white">{health?.version ?? '—'}</div>
                   <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Express 4.21.2 · ESM
+                    Uptime: {typeof health?.uptimeSeconds === 'number' ? `${Math.floor(health.uptimeSeconds / 60)} min` : '—'}
                   </div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Memory RSS</span>
+                    <span>AI Assistant</span>
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                   </div>
                   <div className="text-lg font-mono font-extrabold text-amber-400">
-                    {health?.memoryUsageMb?.rss || 64} MB
+                    {health?.aiAvailable == null ? '—' : health.aiAvailable ? 'ONLINE' : 'OFFLINE'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Heap: {health?.memoryUsageMb?.heapUsed || 28} MB
-                  </div>
+                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">Server-side key only</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Cloud Firestore</span>
+                    <span>Database</span>
                     <Database className="w-3.5 h-3.5 text-purple-400" />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-purple-300">
-                    CONNECTED
+                  <div className={`text-lg font-mono font-extrabold ${health?.database === 'UP' ? 'text-purple-300' : 'text-rose-400'}`}>
+                    {health?.database ?? 'UNKNOWN'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate" title={health?.cloud?.firestoreDatabaseId}>
-                    ID: {health?.cloud?.firestoreDatabaseId?.substring(0, 16)}...
-                  </div>
+                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">Readiness probe</div>
                 </div>
               </div>
 

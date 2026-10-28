@@ -1,11 +1,4 @@
-import {
-  doc,
-  setDoc,
-  deleteDoc,
-  getDocs,
-  collection,
-} from 'firebase/firestore';
-import { db, testFirestoreConnection } from './firebaseConfig';
+import { api, ApiError } from './apiClient';
 import { dexieDb, DexieSyncQueueItem } from './dexieDbService';
 import {
   WorkOrder,
@@ -178,33 +171,30 @@ class FirestoreSyncService {
     }
 
     if (!this.isOnlineStatus) {
-      this.currentMessage = 'Offline: Unable to reach Firestore';
+      this.currentMessage = 'Offline: changes are kept on this device';
       this.notify();
       return { success: false, syncedCount: 0, errors: ['Network offline'] };
     }
 
     this.isSyncing = true;
-    this.currentMessage = 'Reconciling connection & local Dexie queue...';
+    this.currentMessage = 'Checking connection to the sync gateway...';
     this.notify();
 
-    const isConnected = await testFirestoreConnection();
-    if (!isConnected) {
+    if (!(await isGatewayReachable())) {
       this.isSyncing = false;
-      this.currentMessage = 'Firestore connection unavailable';
+      this.currentMessage = 'Sync gateway unavailable — will retry automatically';
       this.notify();
-      return { success: false, syncedCount: 0, errors: ['Firestore unreachable'] };
+      return { success: false, syncedCount: 0, errors: ['Sync gateway unreachable'] };
     }
 
-    const pendingItems = await dexieDb.syncQueue
-      .where('status')
-      .anyOf(['PENDING', 'FAILED'])
-      .toArray();
+    // FAILED items were rejected or conflicted on the server; they need a person, not a retry loop.
+    const pendingItems = await dexieDb.syncQueue.where('status').equals('PENDING').sortBy('timestamp');
 
     if (pendingItems.length === 0) {
       this.isSyncing = false;
       this.lastSyncTime = new Date().toISOString();
       localStorage.setItem('fieldops_last_firestore_sync', this.lastSyncTime);
-      this.currentMessage = 'All offline queue items are synchronized';
+      this.currentMessage = 'All offline changes are synchronized';
       this.totalProgressPercent = 100;
       this.photoProgressPercent = 100;
       this.dataProgressPercent = 100;
@@ -212,94 +202,90 @@ class FirestoreSyncService {
       return { success: true, syncedCount: 0, errors: [] };
     }
 
-    // Partition into photos vs data synchronizations
     const photoItems = pendingItems.filter((i) => i.collectionName === 'photos');
     const dataItems = pendingItems.filter((i) => i.collectionName !== 'photos');
 
     this.totalItemsToSync = pendingItems.length;
     this.syncedItemsCount = 0;
     this.totalProgressPercent = 0;
-
     this.photoTotalCount = photoItems.length;
     this.photoSyncedCount = 0;
     this.photoProgressPercent = photoItems.length === 0 ? 100 : 0;
-
     this.dataTotalCount = dataItems.length;
     this.dataSyncedCount = 0;
     this.dataProgressPercent = dataItems.length === 0 ? 100 : 0;
-
-    // Estimate bytes (average ~1.8MB per photo evidence payload, ~12KB per data mutation)
-    this.estimatedTotalBytes = photoItems.length * 1800000 + dataItems.length * 12000;
+    this.estimatedTotalBytes = pendingItems.reduce((n, i) => n + approxBytes(i.payload), 0);
     this.estimatedBytesTransferred = 0;
 
-    this.currentMessage = `Preparing batch: ${photoItems.length} photos, ${dataItems.length} data mutations...`;
+    this.currentMessage = `Preparing batch: ${photoItems.length} photos, ${dataItems.length} data changes...`;
     this.notify();
 
     let syncedCount = 0;
     const errors: string[] = [];
 
-    // Process all pending items with progressive telemetry updates
-    for (let i = 0; i < pendingItems.length; i++) {
-      const item = pendingItems[i];
-      const isPhoto = item.collectionName === 'photos';
+    // Data mutations travel in batches (order preserved); photos go one per request to stay under body limits.
+    const chunks: DexieSyncQueueItem[][] = [];
+    for (let i = 0; i < dataItems.length; i += DATA_BATCH_SIZE) chunks.push(dataItems.slice(i, i + DATA_BATCH_SIZE));
+    for (const photo of photoItems) chunks.push([photo]);
+
+    for (const chunk of chunks) {
+      const isPhoto = chunk[0].collectionName === 'photos';
       this.activeItemCategory = isPhoto ? 'PHOTO' : 'DATA';
-
-      const entityName = isPhoto
-        ? (item.payload?.title || item.payload?.category || `Photo_${item.entityId.slice(-6)}.jpg`)
-        : `${item.collectionName} (${item.entityId})`;
-      this.activeItemName = entityName;
-
+      this.activeItemName = isPhoto
+        ? String(chunk[0].payload?.title || chunk[0].payload?.category || `Photo_${chunk[0].entityId.slice(-6)}.jpg`)
+        : `${chunk.length} record change(s)`;
       this.currentMessage = isPhoto
-        ? `Uploading Photo Evidence [${this.photoSyncedCount + 1}/${this.photoTotalCount}]: ${entityName}`
-        : `Synchronizing Record [${this.dataSyncedCount + 1}/${this.dataTotalCount}]: ${entityName}`;
+        ? `Uploading photo [${this.photoSyncedCount + 1}/${this.photoTotalCount}]: ${this.activeItemName}`
+        : `Synchronizing ${this.activeItemName}`;
       this.notify();
 
       try {
-        const docRef = doc(db, item.collectionName, item.entityId);
-
-        if (item.operation === 'DELETE') {
-          await deleteDoc(docRef);
-        } else {
-          // Clean payload of undefined values which Firestore rejects
-          const cleanPayload = item.payload ? JSON.parse(JSON.stringify(item.payload)) : {};
-          await setDoc(docRef, cleanPayload, { merge: true });
-        }
-
-        // Mark local item as SYNCED in respective Dexie table
-        await this.markLocalItemSynced(item.collectionName, item.entityId);
-
-        // Delete processed item from syncQueue
-        await dexieDb.syncQueue.delete(item.id);
-
-        syncedCount++;
-        this.syncedItemsCount = syncedCount;
-        this.totalProgressPercent = Math.round((syncedCount / this.totalItemsToSync) * 100);
-
-        if (isPhoto) {
-          this.photoSyncedCount++;
-          this.photoProgressPercent = Math.round((this.photoSyncedCount / this.photoTotalCount) * 100);
-          this.estimatedBytesTransferred += 1800000;
-        } else {
-          this.dataSyncedCount++;
-          this.dataProgressPercent = Math.round((this.dataSyncedCount / this.dataTotalCount) * 100);
-          this.estimatedBytesTransferred += 12000;
-        }
-
-        this.notify();
-        // Brief pacing delay (40ms) to ensure UI reflects smooth frame animation
-        await new Promise((r) => setTimeout(r, 40));
-      } catch (err: any) {
-        console.error(`Sync failed for item ${item.id}:`, err);
-        const errMsg = err?.message || 'Unknown Firestore write error';
-        errors.push(`${item.collectionName}/${item.entityId}: ${errMsg}`);
-
-        // Update retry count and status in Dexie
-        await dexieDb.syncQueue.update(item.id, {
-          status: item.retryCount >= 4 ? 'FAILED' : 'PENDING',
-          retryCount: item.retryCount + 1,
-          lastError: errMsg,
+        const res = await api<{ results: SyncResult[] }>('/api/sync/batch', {
+          method: 'POST',
+          body: {
+            mutations: chunk.map((item) => ({
+              id: item.id,
+              collectionName: item.collectionName,
+              entityId: item.entityId,
+              operation: item.operation,
+              payload: item.payload ? JSON.parse(JSON.stringify(item.payload)) : null,
+            })),
+          },
         });
+        const byId = new Map(res.results.map((r) => [r.id, r]));
+        for (const item of chunk) {
+          const result = byId.get(item.id);
+          if (result?.status === 'APPLIED') {
+            await this.markLocalItemSynced(item.collectionName, item.entityId);
+            await dexieDb.syncQueue.delete(item.id);
+            syncedCount++;
+            if (isPhoto) this.photoSyncedCount++;
+            else this.dataSyncedCount++;
+          } else {
+            const reason = result ? `${result.status}: ${result.error ?? 'rejected by server'}` : 'No result returned';
+            errors.push(`${item.collectionName}/${item.entityId}: ${reason}`);
+            await dexieDb.syncQueue.update(item.id, { status: 'FAILED', lastError: reason });
+          }
+          this.estimatedBytesTransferred += approxBytes(item.payload);
+        }
+      } catch (err) {
+        // Transport/auth failure: keep items PENDING (bounded retries) so nothing recorded offline is lost.
+        const errMsg = err instanceof ApiError ? `${err.status} ${err.message}` : (err as Error)?.message || 'Network error';
+        for (const item of chunk) {
+          errors.push(`${item.collectionName}/${item.entityId}: ${errMsg}`);
+          await dexieDb.syncQueue.update(item.id, {
+            status: item.retryCount >= MAX_RETRIES ? 'FAILED' : 'PENDING',
+            retryCount: item.retryCount + 1,
+            lastError: errMsg,
+          });
+        }
       }
+
+      this.syncedItemsCount = syncedCount;
+      this.totalProgressPercent = Math.round(((this.photoSyncedCount + this.dataSyncedCount) / this.totalItemsToSync) * 100);
+      this.photoProgressPercent = this.photoTotalCount ? Math.round((this.photoSyncedCount / this.photoTotalCount) * 100) : 100;
+      this.dataProgressPercent = this.dataTotalCount ? Math.round((this.dataSyncedCount / this.dataTotalCount) * 100) : 100;
+      this.notify();
     }
 
     this.isSyncing = false;
@@ -309,8 +295,8 @@ class FirestoreSyncService {
     this.totalProgressPercent = 100;
     this.currentMessage =
       errors.length > 0
-        ? `Batch completed: ${syncedCount} synced, ${errors.length} failed`
-        : `Successfully synchronized ${syncedCount} offline items to Firestore`;
+        ? `Batch completed: ${syncedCount} synced, ${errors.length} need attention`
+        : `Synchronized ${syncedCount} offline changes`;
 
     this.notify();
     return { success: errors.length === 0, syncedCount, errors };
@@ -427,25 +413,27 @@ class FirestoreSyncService {
 
     try {
       let count = 0;
-      // 1. Pull work orders
-      const woSnapshot = await getDocs(collection(db, 'work_orders'));
-      for (const d of woSnapshot.docs) {
-        const remoteWo = d.data() as WorkOrder;
+      const pendingIds = new Set(
+        (await dexieDb.syncQueue.where('status').anyOf(['PENDING', 'SYNCING']).toArray()).map((q) => q.entityId)
+      );
+
+      // 1. Work orders the server lets this user see (already scoped by org and assignment)
+      for (const remoteWo of await api<WorkOrder[]>('/api/work-orders')) {
+        if (pendingIds.has(remoteWo.id)) continue; // never clobber unsynced local edits
         const local = await dexieDb.workOrders.get(remoteWo.id);
-        if (!local || (remoteWo.updatedAt && (!local.updatedAt || remoteWo.updatedAt > local.updatedAt))) {
+        if (!local || (remoteWo.version ?? 0) > (local.version ?? 0) || (remoteWo.updatedAt ?? '') > (local.updatedAt ?? '')) {
           await dexieDb.workOrders.put({ ...remoteWo, syncStatus: 'SYNCED' });
           count++;
         }
       }
 
-      // 2. Pull TSSR Approvals
-      const tssrSnapshot = await getDocs(collection(db, 'tssr_approvals'));
-      for (const d of tssrSnapshot.docs) {
-        const remoteApprovals = d.data() as TssrApprovalSheet;
+      // 2. TSSR approval sheets
+      for (const remote of await api<Array<TssrApprovalSheet & { id: string; updatedAt?: string }>>('/api/tssr-approvals')) {
+        if (pendingIds.has(remote.id)) continue;
         await dexieDb.tssrApprovals.put({
-          id: d.id,
-          data: remoteApprovals,
-          updatedAt: new Date().toISOString(),
+          id: remote.id,
+          data: remote,
+          updatedAt: remote.updatedAt ?? new Date().toISOString(),
           syncStatus: 'SYNCED',
         });
         count++;
@@ -456,9 +444,35 @@ class FirestoreSyncService {
       this.notify();
       return { pulledCount: count, message: `Updated ${count} records from cloud` };
     } catch (err: any) {
-      console.warn('Pull from Firestore error:', err);
+      console.warn('Pull from server error:', err);
       return { pulledCount: 0, message: err?.message || 'Pull error' };
     }
+  }
+}
+
+interface SyncResult {
+  id: string;
+  status: 'APPLIED' | 'REJECTED' | 'CONFLICT';
+  error?: string;
+}
+
+const DATA_BATCH_SIZE = 50;
+const MAX_RETRIES = 4;
+
+function approxBytes(payload: unknown): number {
+  try {
+    return payload ? JSON.stringify(payload).length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function isGatewayReachable(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/health/ready', { cache: 'no-store' });
+    return res.ok;
+  } catch {
+    return false;
   }
 }
 

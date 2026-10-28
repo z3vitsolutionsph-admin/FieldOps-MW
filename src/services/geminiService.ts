@@ -1,29 +1,11 @@
-import { GoogleGenAI } from '@google/genai';
 import { Site, Hop, WorkOrder, ParsedTssrProjectData } from '../types/fieldops';
+import { api } from './apiClient';
 
-// Safe initialization of GoogleGenAI
-const getApiKey = (): string => {
-  return (
-    (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) ||
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
-    ''
-  );
-};
-
+/**
+ * All model calls go through the server (/api/ai/*), which holds the Gemini key.
+ * Each method keeps an offline heuristic so field crews get an answer without signal.
+ */
 export class GeminiService {
-  private ai: GoogleGenAI | null = null;
-
-  constructor() {
-    const key = getApiKey();
-    if (key) {
-      try {
-        this.ai = new GoogleGenAI({ apiKey: key });
-      } catch (err) {
-        console.warn('Failed to initialize GoogleGenAI with key:', err);
-      }
-    }
-  }
-
   public async askFieldOps(
     query: string,
     context: {
@@ -32,62 +14,17 @@ export class GeminiService {
       workOrder?: WorkOrder;
     }
   ): Promise<string> {
-    const promptContext = `
-You are FieldOps AI, a specialized telecom microwave engineer assistant.
-Current Context:
-Hop: ${context.hop?.hopName || 'NS-TER25-A062 to NS-TER25-A035'}
-Link Type: ${context.hop?.linkType || 'NEW LINK'}
-Config: ${context.hop?.configuration || '4+0 CA XPIC'} (11 GHz)
-Site: ${context.site?.id || 'NS-TER25-A035'} (${context.site?.name || 'CATANGNAN_TourismRoad'})
-Approved ACL: ${context.site?.approvedAclHeightM || 40.7}m on ${context.site?.approvedAclLeg || 'Leg C'}
-Antenna: ${context.hop?.antennaModel || 'MA12U10W 1.2m'}
-Expected RSL: ${context.hop?.expectedRslDbm || -27.17} dBm
-Expected TX: ${context.hop?.expectedTxDbm || 20} dBm
-Grounding: IDU ${context.site?.cablePlan.groundingIduMm2 || 10}mm², ODU/LPA ${context.site?.cablePlan.groundingOduMm2 || 16}mm² to busbar at ${context.site?.cablePlan.busbarLocations[0] || '40.3m'}
-Tower: ${context.site?.tower.type || '3-legged SST tubular 45.1m'}
-Power: ZTE ER4850 Rectifier (5 modules), ZXESM 7x100Ah battery, -48V DC
-
-Rules:
-1. Answer concisely and practically for a technician up a tower or in the shelter with gloves on.
-2. Always cite specific TSSR sections or values (e.g. "Per TSSR Section 1.6 & Transport ACL approval, antenna height is 40.7 m on Leg C").
-3. Flag any discrepancies or safety hazards immediately.
-4. If asked about torque specs, standard MW M10/M12 U-bolt torque is 45-50 N·m, N-type connectors 1.5-2.0 N·m.
-`;
-
-    // 1. Attempt server-side proxy route (/api/ai/ask)
     try {
-      const res = await fetch('/api/ai/ask', {
+      const { answer } = await api<{ answer: string }>('/api/ai/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query,
-          context: {
-            siteId: context.site?.id,
-            siteName: context.site?.name,
-            hopName: context.hop?.hopName,
-          },
-        }),
+        body: {
+          query: query.slice(0, 2000),
+          context: { siteId: context.site?.id, siteName: context.site?.name, hopName: context.hop?.hopName },
+        },
       });
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.data?.answer) {
-          return json.data.answer;
-        }
-      }
-    } catch {
-      // Fallback if offline or server route unreachable
-    }
-
-    if (this.ai) {
-      try {
-        const response = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: `${promptContext}\n\nTechnician Question: ${query}`,
-        });
-        return response.text || 'No response generated from AI.';
-      } catch (err: any) {
-        console.warn('Gemini API call failed, using intelligent telecom fallback:', err);
-      }
+      if (answer) return answer;
+    } catch (err) {
+      console.warn('AI assistant unavailable, using offline guidance:', err);
     }
 
     // Intelligent telecom offline/fallback knowledge base
@@ -98,38 +35,14 @@ Rules:
     photoTitle: string,
     base64Image?: string
   ): Promise<{ verified: boolean; score: number; feedback: string }> {
-    if (this.ai && base64Image) {
+    if (base64Image) {
       try {
-        const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-        const response = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: [
-            {
-              text: `You are a strict QA telecom site audit inspector. Analyze this photo submitted for TSSR evidence category: "${photoTitle}".
-Verify:
-1. Is the equipment/feature clearly visible and in focus?
-2. Are grounding lugs, weatherproofing, or equipment tags legible if applicable?
-3. Are there safety violations or bad cabling practices?
-Format your answer with:
-PASSED or NEEDS_RETAKE, followed by a concise 2-sentence rationale and score out of 100.`,
-            },
-            {
-              inlineData: {
-                mimeType: 'image/jpeg',
-                data: cleanBase64,
-              },
-            },
-          ],
+        return await api<{ verified: boolean; score: number; feedback: string }>('/api/ai/inspect-photo', {
+          method: 'POST',
+          body: { photoTitle: photoTitle.slice(0, 200), imageBase64: base64Image },
         });
-        const text = response.text || '';
-        const passed = text.toUpperCase().includes('PASSED') || !text.toUpperCase().includes('NEEDS_RETAKE');
-        return {
-          verified: passed,
-          score: passed ? 94 : 45,
-          feedback: text,
-        };
       } catch (err) {
-        console.warn('Gemini photo inspection failed, using heuristic:', err);
+        console.warn('AI photo inspection unavailable, using heuristic:', err);
       }
     }
 
@@ -146,38 +59,23 @@ PASSED or NEEDS_RETAKE, followed by a concise 2-sentence rationale and score out
     site: Site,
     hop: Hop
   ): Promise<{ summary: string; punchList: string[] }> {
-    if (this.ai) {
-      try {
-        const prompt = `
-Generate an executive As-Built Handover Summary and Punch List for:
-Work Order: ${workOrder.workOrderNumber}
-Site: ${site.id} (${site.name})
-Hop: ${hop.hopName}
-Completed Steps: ${JSON.stringify(workOrder.stepsData)}
-Approved ACL: ${site.approvedAclHeightM}m, Leg: ${site.approvedAclLeg}
-Target RSL: ${hop.expectedRslDbm} dBm
-
-Provide:
-1. A concise 3-paragraph executive handover statement.
-2. A list of 3-4 minor punch list items (e.g. cable tie trimming, touch-up cold galv paint, trash cleanup).
-`;
-        const res = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
-        });
-        const text = res.text || '';
-        return {
-          summary: text,
-          punchList: [
-            'Trim all outdoor UV-resistant cable ties flush to prevent snag hazard.',
-            'Apply cold-galvanizing zinc spray on minor scratch on AMB pipe clamp.',
-            'Verify all spare knockouts on NR9150 outdoor cabinet are sealed with IP67 blanking plugs.',
-            'Turn over site keys to EDOTCO warden Rommel and log compound gate exit.',
-          ],
-        };
-      } catch (e) {
-        console.warn('Gemini as-built summary generation failed, falling back:', e);
-      }
+    try {
+      const res = await api<{ summary: string; punchList: string[] }>('/api/ai/as-built-summary', {
+        method: 'POST',
+        body: {
+          workOrderNumber: workOrder.workOrderNumber,
+          siteId: site.id,
+          siteName: site.name,
+          hopName: hop.hopName,
+          approvedAclHeightM: site.approvedAclHeightM,
+          approvedAclLeg: site.approvedAclLeg,
+          expectedRslDbm: hop.expectedRslDbm,
+          stepsData: workOrder.stepsData,
+        },
+      });
+      if (res.summary) return res;
+    } catch (e) {
+      console.warn('AI as-built summary unavailable, falling back:', e);
     }
 
     return {
@@ -202,54 +100,12 @@ Provide:
     const defaultProjectCode = `PRJ-${Date.now().toString().slice(-6)}`;
     const nowIso = new Date().toISOString();
 
-    if (this.ai && rawText.trim().length > 20) {
+    if (rawText.trim().length > 20) {
       try {
-        const prompt = `You are a Principal Telecom Transmission Engineer. Analyze this raw Technical Site Survey Report (TSSR) content from file "${fileName}":
-
-"""
-${rawText.slice(0, 8000)}
-"""
-
-Extract and return STRICT JSON ONLY (no markdown code blocks, no preamble) with this exact schema:
-{
-  "projectCode": "string",
-  "documentTitle": "string",
-  "hopName": "string",
-  "frequencyMHz": number,
-  "pathLengthKm": number,
-  "expectedRslDbm": number,
-  "radioModel": "string",
-  "antennaModel": "string",
-  "siteA": {
-    "id": "string",
-    "name": "string",
-    "lat": number,
-    "long": number,
-    "elevationM": number,
-    "towerType": "string",
-    "towerHeightM": number
-  },
-  "siteB": {
-    "id": "string",
-    "name": "string",
-    "lat": number,
-    "long": number,
-    "elevationM": number,
-    "towerType": "string",
-    "towerHeightM": number,
-    "approvedAclHeightM": number,
-    "approvedAclLeg": "string",
-    "ownerTowerProvider": "string"
-  }
-}`;
-
-        const res = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
+        const { parsed } = await api<{ parsed: any }>('/api/ai/parse-tssr', {
+          method: 'POST',
+          body: { rawText: rawText.slice(0, 50_000), fileName: fileName.slice(0, 255) },
         });
-
-        const text = (res.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const parsed = JSON.parse(text);
 
         const siteA_Id = parsed.siteA?.id || 'SITE-A-NEW';
         const siteB_Id = parsed.siteB?.id || 'SITE-B-NEW';

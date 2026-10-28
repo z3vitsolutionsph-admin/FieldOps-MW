@@ -8,7 +8,6 @@ import {
   Wrench,
   ClipboardCheck,
   Briefcase,
-  Key,
   CheckCircle2,
   ArrowRight,
   ShieldAlert,
@@ -25,6 +24,7 @@ import {
 import { UserProfile, UserRole } from '../../types/fieldops';
 import { storage } from '../../services/storageService';
 import { SEED_USERS } from '../../data/seedData';
+import { AUTH_MODE, signOut } from '../../services/authService';
 
 interface LoginPageProps {
   onLoginSuccess: (user: UserProfile, targetFlowStep?: 'TSSR' | 'DASHBOARD' | 'JOBS') => void;
@@ -40,7 +40,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
   );
 
   // Form states
-  const [pinCode, setPinCode] = useState('1234');
   const [customEmail, setCustomEmail] = useState(selectedUser.email);
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -284,6 +283,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
   };
 
   const currentDetails = getRoleDetails(selectedRole);
+
+  // With real accounts, roles are assigned by an administrator; there is nothing to pick here.
+  if (AUTH_MODE === 'firebase') {
+    const me = storage.getActiveUser();
+    return (
+      <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <section className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4" aria-labelledby="account-title">
+          <h2 id="account-title" className="text-base font-semibold text-white">Your account</h2>
+          <dl className="text-sm space-y-1 text-slate-300">
+            <div className="flex justify-between gap-4"><dt className="text-slate-400">Name</dt><dd>{me.name}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-slate-400">Email</dt><dd className="truncate">{me.email}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-slate-400">Role</dt><dd>{me.role.replace(/_/g, ' ')}</dd></div>
+          </dl>
+          <p className="text-xs text-slate-400">Need a different role? Ask your administrator.</p>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="flex-1 min-h-11 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-semibold text-slate-100">Close</button>
+            <button
+              onClick={() => signOut().then(() => window.location.reload())}
+              className="flex-1 min-h-11 rounded-lg bg-rose-700 hover:bg-rose-600 text-sm font-semibold text-white"
+            >
+              Sign out
+            </button>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
@@ -541,21 +567,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1">Security PIN / Access Token</label>
-                  <div className="relative">
-                    <Key className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
-                    <input
-                      type="password"
-                      value={pinCode}
-                      onChange={(e) => setPinCode(e.target.value)}
-                      placeholder="••••"
-                      maxLength={6}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs font-mono tracking-widest text-white focus:border-cyan-500 outline-none"
-                      required
-                    />
-                  </div>
-                </div>
+                <p className="p-2.5 rounded-lg bg-amber-950/60 border border-amber-800 text-xs text-amber-200">
+                  Demo mode: you are choosing a sample identity, not signing in. Production builds require a real account.
+                </p>
 
                 {errorMsg && (
                   <div className="p-2.5 bg-rose-950/80 border border-rose-800 rounded-lg text-xs text-rose-200 flex items-center gap-2">
