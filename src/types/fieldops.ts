@@ -225,6 +225,8 @@ export interface WorkOrder {
     note?: string;
   }[];
   updatedAt?: string;
+  /** Optimistic-concurrency counter, incremented by the server on every write. */
+  version?: number;
   syncStatus?: 'SYNCED' | 'QUEUED' | 'ERROR';
   milestonePhase?: 'PHASE_1_CIVIL' | 'PHASE_2_RIGGING' | 'PHASE_3_COMMISSIONING' | 'PHASE_4_QA_HANDOVER';
   budgetCostPhp?: number;

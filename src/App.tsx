@@ -1,20 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Header } from './components/common/Header';
 import { BottomNav, ActiveTab, SyncModal } from './components/common/BottomNav';
-import { InstallationWizard } from './components/installation/InstallationWizard';
-import { DismantlingModule } from './components/dismantling/DismantlingModule';
-import { TroubleshootingModule } from './components/troubleshooting/TroubleshootingModule';
-import { ToolsPage } from './components/tools/ToolsPage';
-import { PhotoEngine } from './components/photos/PhotoEngine';
-import { TssrModule } from './components/tssr/TssrModule';
-import { AIAssistant } from './components/ai/AIAssistant';
-import { Dashboard } from './components/dashboard/Dashboard';
-import { ReportExportModal } from './components/reports/ReportExportModal';
-import { AppBlueprintModal } from './components/common/AppBlueprintModal';
-import { PreClimbSafetyModal } from './components/common/PreClimbSafetyModal';
-import { BackendCloudModal } from './components/common/BackendCloudModal';
 import { RoleGate } from './components/auth/RoleGate';
-import { LoginPage } from './components/auth/LoginPage';
 import { EnterpriseSidebar } from './components/common/EnterpriseSidebar';
 import { hasPermission } from './services/rbacService';
 import { storage } from './services/storageService';
@@ -40,7 +27,25 @@ import {
   SEED_USERS,
 } from './data/seedData';
 import { WifiOff, AlertTriangle, ArrowRight, ShieldCheck, UserCheck, Lock, FileText, Clock, Upload } from 'lucide-react';
-import { ShiftHandoverModal } from './components/installation/ShiftHandoverModal';
+
+const InstallationWizard = lazy(() => import('./components/installation/InstallationWizard').then((m) => ({ default: m.InstallationWizard })));
+const DismantlingModule = lazy(() => import('./components/dismantling/DismantlingModule').then((m) => ({ default: m.DismantlingModule })));
+const TroubleshootingModule = lazy(() => import('./components/troubleshooting/TroubleshootingModule').then((m) => ({ default: m.TroubleshootingModule })));
+const ToolsPage = lazy(() => import('./components/tools/ToolsPage').then((m) => ({ default: m.ToolsPage })));
+const PhotoEngine = lazy(() => import('./components/photos/PhotoEngine').then((m) => ({ default: m.PhotoEngine })));
+const TssrModule = lazy(() => import('./components/tssr/TssrModule').then((m) => ({ default: m.TssrModule })));
+const AIAssistant = lazy(() => import('./components/ai/AIAssistant').then((m) => ({ default: m.AIAssistant })));
+const Dashboard = lazy(() => import('./components/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })));
+const ReportExportModal = lazy(() => import('./components/reports/ReportExportModal').then((m) => ({ default: m.ReportExportModal })));
+const AppBlueprintModal = lazy(() => import('./components/common/AppBlueprintModal').then((m) => ({ default: m.AppBlueprintModal })));
+const PreClimbSafetyModal = lazy(() => import('./components/common/PreClimbSafetyModal').then((m) => ({ default: m.PreClimbSafetyModal })));
+const BackendCloudModal = lazy(() => import('./components/common/BackendCloudModal').then((m) => ({ default: m.BackendCloudModal })));
+const LoginPage = lazy(() => import('./components/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
+const ShiftHandoverModal = lazy(() => import('./components/installation/ShiftHandoverModal').then((m) => ({ default: m.ShiftHandoverModal })));
+
+const ModuleFallback = () => (
+  <div role="status" className="p-6 text-sm text-slate-400">Loading module…</div>
+);
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('DASHBOARD');
@@ -240,6 +245,7 @@ export default function App() {
 
         {/* Main Content Viewport */}
         <main className="flex-1 min-w-0 max-w-7xl mx-auto p-3 sm:p-5">
+          <Suspense fallback={<ModuleFallback />}>
         {/* TAB 1: JOBS / WORK ORDERS */}
         {activeTab === 'JOBS' && (
           <div className="space-y-4">
@@ -445,9 +451,11 @@ export default function App() {
             sunlightMode={sunlightMode}
           />
         )}
+          </Suspense>
       </main>
       </div>
 
+      <Suspense fallback={null}>
       {/* Mobile-First Bottom Navigation Bar */}
       <BottomNav
         activeTab={activeTab}
@@ -557,6 +565,7 @@ export default function App() {
           sunlightMode={sunlightMode}
         />
       )}
+      </Suspense>
     </div>
   );
 }
