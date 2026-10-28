@@ -507,11 +507,11 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
                   Equipment QR & Barcode Scanner
                 </h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/60 text-cyan-300 font-mono font-bold border border-cyan-700/80">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-900/60 text-cyan-300 font-mono font-bold border border-cyan-700/80">
                   AUTO-POPULATE
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 Aim camera at serial plate or asset sticker to auto-fill inventory return
               </p>
             </div>
@@ -534,12 +534,12 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
           <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs">
             <div className="flex items-center gap-1.5 text-slate-400">
               <SwitchCamera className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-[11px] font-mono">Camera:</span>
+              <span className="text-xs font-mono">Camera:</span>
             </div>
             <select
               value={selectedCameraId}
               onChange={(e) => handleSwitchCamera(e.target.value)}
-              className="bg-transparent text-cyan-300 font-mono text-[11px] border-none focus:ring-0 cursor-pointer"
+              className="bg-transparent text-cyan-300 font-mono text-xs border-none focus:ring-0 cursor-pointer"
             >
               {cameras.map((c) => (
                 <option key={c.id} value={c.id} className="bg-slate-900 text-white">
@@ -569,7 +569,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             {/* Pulsing Animated Horizontal Laser Sweep Line */}
             <div className="w-full relative flex items-center justify-center">
               <div className="w-11/12 h-0.5 bg-cyan-400 shadow-[0_0_16px_#06b6d4] animate-pulse" />
-              <span className="absolute -top-3 font-mono text-[9px] text-cyan-300 bg-black/60 px-1 rounded">
+              <span className="absolute -top-3 font-mono text-xs text-cyan-300 bg-black/60 px-1 rounded">
                 AIM AT CODE 128 / QR
               </span>
             </div>
@@ -661,10 +661,10 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         {showManualInput && (
           <form onSubmit={handleManualSubmit} className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-[11px] text-slate-400 font-bold">
+              <span className="font-mono text-xs text-slate-400 font-bold">
                 Manual Barcode / Serial Number Input:
               </span>
-              <span className="text-[10px] text-cyan-400 font-mono">Press Enter to Auto-Fill</span>
+              <span className="text-xs text-cyan-400 font-mono">Press Enter to Auto-Fill</span>
             </div>
             <div className="flex gap-1.5">
               <input
@@ -689,11 +689,11 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         {/* Quick-Test Telecom Sample Barcodes Carousel */}
         <div className="pt-2 border-t border-slate-800 space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold flex items-center gap-1">
+            <span className="text-xs font-mono uppercase text-slate-400 font-bold flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-cyan-400" />
               Demo Simulation: 1-Tap to Test Auto-Population:
             </span>
-            <span className="text-[9.5px] font-mono text-slate-500">
+            <span className="text-xs font-mono text-slate-500">
               Site: {siteId || 'NS-TER25-A035'}
             </span>
           </div>
@@ -712,11 +712,11 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
               >
                 <div className="flex items-center gap-1.5">
                   <Barcode className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300" />
-                  <span className="text-[11px] font-bold text-slate-200 group-hover:text-cyan-300">
+                  <span className="text-xs font-bold text-slate-200 group-hover:text-cyan-300">
                     {sample.label}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-0.5 text-[9.5px] font-mono">
+                <div className="flex items-center gap-2 mt-0.5 text-xs font-mono">
                   <span className="text-cyan-400">SN: {sample.data.serialNumber}</span>
                   <span className="text-slate-500">&bull;</span>
                   <span className="text-emerald-400">{sample.tag}</span>

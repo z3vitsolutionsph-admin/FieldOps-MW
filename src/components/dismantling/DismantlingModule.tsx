@@ -250,7 +250,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
               />
               <span className="font-bold text-slate-200">Customer Traffic Migrated / Rerouted</span>
             </label>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-xs text-slate-400">
               Confirmed 0 bps active payload with Core Network Operations before breaking RF path.
             </p>
           </div>
@@ -373,7 +373,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                     <td className="py-2.5 px-3 text-slate-400">{item.assetTag}</td>
                     <td className="py-2.5 px-3">
                       <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded text-xs font-bold ${
                           item.condition === 'GOOD'
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                             : item.condition === 'DAMAGED'
@@ -384,12 +384,12 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                         {item.condition}
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 text-slate-300 text-[11px] font-sans">
+                    <td className="py-2.5 px-3 text-slate-300 text-xs font-sans">
                       {item.destinationWarehouse || 'Regional Depot'}
                     </td>
                     <td className="py-2.5 px-3">
                       <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded text-xs font-bold ${
                           isReturned
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                             : isPendingReturn
@@ -405,7 +405,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                         <button
                           type="button"
                           onClick={() => handleStartScanForItem(item)}
-                          className="px-2 py-1 rounded bg-slate-800 hover:bg-cyan-900/60 text-cyan-300 hover:text-white border border-slate-700 hover:border-cyan-600 flex items-center gap-1 text-[10px] transition-colors"
+                          className="px-2 py-1 rounded bg-slate-800 hover:bg-cyan-900/60 text-cyan-300 hover:text-white border border-slate-700 hover:border-cyan-600 flex items-center gap-1 text-xs transition-colors"
                           title="Scan / Verify barcode physically on hardware"
                         >
                           <Barcode className="w-3 h-3 text-cyan-400" />
@@ -416,7 +416,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                           <button
                             type="button"
                             onClick={() => handleQuickDispatch(item)}
-                            className="px-2 py-1 rounded bg-emerald-900/50 hover:bg-emerald-800 text-emerald-300 hover:text-white border border-emerald-700 flex items-center gap-1 text-[10px] transition-colors"
+                            className="px-2 py-1 rounded bg-emerald-900/50 hover:bg-emerald-800 text-emerald-300 hover:text-white border border-emerald-700 flex items-center gap-1 text-xs transition-colors"
                             title="Dispatch to Depot"
                           >
                             <Truck className="w-3 h-3" />
@@ -467,7 +467,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                   <Truck className="w-4 h-4 text-cyan-400" />
                   Log Dismantled Equipment Return
                 </h3>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-xs text-slate-400">
                   {editingItemId ? 'Update existing site asset return' : 'Register dismantled hardware for warehouse return'}
                 </p>
               </div>
@@ -486,7 +486,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
                 <span className="font-bold text-cyan-300 block text-xs">
                   Scan Barcode with Camera
                 </span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-xs text-slate-400">
                   Auto-fills Serial Number, Asset Tag, and Model
                 </span>
               </div>
@@ -504,7 +504,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
 
             {/* Equipment Category */}
             <div>
-              <label className="text-slate-400 block mb-1 font-mono text-[11px]">
+              <label className="text-slate-400 block mb-1 font-mono text-xs">
                 EQUIPMENT CATEGORY:
               </label>
               <select
@@ -523,12 +523,12 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
 
             {/* Serial Number with Scan Shortcut */}
             <div>
-              <div className="flex items-center justify-between mb-1 font-mono text-[11px]">
+              <div className="flex items-center justify-between mb-1 font-mono text-xs">
                 <label className="text-slate-400">SERIAL NUMBER (SN):</label>
                 <button
                   type="button"
                   onClick={() => setShowScannerModal(true)}
-                  className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-mono font-bold"
+                  className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-mono font-bold"
                 >
                   <Barcode className="w-3 h-3" />
                   Scan Barcode
@@ -555,7 +555,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
 
             {/* Asset Tag */}
             <div>
-              <label className="text-slate-400 block mb-1 font-mono text-[11px]">
+              <label className="text-slate-400 block mb-1 font-mono text-xs">
                 ASSET TAG:
               </label>
               <input
@@ -569,7 +569,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
 
             {/* Equipment Model */}
             <div>
-              <label className="text-slate-400 block mb-1 font-mono text-[11px]">
+              <label className="text-slate-400 block mb-1 font-mono text-xs">
                 EQUIPMENT MODEL / DESCRIPTION:
               </label>
               <input
@@ -584,7 +584,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
             {/* Condition and Destination Warehouse */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-slate-400 block mb-1 font-mono text-[11px]">CONDITION:</label>
+                <label className="text-slate-400 block mb-1 font-mono text-xs">CONDITION:</label>
                 <select
                   value={newItem.condition}
                   onChange={(e) => setNewItem({ ...newItem, condition: e.target.value as any })}
@@ -597,7 +597,7 @@ export const DismantlingModule: React.FC<DismantlingModuleProps> = ({
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1 font-mono text-[11px]">DESTINATION WAREHOUSE:</label>
+                <label className="text-slate-400 block mb-1 font-mono text-xs">DESTINATION WAREHOUSE:</label>
                 <select
                   value={newItem.destinationWarehouse}
                   onChange={(e) => setNewItem({ ...newItem, destinationWarehouse: e.target.value })}

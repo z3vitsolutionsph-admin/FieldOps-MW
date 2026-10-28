@@ -533,16 +533,16 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
             <h2 className="text-base font-extrabold text-white tracking-tight">
               Project Manager TSSR Ingestion & System Synchronization
             </h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-700 font-bold">
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-700 font-bold">
               RBAC PM AUTHORITY
             </span>
             {activeTssrProject ? (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold flex items-center gap-1">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 ACTIVE TSSR BOUND
               </span>
             ) : (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700 font-bold flex items-center gap-1">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700 font-bold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                 CLEAN SLATE · AWAITING TSSR
               </span>
@@ -555,7 +555,7 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
         </div>
 
         {/* Project Manager User Flow Navigation Stepper */}
-        <div className="flex items-center gap-1.5 font-mono text-[10px] overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-1.5 font-mono text-xs overflow-x-auto scrollbar-none">
           <span className="px-2 py-1 rounded bg-slate-950 text-slate-400 border border-slate-800">
             1. Login
           </span>
@@ -608,14 +608,14 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
                 <span className="font-bold text-white text-sm">
                   {activeTssrProject.documentTitle}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-900/80 text-cyan-300 font-mono font-bold border border-cyan-700">
+                <span className="px-2 py-0.5 rounded text-xs bg-cyan-900/80 text-cyan-300 font-mono font-bold border border-cyan-700">
                   PROJECT CODE: {activeTssrProject.projectCode}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 font-mono font-bold border border-emerald-700">
+                <span className="px-2 py-0.5 rounded text-xs bg-emerald-950 text-emerald-300 font-mono font-bold border border-emerald-700">
                   AI EXTRACTED & BOUND
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300">
+              <p className="text-xs text-slate-300">
                 Uploaded by <strong>{activeTssrProject.uploadedBy}</strong> on{' '}
                 {new Date(activeTssrProject.uploadedAt).toLocaleString()} · Bound to{' '}
                 <strong>{activeTssrProject.summary.totalMilestones} Work Orders</strong> across Sites{' '}
@@ -666,11 +666,11 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
                 <span className="font-bold text-white text-sm">
                   System Clean Slate — Ready for New TSSR Ingestion
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 font-mono font-bold border border-amber-700">
+                <span className="px-2 py-0.5 rounded text-xs bg-amber-950 text-amber-300 font-mono font-bold border border-amber-700">
                   ALL PREVIOUS TSSR DATA REMOVED
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300">
+              <p className="text-xs text-slate-300">
                 All previous TSSR data has been removed. Upload a new telecom survey dossier below (or select one of the high-fidelity sample presets) to see Gemini AI extract coordinates, tower heights, ACL centerline, power specs, and automatically generate deployment work orders.
               </p>
             </div>
@@ -733,7 +733,7 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-slate-400">Current Status:</span>
+              <span className="text-xs font-mono text-slate-400">Current Status:</span>
               <span className={`text-xs font-bold font-mono px-2 py-1 rounded border ${
                 activeTssrProject
                   ? 'text-emerald-300 bg-emerald-950/80 border-emerald-700'
@@ -778,7 +778,7 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
               <p className="text-xs text-slate-400 mt-1">
                 Supports Globe Telecom, Smart-PLDT, DITO Telecommunity, and EDOTCO survey formats up to 50MB.
               </p>
-              <p className="text-[11px] text-cyan-400 font-mono mt-2">
+              <p className="text-xs text-cyan-400 font-mono mt-2">
                 Click to browse files from your computer
               </p>
             </div>
@@ -797,7 +797,7 @@ export const TssrModule: React.FC<TssrModuleProps> = ({
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
                 Or Test AI with Sample Regional Deployment Projects:
               </span>
-              <span className="text-[11px] text-cyan-400 font-mono">
+              <span className="text-xs text-cyan-400 font-mono">
                 Click any preset to simulate PM upload
               </span>
             </div>
@@ -922,9 +922,9 @@ SITE_B:
                         <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                       )}
                     </div>
-                    <div className="text-[11px] font-mono text-cyan-300 truncate">{p.route}</div>
-                    <div className="text-[10px] text-slate-400 mt-1">{p.band}</div>
-                    <div className="text-[10px] text-emerald-400 font-mono mt-0.5">{p.tower}</div>
+                    <div className="text-xs font-mono text-cyan-300 truncate">{p.route}</div>
+                    <div className="text-xs text-slate-400 mt-1">{p.band}</div>
+                    <div className="text-xs text-emerald-400 font-mono mt-0.5">{p.tower}</div>
                   </div>
 
                   <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center gap-1.5">
@@ -936,7 +936,7 @@ SITE_B:
                         executeAiExtraction(p.sampleText, `${p.key}_TSSR.pdf`);
                       }}
                       disabled={isExtracting}
-                      className="flex-1 py-1 px-2 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-[10px] font-bold shadow flex items-center justify-center gap-1"
+                      className="flex-1 py-1 px-2 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold shadow flex items-center justify-center gap-1"
                     >
                       <Sparkles className="w-3 h-3" />
                       <span>Run AI Parse</span>
@@ -947,7 +947,7 @@ SITE_B:
                         setSelectedPreset(p.key);
                         setImportText(p.sampleText);
                       }}
-                      className="py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px]"
+                      className="py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs"
                     >
                       View Text
                     </button>
@@ -968,12 +968,12 @@ SITE_B:
                   </span>
                 </div>
                 {isExtracting ? (
-                  <span className="flex items-center gap-1 text-[11px] text-cyan-400 animate-pulse">
+                  <span className="flex items-center gap-1 text-xs text-cyan-400 animate-pulse">
                     <Cpu className="w-3.5 h-3.5 animate-spin" />
                     Processing ({extractionProgress}%)...
                   </span>
                 ) : (
-                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                  <span className="text-xs text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
                     COMPLETE (100%)
                   </span>
                 )}
@@ -987,7 +987,7 @@ SITE_B:
                 />
               </div>
 
-              <div className="max-h-36 overflow-y-auto space-y-1 text-[11px] text-slate-300 scrollbar-thin">
+              <div className="max-h-36 overflow-y-auto space-y-1 text-xs text-slate-300 scrollbar-thin">
                 {aiTerminalLogs.map((log, idx) => (
                   <div key={idx} className="leading-relaxed">
                     {log.includes('[SUCCESS]') ? (
@@ -1020,7 +1020,7 @@ SITE_B:
                     <h4 className="font-bold text-white text-sm">
                       AI-Extracted Telecom Parameters Preview
                     </h4>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Document: <strong>{extractedPreview.documentTitle}</strong> (Code: {extractedPreview.projectCode})
                     </p>
                   </div>
@@ -1042,15 +1042,15 @@ SITE_B:
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                 {/* Site A Card */}
                 <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-cyan-400 font-bold block uppercase">
+                  <span className="text-xs font-mono text-cyan-400 font-bold block uppercase">
                     Site A Terminal
                   </span>
                   <p className="font-mono font-bold text-white text-sm">{extractedPreview.siteA.id}</p>
-                  <p className="text-[11px] text-slate-300 truncate">{extractedPreview.siteA.name}</p>
-                  <p className="text-[10px] text-slate-400 font-mono">
+                  <p className="text-xs text-slate-300 truncate">{extractedPreview.siteA.name}</p>
+                  <p className="text-xs text-slate-400 font-mono">
                     {extractedPreview.siteA.lat.toFixed(4)}° N, {extractedPreview.siteA.long.toFixed(4)}° E
                   </p>
-                  <div className="pt-1 text-[10px] text-slate-300 flex justify-between">
+                  <div className="pt-1 text-xs text-slate-300 flex justify-between">
                     <span>Tower: {extractedPreview.siteA.tower?.heightM || 35}m</span>
                     <span>Elev: {extractedPreview.siteA.elevationM}m</span>
                   </div>
@@ -1058,15 +1058,15 @@ SITE_B:
 
                 {/* Site B Card */}
                 <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-emerald-400 font-bold block uppercase">
+                  <span className="text-xs font-mono text-emerald-400 font-bold block uppercase">
                     Site B Terminal
                   </span>
                   <p className="font-mono font-bold text-white text-sm">{extractedPreview.siteB.id}</p>
-                  <p className="text-[11px] text-slate-300 truncate">{extractedPreview.siteB.name}</p>
-                  <p className="text-[10px] text-slate-400 font-mono">
+                  <p className="text-xs text-slate-300 truncate">{extractedPreview.siteB.name}</p>
+                  <p className="text-xs text-slate-400 font-mono">
                     {extractedPreview.siteB.lat.toFixed(4)}° N, {extractedPreview.siteB.long.toFixed(4)}° E
                   </p>
-                  <div className="pt-1 text-[10px] text-emerald-400 font-bold flex justify-between">
+                  <div className="pt-1 text-xs text-emerald-400 font-bold flex justify-between">
                     <span>Approved ACL: {extractedPreview.siteB.approvedAclHeightM || 40.7}m</span>
                     <span>{extractedPreview.siteB.approvedAclLeg || 'Leg C'}</span>
                   </div>
@@ -1074,25 +1074,25 @@ SITE_B:
 
                 {/* Microwave Hop Specs */}
                 <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-purple-400 font-bold block uppercase">
+                  <span className="text-xs font-mono text-purple-400 font-bold block uppercase">
                     RF Microwave Hop
                   </span>
                   <p className="font-bold text-white truncate">{extractedPreview.hop.hopName}</p>
-                  <div className="text-[11px] text-slate-300 font-mono">
+                  <div className="text-xs text-slate-300 font-mono">
                     {(extractedPreview.hop.frequencyMHz / 1000).toFixed(1)} GHz · {extractedPreview.hop.polarization} Polarized
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono flex justify-between">
+                  <div className="text-xs text-slate-400 font-mono flex justify-between">
                     <span>Path: {extractedPreview.hop.pathLengthKm} km</span>
                     <span className="text-emerald-400 font-bold">RSL: {extractedPreview.hop.expectedRslDbm} dBm</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 pt-0.5">
+                  <div className="text-xs text-slate-400 pt-0.5">
                     Antenna: {extractedPreview.hop.antennaModel}
                   </div>
                 </div>
 
                 {/* Generated Work Orders */}
                 <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-amber-400 font-bold block uppercase">
+                  <span className="text-xs font-mono text-amber-400 font-bold block uppercase">
                     Auto-Generated Work Orders
                   </span>
                   <p className="font-bold text-white text-sm">
@@ -1100,7 +1100,7 @@ SITE_B:
                   </p>
                   <div className="space-y-1 max-h-16 overflow-y-auto">
                     {extractedPreview.generatedWorkOrders.map((wo) => (
-                      <div key={wo.id} className="text-[10px] font-mono text-slate-300 truncate flex items-center justify-between">
+                      <div key={wo.id} className="text-xs font-mono text-slate-300 truncate flex items-center justify-between">
                         <span>{wo.workOrderNumber}</span>
                         <span className="text-cyan-400">{wo.type}</span>
                       </div>
@@ -1159,7 +1159,7 @@ SITE_B:
             />
 
             <div className="flex justify-between items-center">
-              <div className="text-[11px] text-slate-500 font-mono">
+              <div className="text-xs text-slate-500 font-mono">
                 {importText ? `${importText.length} characters loaded` : 'No text loaded'}
               </div>
               <button
@@ -1183,7 +1183,7 @@ SITE_B:
                   {onNavigateToDashboard && (
                     <button
                       onClick={onNavigateToDashboard}
-                      className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-[11px] shadow flex items-center gap-1"
+                      className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs shadow flex items-center gap-1"
                     >
                       <span>Proceed to Dashboard</span>
                       <ArrowRight className="w-3 h-3" />
@@ -1192,7 +1192,7 @@ SITE_B:
                   {onNavigateToJobs && (
                     <button
                       onClick={onNavigateToJobs}
-                      className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 font-mono font-bold text-[11px] border border-emerald-700/80 flex items-center gap-1"
+                      className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 font-mono font-bold text-xs border border-emerald-700/80 flex items-center gap-1"
                     >
                       <span>Proceed to Jobs Schedule</span>
                       <ArrowRight className="w-3 h-3" />
@@ -1247,7 +1247,7 @@ SITE_B:
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{gate.title}</span>
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
                         gate.data.status === 'APPROVED'
                           ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                           : 'bg-amber-950 text-amber-300 border border-amber-700'
@@ -1256,15 +1256,15 @@ SITE_B:
                       {gate.data.status}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">{gate.role}</p>
+                  <p className="text-xs text-slate-400 mt-1">{gate.role}</p>
 
                   {gate.data.status === 'APPROVED' ? (
-                    <div className="mt-3 p-2 rounded bg-slate-900 border border-slate-800 text-[11px] font-mono space-y-0.5">
+                    <div className="mt-3 p-2 rounded bg-slate-900 border border-slate-800 text-xs font-mono space-y-0.5">
                       <div className="text-slate-400">Signed: {gate.data.approverName}</div>
                       <div className="text-emerald-400 font-bold">Date: {gate.data.date}</div>
                     </div>
                   ) : (
-                    <div className="mt-3 text-[11px] text-amber-400/90 italic">
+                    <div className="mt-3 text-xs text-amber-400/90 italic">
                       Pending official signature sign-off.
                     </div>
                   )}
@@ -1421,19 +1421,19 @@ SITE_B:
               <p className="font-bold text-white">
                 {currentSite.commercialPower?.available ? 'Available & Metered' : 'No Commercial Power'}
               </p>
-              <p className="text-[11px] text-slate-400">{currentSite.commercialPower?.remarks}</p>
+              <p className="text-xs text-slate-400">{currentSite.commercialPower?.remarks}</p>
             </div>
             <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
               <span className="text-slate-400">Rectifier System:</span>
               <p className="font-bold text-white">{currentSite.power?.rectifierBrand}</p>
-              <p className="text-[11px] text-cyan-400 font-mono">
+              <p className="text-xs text-cyan-400 font-mono">
                 {currentSite.power?.rectifierModulesCount} modules x {currentSite.power?.rectifierModuleRatingA}A (Total: {(currentSite.power?.rectifierModulesCount || 0) * (currentSite.power?.rectifierModuleRatingA || 0)}A)
               </p>
             </div>
             <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
               <span className="text-slate-400">Battery Reserve:</span>
               <p className="font-bold text-white">{currentSite.power?.batteryBrand}</p>
-              <p className="text-[11px] text-purple-400 font-mono">
+              <p className="text-xs text-purple-400 font-mono">
                 {currentSite.power?.batteryBanksCount} banks x {currentSite.power?.batteryAh} Ah
               </p>
             </div>
@@ -1476,7 +1476,7 @@ SITE_B:
                   {currentSite.cablePlan?.groundingIduMm2} mm² ({currentSite.cablePlan?.groundingIduM} m)
                 </span>
               </div>
-              <div className="pt-1 text-[11px] text-slate-400 font-sans">
+              <div className="pt-1 text-xs text-slate-400 font-sans">
                 Busbar Terminations: {currentSite.cablePlan?.busbarLocations?.join(' · ') || 'Tower Base'}
               </div>
             </div>

@@ -275,7 +275,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
     <div className="space-y-4">
       {/* Scope Selector Tabs */}
       <div className="flex items-center gap-1.5 overflow-x-auto p-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
-        <span className="text-[10px] font-mono text-slate-400 font-bold px-2 shrink-0">
+        <span className="text-xs font-mono text-slate-400 font-bold px-2 shrink-0">
           TSSR AUDIT SCOPE:
         </span>
         <button
@@ -288,7 +288,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
           }`}
         >
           <span>Target Site: {site.id}</span>
-          <span className="text-[10px] opacity-75 font-normal">({site.role})</span>
+          <span className="text-xs opacity-75 font-normal">({site.role})</span>
         </button>
         <button
           type="button"
@@ -301,7 +301,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
         >
           <span className="w-2 h-2 rounded-full bg-rose-400 inline-block"></span>
           <span>Site A ({SEED_SITE_A.id})</span>
-          <span className="text-[10px] px-1 rounded bg-rose-950 text-rose-300 border border-rose-800">
+          <span className="text-xs px-1 rounded bg-rose-950 text-rose-300 border border-rose-800">
             200m Haul &bull; Off-Grid
           </span>
         </button>
@@ -315,7 +315,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
           }`}
         >
           <span>Site B ({SEED_SITE_B.id})</span>
-          <span className="text-[10px] opacity-75 font-normal">Catangnan</span>
+          <span className="text-xs opacity-75 font-normal">Catangnan</span>
         </button>
         <button
           type="button"
@@ -344,7 +344,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded bg-rose-600 text-white">
+                <span className="text-xs font-mono font-black uppercase px-2 py-0.5 rounded bg-rose-600 text-white">
                   TSSR SITE CONSTRAINTS DETECTED
                 </span>
                 <span className="text-xs font-mono font-bold text-rose-300">
@@ -364,7 +364,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
 
           {/* Aggregate Risk Score Badge */}
           <div className="text-right sm:border-l sm:border-rose-800/80 sm:pl-4 shrink-0">
-            <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+            <span className="text-xs font-mono uppercase text-slate-400 block font-bold">
               Site Risk Profile
             </span>
             <span
@@ -374,7 +374,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
             >
               {criticalCount > 0 ? 'LEVEL 4 — CRITICAL' : 'LEVEL 3 — ELEVATED'}
             </span>
-            <p className="text-[10px] text-slate-400 font-mono">
+            <p className="text-xs text-slate-400 font-mono">
               Action Plan Mandatory
             </p>
           </div>
@@ -417,7 +417,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className={`text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded ${
+                        className={`text-xs font-mono font-black uppercase px-2 py-0.5 rounded ${
                           isCritical
                             ? 'bg-rose-600 text-white animate-pulse'
                             : 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
@@ -425,7 +425,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
                       >
                         {item.severity} RISK FLAG
                       </span>
-                      <span className="text-[10px] font-mono text-cyan-400">
+                      <span className="text-xs font-mono text-cyan-400">
                         {item.category}
                       </span>
                     </div>
@@ -435,14 +435,14 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
                   </div>
                 </div>
 
-                <span className="text-[10px] font-mono text-slate-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded self-start shrink-0">
+                <span className="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded self-start shrink-0">
                   {item.sourceTssr}
                 </span>
               </div>
 
               {/* TSSR Constraint Quote Box */}
               <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs font-mono space-y-1 mb-3">
-                <div className="flex items-center justify-between text-slate-400 text-[10px]">
+                <div className="flex items-center justify-between text-slate-400 text-xs">
                   <span>SURVEYED TSSR CONSTRAINT:</span>
                   <span className="text-cyan-400">{site.id}</span>
                 </div>
@@ -457,13 +457,13 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
               {/* Mandatory Mitigations Checklist */}
               <div className="space-y-1.5 pt-2 border-t border-slate-800">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-200 uppercase font-mono block">
+                  <span className="text-xs font-bold text-slate-200 uppercase font-mono block">
                     Mandatory Pre-Departure Mitigations:
                   </span>
                   <button
                     type="button"
                     onClick={handleAcknowledgeAllMitigations}
-                    className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 underline"
+                    className="text-xs font-mono text-cyan-400 hover:text-cyan-300 underline"
                   >
                     Check All Mitigations
                   </button>
@@ -496,7 +496,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
 
               {/* Recommended Gear / Cargo Box */}
               <div className="mt-3 p-2.5 rounded-lg bg-cyan-950/20 border border-cyan-900/60 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 text-cyan-300 font-mono text-[11px]">
+                <div className="flex items-center gap-1.5 text-cyan-300 font-mono text-xs">
                   <Package className="w-3.5 h-3.5 shrink-0" />
                   <strong>Cargo to Manifest in Service Truck:</strong>
                 </div>
@@ -504,7 +504,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
                   {item.recommendedGear.map((gear, gIdx) => (
                     <span
                       key={gIdx}
-                      className="px-2 py-0.5 rounded bg-slate-900 border border-cyan-800/80 text-[10px] font-mono text-cyan-200"
+                      className="px-2 py-0.5 rounded bg-slate-900 border border-cyan-800/80 text-xs font-mono text-cyan-200"
                     >
                       {gear}
                     </span>
@@ -538,7 +538,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
 
         {aiAnalysis && (
           <div className="p-3 rounded-lg bg-slate-900 border border-cyan-900/70 text-xs text-slate-300 whitespace-pre-line leading-relaxed">
-            <span className="text-[10px] font-mono text-cyan-400 font-bold block mb-1">
+            <span className="text-xs font-mono text-cyan-400 font-bold block mb-1">
               AI CHIEF SAFETY OFFICER BRIEFING:
             </span>
             {aiAnalysis}
@@ -559,7 +559,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
             <p className="text-xs font-bold text-slate-100">
               I acknowledge the site-specific TSSR constraints above and verify required mitigations
             </p>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
               Certified by <strong>{activeUser.name}</strong> ({activeUser.role}). All critical
               contingency gear (including portable power, hauling equipment, and height rigging) is
               confirmed and allocated before the pre-departure checklist.
@@ -573,7 +573,7 @@ Provide a concise 3-bullet pre-departure risk briefing with prioritized mitigati
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               Dynamic Risk Analysis Verified — Pre-Departure Checklist Unlocked
             </span>
-            <span className="text-[10px] font-mono text-emerald-400">
+            <span className="text-xs font-mono text-emerald-400">
               {new Date().toLocaleTimeString()}
             </span>
           </div>

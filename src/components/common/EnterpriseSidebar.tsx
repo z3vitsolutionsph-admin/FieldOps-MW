@@ -80,7 +80,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     >
       {/* Decorative Enterprise Microwave Link Telemetry Card */}
       <div className="p-3.5 border-b border-slate-800/80 space-y-2.5">
-        <div className="flex items-center justify-between font-mono text-[11px]">
+        <div className="flex items-center justify-between font-mono text-xs">
           <span className="text-slate-300 flex items-center gap-1.5 font-bold">
             <span
               className={`w-2 h-2 rounded-full ${
@@ -90,7 +90,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             MICROWAVE LINK
           </span>
           <span
-            className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+            className={`px-1.5 py-0.5 rounded text-xs font-bold ${
               siteA && siteB && hop
                 ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                 : 'bg-amber-950 text-amber-300 border border-amber-800'
@@ -102,18 +102,18 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
         {/* Link Route Card */}
         {siteA && siteB && hop ? (
-          <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono space-y-1.5">
+          <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono space-y-1.5">
             <div className="flex items-center justify-between text-slate-200 font-bold">
               <span className="truncate">{siteA.id}</span>
               <span className="text-cyan-400 mx-1">↔</span>
               <span className="truncate">{siteB.id}</span>
             </div>
 
-            <p className="text-[10px] text-slate-400 truncate">
+            <p className="text-xs text-slate-400 truncate">
               {hop.hopName || 'Microwave Backbone Link'}
             </p>
 
-            <div className="grid grid-cols-3 gap-1 pt-1.5 border-t border-slate-850 text-[9px] text-center text-slate-400">
+            <div className="grid grid-cols-3 gap-1 pt-1.5 border-t border-slate-850 text-xs text-center text-slate-400">
               <div>
                 <span className="block text-slate-500">BAND</span>
                 <span className="text-slate-200 font-bold">
@@ -135,17 +135,17 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             </div>
           </div>
         ) : (
-          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-dashed border-slate-800 text-[11px] font-mono space-y-2">
-            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[10px]">
+          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-dashed border-slate-800 text-xs font-mono space-y-2">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
               <span>No Active Hop Data</span>
             </div>
-            <p className="text-[10px] text-slate-400 leading-normal">
+            <p className="text-xs text-slate-400 leading-normal">
               Previous TSSR data cleared. Upload a new TSSR to bind hop geometry.
             </p>
             <button
               onClick={() => onChangeTab('TSSR')}
-              className="w-full py-1.5 px-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 font-bold text-[10px] flex items-center justify-center gap-1 transition-colors"
+              className="w-full py-1.5 px-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1 transition-colors"
             >
               <span>Upload TSSR (PM)</span>
               <ArrowRight className="w-3 h-3" />
@@ -156,16 +156,16 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
       {/* Role-Based User Flow Stepper Ribbon */}
       <div className="p-3 border-b border-slate-800/80 bg-slate-900/50 space-y-1.5 font-mono">
-        <div className="flex items-center justify-between text-[10px]">
+        <div className="flex items-center justify-between text-xs">
           <span className="text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
             {activeUser.role === 'PROJECT_MANAGER' ? 'PM User Flow' : 'Team Leader Flow'}
           </span>
-          <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-950 text-cyan-300 font-bold border border-cyan-800">
+          <span className="text-xs px-1 py-0.5 rounded bg-cyan-950 text-cyan-300 font-bold border border-cyan-800">
             RBAC
           </span>
         </div>
-        <div className="space-y-1 text-[10px]">
+        <div className="space-y-1 text-xs">
           {activeUser.role === 'PROJECT_MANAGER' ? (
             <>
               <button
@@ -237,7 +237,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           if (items.length === 0) return null;
           return (
             <div key={sec} className="space-y-1">
-              <div className="px-2 text-[9px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+              <div className="px-2 text-xs font-mono font-bold tracking-wider text-slate-400 uppercase">
                 {sec}
               </div>
               {items.map((item) => {
@@ -265,7 +265,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
         {/* Quick System Consoles */}
         <div className="pt-2 border-t border-slate-800/80 space-y-1">
-          <div className="px-2 text-[9px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+          <div className="px-2 text-xs font-mono font-bold tracking-wider text-slate-400 uppercase">
             SYSTEM CONSOLES
           </div>
           <button
@@ -277,11 +277,11 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               <span>Offline Sync Queue</span>
             </span>
             {queuedCount > 0 ? (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 font-mono">
+              <span className="px-1.5 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-slate-950 font-mono">
                 {queuedCount}
               </span>
             ) : (
-              <span className="text-[10px] text-emerald-400">Synced</span>
+              <span className="text-xs text-emerald-400">Synced</span>
             )}
           </button>
 
@@ -293,7 +293,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               <Activity className="w-3.5 h-3.5 text-cyan-400" />
               <span>Blueprint & Changelog</span>
             </span>
-            <span className="text-[10px] text-slate-400">v3.6</span>
+            <span className="text-xs text-slate-400">v3.6</span>
           </button>
 
           <button
@@ -304,7 +304,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               <Zap className="w-3.5 h-3.5 text-purple-400" />
               <span>Backend & Cloud APIs</span>
             </span>
-            <span className="text-[10px] text-purple-400">Cloud Run</span>
+            <span className="text-xs text-purple-400">Cloud Run</span>
           </button>
         </div>
       </div>
@@ -318,7 +318,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-bold text-slate-200 truncate">{activeUser.name}</p>
-            <p className="text-[10px] text-slate-400 font-mono truncate">
+            <p className="text-xs text-slate-400 font-mono truncate">
               {activeUser.role.replace('_', ' ')}
             </p>
           </div>
@@ -326,7 +326,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         </div>
 
         {/* Controls row: Sunlight Mode & Language */}
-        <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
+        <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
           <button
             onClick={onToggleSunlight}
             className={`p-1.5 rounded-lg border flex items-center justify-center gap-1 transition-colors ${

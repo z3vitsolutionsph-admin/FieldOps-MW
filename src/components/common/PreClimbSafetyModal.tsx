@@ -146,7 +146,7 @@ export const PreClimbSafetyModal: React.FC<PreClimbSafetyModalProps> = ({
                 <HardHat className="w-4 h-4" />
                 1. Personal Protective Equipment (PPE) Checklist
               </h3>
-              <span className="text-[11px] text-slate-400 font-mono">
+              <span className="text-xs text-slate-400 font-mono">
                 {Object.values(ppe).filter(Boolean).length}/6 Verified
               </span>
             </div>
@@ -192,7 +192,7 @@ export const PreClimbSafetyModal: React.FC<PreClimbSafetyModalProps> = ({
                 <Radio className="w-4 h-4" />
                 2. Site Hazards & Environmental Mitigation
               </h3>
-              <span className="text-[11px] text-slate-400 font-mono">
+              <span className="text-xs text-slate-400 font-mono">
                 {Object.values(hazards).filter(Boolean).length}/5 Acknowledged
               </span>
             </div>

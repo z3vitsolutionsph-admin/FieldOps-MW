@@ -113,7 +113,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
           <div>
             <h2 className="text-base font-bold text-white flex items-center gap-1.5">
               Ask FieldOps AI
-              <span className="text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+              <span className="text-xs px-1.5 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                 {hop ? 'Grounded on TSSR' : 'Awaiting TSSR Ingestion'}
               </span>
             </h2>
@@ -171,7 +171,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
             >
               <div className="whitespace-pre-line">{msg.text}</div>
 
-              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/60 font-mono">
+              <div className="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-800/60 font-mono">
                 <span>{msg.citation || 'Technician Prompt'}</span>
                 <span>{msg.timestamp}</span>
               </div>

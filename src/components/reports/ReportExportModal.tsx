@@ -286,32 +286,41 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
         <div className="my-3 rounded-xl border border-slate-700/80 bg-slate-950/80 overflow-hidden shrink-0 modal-controls-toolbar">
           <div
             onClick={() => setIsConfigOpen(!isConfigOpen)}
-            className="p-3 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-800/70 transition-colors"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsConfigOpen(!isConfigOpen);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-expanded={isConfigOpen}
+            className="p-3 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-800/70 transition-colors"
           >
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-800">
+            <div className="flex items-start gap-2.5 min-w-0">
+              <div className="p-1.5 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-800 shrink-0">
                 <SlidersHorizontal className="w-4 h-4" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                     Photo Evidence Category Selection for PDF Annex
                   </h4>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-900/50 text-cyan-300 border border-cyan-700/60 font-semibold">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-cyan-900/50 text-cyan-300 border border-cyan-700/60 font-semibold">
                     {selectedCategoryIds.size} of {PHOTO_CATEGORIES.length} Categories Selected
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-semibold">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-semibold">
                     {selectedPhotos.length} Photos in Dossier
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-xs text-slate-400">
                   Select which technical inspection photo disciplines to render in the printable As-Built report.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 font-mono">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="hidden sm:inline text-xs text-slate-400 font-mono">
                 {isConfigOpen ? 'Collapse Controls' : 'Expand Controls'}
               </span>
               {isConfigOpen ? (
@@ -327,7 +336,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
               {/* Presets and Quick Toggles */}
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs pb-2 border-b border-slate-800">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[11px] text-slate-400 font-mono uppercase font-bold mr-1">
+                  <span className="text-xs text-slate-400 font-mono uppercase font-bold mr-1">
                     Presets:
                   </span>
                   <button
@@ -361,13 +370,13 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                 </div>
 
                 {/* Layout and Options */}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded border border-slate-800">
-                    <span className="text-[10px] font-mono text-slate-400 px-1.5 font-bold">GRID:</span>
+                    <span className="text-xs font-mono text-slate-400 px-1.5 font-bold">GRID:</span>
                     <button
                       type="button"
                       onClick={() => setGridLayout('2_COL')}
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
                         gridLayout === '2_COL' ? 'bg-cyan-600 text-white' : 'text-slate-400'
                       }`}
                     >
@@ -376,7 +385,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setGridLayout('3_COL')}
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
                         gridLayout === '3_COL' ? 'bg-cyan-600 text-white' : 'text-slate-400'
                       }`}
                     >
@@ -384,7 +393,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                     </button>
                   </div>
 
-                  <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 select-none">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-300 select-none">
                     <input
                       type="checkbox"
                       checked={includeWatermarkMetadata}
@@ -394,7 +403,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                     <span>GPS HUD Strip</span>
                   </label>
 
-                  <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 select-none">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-300 select-none">
                     <input
                       type="checkbox"
                       checked={includeAiVerification}
@@ -441,7 +450,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                             >
                               {cat.shortName}
                             </h5>
-                            <span className="text-[10px] font-mono text-slate-400 block">
+                            <span className="text-xs font-mono text-slate-400 block">
                               {photosCount} {photosCount === 1 ? 'photo' : 'photos'} available
                             </span>
                           </div>
@@ -456,7 +465,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                         </div>
                       </div>
 
-                      <p className="text-[10px] text-slate-400 leading-tight mt-2 line-clamp-2">
+                      <p className="text-xs text-slate-400 leading-tight mt-2 line-clamp-2">
                         {cat.description}
                       </p>
                     </div>
@@ -475,7 +484,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
           {/* Cover Header */}
           <div className="border-b-2 border-neutral-900 pb-4 flex items-center justify-between flex-wrap gap-2">
             <div>
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-neutral-500">
+              <span className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-500">
                 OFFICIAL TELECOM ENGINEERING DOSSIER
               </span>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 mt-0.5">
@@ -485,17 +494,17 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                 Document Ref: {workOrder.workOrderNumber} &bull; Project: Project Crane (Region MIN)
               </p>
             </div>
-            <div className="text-right font-mono text-[11px] text-neutral-600">
+            <div className="text-right font-mono text-xs text-neutral-600">
               <p className="font-bold text-neutral-900">CLASSIFICATION: CONFIDENTIAL</p>
               <p>Generated: {new Date().toLocaleDateString()}</p>
-              <p className="text-[10px] text-emerald-700 font-bold">
+              <p className="text-xs text-emerald-700 font-bold">
                 {selectedPhotos.length} Photo Evidence Records Attached
               </p>
             </div>
           </div>
 
           {/* Project & Hop Metadata Table */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-neutral-100 rounded border border-neutral-300 font-mono text-[11px]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-neutral-100 rounded border border-neutral-300 font-mono text-xs">
             <div>
               <span className="text-neutral-500 block">Hop Link:</span>
               <p className="font-bold text-neutral-900">{hop.hopName}</p>
@@ -525,7 +534,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
             </h3>
             <table className="w-full border-collapse border border-neutral-300 text-left">
               <thead>
-                <tr className="bg-neutral-100 font-mono text-[10px] text-neutral-700">
+                <tr className="bg-neutral-100 font-mono text-xs text-neutral-700">
                   <th className="border border-neutral-300 p-2">Engineering Discipline</th>
                   <th className="border border-neutral-300 p-2">Status</th>
                   <th className="border border-neutral-300 p-2">Approver Name & Date</th>
@@ -579,7 +588,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
             <h3 className="font-bold text-sm uppercase tracking-wide text-neutral-900 border-b border-neutral-300 pb-1 mb-2">
               2. As-Built Parameter Audit (Planned vs. Actual)
             </h3>
-            <table className="w-full border-collapse border border-neutral-300 font-mono text-[11px]">
+            <table className="w-full border-collapse border border-neutral-300 font-mono text-xs">
               <thead>
                 <tr className="bg-neutral-100 text-neutral-700">
                   <th className="border border-neutral-300 p-2">Item</th>
@@ -636,12 +645,12 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                 <h3 className="font-bold text-sm uppercase tracking-wide text-neutral-900">
                   3. As-Built Photographic Evidence Annex
                 </h3>
-                <p className="text-[11px] text-neutral-600 font-mono">
+                <p className="text-xs text-neutral-600 font-mono">
                   Site-audited photographic records with burned-in HUD watermark, GPS geolocation, and QA verification.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-[10px]">
+              <div className="flex items-center gap-2 font-mono text-xs">
                 <span className="px-2 py-0.5 rounded bg-neutral-100 border border-neutral-300 font-bold text-neutral-800">
                   {selectedCategoryIds.size} / {PHOTO_CATEGORIES.length} Categories Included
                 </span>
@@ -653,7 +662,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
 
             {/* Selected Categories Summary Matrix */}
             <div className="p-3 bg-neutral-50 rounded border border-neutral-300">
-              <span className="text-[10px] font-mono font-bold uppercase text-neutral-500 block mb-1.5">
+              <span className="text-xs font-mono font-bold uppercase text-neutral-500 block mb-1.5">
                 Included Evidence Category Index:
               </span>
               <div className="flex flex-wrap gap-2">
@@ -663,7 +672,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                   return (
                     <span
                       key={cat.id}
-                      className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 border ${
+                      className={`px-2 py-1 rounded text-xs font-mono flex items-center gap-1 border ${
                         isChecked
                           ? 'bg-neutral-900 text-white border-neutral-900 font-bold'
                           : 'bg-neutral-200 text-neutral-500 border-neutral-300 line-through opacity-60'
@@ -684,7 +693,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                 <p className="font-bold text-xs text-neutral-700">
                   No Photo Evidence Categories Selected
                 </p>
-                <p className="text-[11px]">
+                <p className="text-xs">
                   Use the control panel above to select photo categories (e.g. Antenna & RF, Power, Grounding) to include in this report.
                 </p>
               </div>
@@ -708,11 +717,11 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                           <h4 className="font-bold text-xs uppercase tracking-wide text-neutral-900">
                             {category.name}
                           </h4>
-                          <span className="text-[10px] font-mono text-neutral-500">
+                          <span className="text-xs font-mono text-neutral-500">
                             ({catPhotos.length} {catPhotos.length === 1 ? 'photo' : 'photos'})
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono text-neutral-500 hidden sm:inline">
+                        <span className="text-xs font-mono text-neutral-500 hidden sm:inline">
                           Discipline Code: {category.id}
                         </span>
                       </div>
@@ -747,11 +756,11 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                                 {/* Burned-in watermark banner if enabled */}
                                 {includeWatermarkMetadata && (
                                   <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between pointer-events-none">
-                                    <span className="px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono font-bold text-cyan-300 border border-cyan-800">
+                                    <span className="px-1.5 py-0.5 rounded bg-black/80 text-xs font-mono font-bold text-cyan-300 border border-cyan-800">
                                       {photo.sectionCode}
                                     </span>
                                     {photo.azimuthDeg !== undefined && (
-                                      <span className="px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono font-bold text-emerald-300 border border-emerald-800">
+                                      <span className="px-1.5 py-0.5 rounded bg-black/80 text-xs font-mono font-bold text-emerald-300 border border-emerald-800">
                                         AZ {photo.azimuthDeg.toFixed(1)}°
                                       </span>
                                     )}
@@ -761,21 +770,21 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
 
                               {/* Title and Caption */}
                               <div>
-                                <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500">
+                                <div className="flex items-center justify-between text-xs font-mono text-neutral-500">
                                   <span className="font-bold text-neutral-900">{photo.sectionCode}</span>
                                   <span>{photo.capturedAt ? new Date(photo.capturedAt).toLocaleDateString() : ''}</span>
                                 </div>
                                 <h5 className="font-bold text-xs text-neutral-900 mt-0.5 line-clamp-1">
                                   {photo.sectionTitle}
                                 </h5>
-                                <p className="text-[11px] text-neutral-700 leading-snug mt-1">
+                                <p className="text-xs text-neutral-700 leading-snug mt-1">
                                   {photo.caption}
                                 </p>
                               </div>
 
                               {/* Technical Metadata Strip */}
                               {includeWatermarkMetadata && (
-                                <div className="p-2 rounded bg-neutral-100 border border-neutral-200 font-mono text-[9px] text-neutral-600 space-y-0.5">
+                                <div className="p-2 rounded bg-neutral-100 border border-neutral-200 font-mono text-xs text-neutral-600 space-y-0.5">
                                   <div className="flex justify-between">
                                     <span>GPS LAT/LONG:</span>
                                     <span className="font-bold text-neutral-900">
@@ -794,7 +803,7 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
 
                               {/* AI Verification Badge */}
                               {includeAiVerification && photo.aiVerification && (
-                                <div className="pt-1 border-t border-neutral-200 flex items-center justify-between text-[10px] font-mono">
+                                <div className="pt-1 border-t border-neutral-200 flex items-center justify-between text-xs font-mono">
                                   <span className="flex items-center gap-1 text-emerald-700 font-bold">
                                     <CheckCircle2 className="w-3.5 h-3.5" />
                                     AI QA: {photo.aiVerification.score}% MATCH
@@ -822,21 +831,21 @@ export const ReportExportModal: React.FC<ReportModalProps> = ({
                 Danilo Reyes
               </div>
               <p className="font-bold text-neutral-900">Danilo Reyes</p>
-              <p className="text-[10px] text-neutral-500 font-mono">Field Lead Technician</p>
+              <p className="text-xs text-neutral-500 font-mono">Field Lead Technician</p>
             </div>
             <div className="space-y-1">
               <div className="h-10 border-b border-neutral-400 flex items-center justify-center font-serif italic text-neutral-800">
                 Engr. Jun Arboleda
               </div>
               <p className="font-bold text-neutral-900">Engr. Jun Arboleda</p>
-              <p className="text-[10px] text-neutral-500 font-mono">Site Safety Supervisor</p>
+              <p className="text-xs text-neutral-500 font-mono">Site Safety Supervisor</p>
             </div>
             <div className="space-y-1">
               <div className="h-10 border-b border-neutral-400 flex items-center justify-center font-serif italic text-neutral-800">
                 Engr. Sarah Mendoza
               </div>
               <p className="font-bold text-neutral-900">Engr. Sarah Mendoza</p>
-              <p className="text-[10px] text-neutral-500 font-mono">QA / Transport Reviewer</p>
+              <p className="text-xs text-neutral-500 font-mono">QA / Transport Reviewer</p>
             </div>
           </div>
         </div>

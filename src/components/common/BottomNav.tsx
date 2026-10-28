@@ -35,24 +35,26 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onChangeTab,
   sunlightMode,
 }) => {
+  // `short` keeps six tabs legible on a 360px phone; the full label shows from sm up.
   const tabs = [
-    { id: 'JOBS', label: 'Jobs', icon: Briefcase },
-    { id: 'TOOLS', label: 'MW Tools', icon: Wrench },
-    { id: 'PHOTOS', label: 'Photos', icon: Camera },
-    { id: 'TSSR', label: 'TSSR / ACL', icon: FileCheck },
-    { id: 'AI', label: 'Ask AI', icon: Bot },
-    { id: 'DASHBOARD', label: 'Dashboard', icon: BarChart3 },
+    { id: 'JOBS', label: 'Jobs', short: 'Jobs', icon: Briefcase },
+    { id: 'TOOLS', label: 'MW Tools', short: 'Tools', icon: Wrench },
+    { id: 'PHOTOS', label: 'Photos', short: 'Photos', icon: Camera },
+    { id: 'TSSR', label: 'TSSR / ACL', short: 'TSSR', icon: FileCheck },
+    { id: 'AI', label: 'Ask AI', short: 'Ask AI', icon: Bot },
+    { id: 'DASHBOARD', label: 'Dashboard', short: 'Overview', icon: BarChart3 },
   ] as const;
 
   return (
     <nav
+      aria-label="Primary"
       className={`fixed bottom-0 left-0 right-0 z-40 border-t pb-safe transition-colors lg:hidden ${
         sunlightMode
           ? 'bg-amber-100 border-amber-400 text-black'
           : 'bg-slate-900/95 backdrop-blur-md border-slate-800 text-slate-300'
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-around px-2 py-1">
+      <div className="max-w-2xl mx-auto grid grid-cols-6 gap-0.5 px-1 sm:px-2 pt-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -60,18 +62,25 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <button
               key={tab.id}
               onClick={() => onChangeTab(tab.id)}
-              className={`flex-1 py-1.5 px-1 flex flex-col items-center justify-center gap-1 transition-all rounded-lg active:scale-95 ${
+              aria-current={isActive ? 'page' : undefined}
+              className={`relative min-w-0 min-h-14 px-0.5 flex flex-col items-center justify-center gap-1 rounded-lg transition-colors active:bg-slate-800 ${
                 isActive
                   ? sunlightMode
-                    ? 'text-black font-extrabold border-b-2 border-black'
-                    : 'text-cyan-400 font-bold bg-cyan-950/40 border-b-2 border-cyan-400'
+                    ? 'text-black font-extrabold'
+                    : 'text-cyan-300 font-semibold bg-cyan-950/50'
                   : sunlightMode
                   ? 'text-neutral-700 hover:text-black'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''}`} />
-              <span className="text-[10px] tracking-tight">{tab.label}</span>
+              {isActive && (
+                <span className="absolute top-0 inset-x-3 h-0.5 rounded-full bg-cyan-400" aria-hidden />
+              )}
+              <Icon className="w-6 h-6 shrink-0" aria-hidden />
+              <span className="text-[12px] tracking-tight leading-none max-w-full truncate">
+                <span className="sm:hidden">{tab.short}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+              </span>
             </button>
           );
         })}
@@ -151,7 +160,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
             <Database className="w-5 h-5 text-cyan-400" />
             <div>
               <h3 className="font-bold text-base">Dexie.js Offline Storage & Firestore Sync</h3>
-              <p className="text-[11px] text-slate-400">IndexedDB Local-First Architecture</p>
+              <p className="text-xs text-slate-400">IndexedDB Local-First Architecture</p>
             </div>
           </div>
           <button
@@ -181,7 +190,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
                 <p className="text-xs font-bold uppercase tracking-wide">
                   {isOnline ? 'Online — Connected to Firestore' : 'Offline — Remote Tower Mode'}
                 </p>
-                <p className="text-[11px] text-slate-300">
+                <p className="text-xs text-slate-300">
                   {isOnline
                     ? 'Mutations auto-sync to Cloud Firestore with Dexie.js offline fallback.'
                     : 'All work orders, photos, and form entries are saved locally in Dexie.js.'}
@@ -189,7 +198,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
               </div>
             </div>
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
+              className={`text-xs font-mono px-2 py-0.5 rounded font-bold uppercase ${
                 isOnline ? 'bg-emerald-900/60 text-emerald-200' : 'bg-amber-900/60 text-amber-200'
               }`}
             >
@@ -207,7 +216,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
               <span className="text-cyan-400 font-bold">Dexie.js (fieldops_mw_dexie_db)</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900 font-mono text-[11px]">
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900 font-mono text-xs">
               <div>
                 <span className="text-slate-400 block">Disk Space Used:</span>
                 <span className="text-slate-200 font-bold">
@@ -222,7 +231,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-900">
+            <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-900">
               <span className="text-slate-400">Firestore Cloud Sync Engine:</span>
               <span className="text-emerald-400 font-mono">
                 {syncState.lastSyncTimestamp
@@ -232,7 +241,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
             </div>
 
             {/* Current Sync Status Message */}
-            <div className="flex items-center gap-2 p-2 rounded bg-slate-900 text-[11px] text-slate-300">
+            <div className="flex items-center gap-2 p-2 rounded bg-slate-900 text-xs text-slate-300">
               {syncState.isSyncing ? (
                 <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin shrink-0" />
               ) : (
@@ -242,7 +251,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
             </div>
 
             {pullMessage && (
-              <div className="p-2 rounded bg-cyan-950/40 border border-cyan-800 text-[11px] text-cyan-300">
+              <div className="p-2 rounded bg-cyan-950/40 border border-cyan-800 text-xs text-cyan-300">
                 {pullMessage}
               </div>
             )}
@@ -256,7 +265,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
                 Batch Synchronization Progress
               </span>
               <span
-                className={`font-bold px-2 py-0.5 rounded text-[10px] ${
+                className={`font-bold px-2 py-0.5 rounded text-xs ${
                   syncState.isSyncing
                     ? 'bg-cyan-950 text-cyan-300 border border-cyan-700 animate-pulse'
                     : syncState.totalProgressPercent === 100
@@ -274,7 +283,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
 
             {/* Total Overall Progress Bar */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <div className="flex items-center justify-between text-xs font-mono text-slate-400">
                 <span>Total Batch Progress:</span>
                 <span className="text-slate-200 font-bold">
                   {syncState.isSyncing
@@ -303,7 +312,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
             {/* Dual Sub-Progress Bars: Photo Evidence vs Data Synchronizations */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               {/* Photo Uploads Progress */}
-              <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1.5 font-mono text-[11px]">
+              <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1.5 font-mono text-xs">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
                     <Camera className="w-3.5 h-3.5 text-cyan-400" />
@@ -327,14 +336,14 @@ export const SyncModal: React.FC<SyncModalProps> = ({
                     }}
                   />
                 </div>
-                <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                <div className="text-xs text-slate-400 flex items-center justify-between">
                   <span>Base64/Binary Stream</span>
                   <span>{syncState.photoProgressPercent}%</span>
                 </div>
               </div>
 
               {/* Data Synchronizations Progress */}
-              <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1.5 font-mono text-[11px]">
+              <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 space-y-1.5 font-mono text-xs">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-purple-300 font-semibold">
                     <Layers className="w-3.5 h-3.5 text-purple-400" />
@@ -358,7 +367,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
                     }}
                   />
                 </div>
-                <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                <div className="text-xs text-slate-400 flex items-center justify-between">
                   <span>Work Orders & Tickets</span>
                   <span>{syncState.dataProgressPercent}%</span>
                 </div>
@@ -367,7 +376,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
 
             {/* Active Transmission Stream Ticker */}
             {syncState.isSyncing && syncState.activeItemName && (
-              <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-800/80 text-[10px] font-mono text-cyan-200 flex items-center gap-2 animate-fadeIn">
+              <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-800/80 text-xs font-mono text-cyan-200 flex items-center gap-2 animate-fadeIn">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />
                 <span className="truncate">
                   STREAMING [{syncState.activeItemCategory}]: {syncState.activeItemName}
@@ -379,7 +388,7 @@ export const SyncModal: React.FC<SyncModalProps> = ({
             {!syncState.isSyncing && (
               <button
                 onClick={() => firestoreSync.simulateBatchProgressDemo(4, 6)}
-                className="w-full py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-700/80 text-[10px] font-mono text-cyan-300 flex items-center justify-center gap-1.5 transition-colors"
+                className="w-full py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-700/80 text-xs font-mono text-cyan-300 flex items-center justify-center gap-1.5 transition-colors"
                 title="Test and verify visual batch progress indicator with sample photos and data records"
               >
                 <span>Preview Visual Batch Progress Animation</span>
@@ -409,14 +418,14 @@ export const SyncModal: React.FC<SyncModalProps> = ({
                     className="p-2 rounded bg-slate-900 border border-slate-800 text-xs flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-mono text-[11px] font-bold text-amber-300">
+                      <span className="font-mono text-xs font-bold text-amber-300">
                         {item.action}
                       </span>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-xs text-slate-400">
                         {new Date(item.timestamp).toLocaleTimeString()}
                       </p>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
+                    <span className="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
                       Pending Cloud Write
                     </span>
                   </div>

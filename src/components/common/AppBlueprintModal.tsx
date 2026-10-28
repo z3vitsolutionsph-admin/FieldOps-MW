@@ -170,21 +170,21 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                 </p>
                 <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80">
                   <div>
-                    <span className="text-[11px] text-slate-500 block uppercase font-mono">Code Name</span>
+                    <span className="text-xs text-slate-500 block uppercase font-mono">Code Name</span>
                     <span className="text-xs font-mono font-bold text-slate-200">{blueprint.codeName}</span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-slate-500 block uppercase font-mono">Current Version</span>
+                    <span className="text-xs text-slate-500 block uppercase font-mono">Current Version</span>
                     <span className="text-xs font-mono font-bold text-cyan-400">{blueprint.version}</span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-slate-500 block uppercase font-mono">Last Updated</span>
+                    <span className="text-xs text-slate-500 block uppercase font-mono">Last Updated</span>
                     <span className="text-xs font-mono font-bold text-slate-200">
                       {new Date(blueprint.lastUpdated).toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-slate-500 block uppercase font-mono">Role</span>
+                    <span className="text-xs text-slate-500 block uppercase font-mono">Role</span>
                     <span className="text-xs font-mono font-bold text-emerald-400">Senior Full-Stack Architect</span>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                     <div key={idx} className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-bold text-cyan-300">{feat.title}</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                        <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
                           {feat.implementedAt}
                         </span>
                       </div>
@@ -220,27 +220,27 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">Frontend Framework</span>
+                    <span className="text-xs text-slate-400 block font-mono">Frontend Framework</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.frontend}</span>
                   </div>
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">State Management</span>
+                    <span className="text-xs text-slate-400 block font-mono">State Management</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.stateManagement}</span>
                   </div>
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">Local Storage & Persistence</span>
+                    <span className="text-xs text-slate-400 block font-mono">Local Storage & Persistence</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.storage}</span>
                   </div>
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">Offline Sync & Queue</span>
+                    <span className="text-xs text-slate-400 block font-mono">Offline Sync & Queue</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.offlineSync}</span>
                   </div>
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">Styling & UI</span>
+                    <span className="text-xs text-slate-400 block font-mono">Styling & UI</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.styling}</span>
                   </div>
                   <div className="bg-slate-900 border border-slate-800 rounded-lg p-3.5">
-                    <span className="text-[11px] text-slate-400 block font-mono">Build Tool & Engine</span>
+                    <span className="text-xs text-slate-400 block font-mono">Build Tool & Engine</span>
                     <span className="text-sm font-semibold text-slate-100">{blueprint.architecture.buildTool}</span>
                   </div>
                 </div>
@@ -296,7 +296,7 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-sm font-bold text-cyan-300">{mod.name}</h4>
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded font-bold ${
                         mod.status === 'ENHANCED' ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-slate-800 text-slate-300'
                       }`}>
                         {mod.status}
@@ -305,10 +305,10 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                     <p className="text-xs text-slate-400 mb-4">{mod.description}</p>
                   </div>
                   <div className="pt-3 border-t border-slate-800/80">
-                    <span className="text-[10px] uppercase font-mono text-slate-500 block mb-1.5">Key Components</span>
+                    <span className="text-xs uppercase font-mono text-slate-500 block mb-1.5">Key Components</span>
                     <div className="flex flex-wrap gap-1.5">
                       {mod.keyComponents.map((comp, idx) => (
-                        <span key={idx} className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                        <span key={idx} className="text-xs font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
                           {comp}
                         </span>
                       ))}
@@ -339,7 +339,7 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                   <div key={entry.id} className="bg-slate-950 border border-slate-800 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                        <span className={`text-xs font-mono px-2 py-0.5 rounded font-bold ${
                           entry.category === 'FEATURE' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
                           entry.category === 'ARCHITECTURE' ? 'bg-purple-950 text-purple-400 border border-purple-800' :
                           'bg-cyan-950 text-cyan-400 border border-cyan-800'
@@ -351,7 +351,7 @@ export const AppBlueprintModal: React.FC<AppBlueprintModalProps> = ({ isOpen, on
                       <span className="text-xs font-mono font-bold text-cyan-400">v{entry.version}</span>
                     </div>
                     <p className="text-xs text-slate-300 mb-3">{entry.description}</p>
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-900">
+                    <div className="flex items-center justify-between text-xs text-slate-500 font-mono pt-2 border-t border-slate-900">
                       <span>Author: {entry.author}</span>
                       <span>{new Date(entry.timestamp).toLocaleString()}</span>
                     </div>

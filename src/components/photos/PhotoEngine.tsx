@@ -267,7 +267,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
               <span className="text-sm font-mono font-bold text-cyan-400">
                 {completedRequiredCount} / {requiredCount} Required
               </span>
-              <p className="text-[10px] text-slate-400">{completenessPercent}% Complete</p>
+              <p className="text-xs text-slate-400">{completenessPercent}% Complete</p>
             </div>
             <div className="w-16 bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700">
               <div
@@ -334,19 +334,19 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
               >
                 <div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-mono text-[11px] font-bold text-cyan-400">
+                    <span className="font-mono text-xs font-bold text-cyan-400">
                       {section.code.split('_')[0]}
                     </span>
                     {isCaptured ? (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1 font-bold">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1 font-bold">
                         <CheckCircle2 className="w-3 h-3" /> CAPTURED
                       </span>
                     ) : isNa ? (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
                         N/A REASON LOGGED
                       </span>
                     ) : (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-bold">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-bold">
                         REQUIRED
                       </span>
                     )}
@@ -355,12 +355,12 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                     {section.title}
                   </h4>
                   {isNa && (
-                    <p className="text-[11px] text-slate-400 mt-1 italic">
+                    <p className="text-xs text-slate-400 mt-1 italic">
                       "{photo?.naReason}"
                     </p>
                   )}
                   {photo?.aiVerification && (
-                    <div className="mt-2 p-2 rounded bg-slate-950 border border-slate-800 text-[10px] text-slate-300">
+                    <div className="mt-2 p-2 rounded bg-slate-950 border border-slate-800 text-xs text-slate-300">
                       <span className="text-cyan-400 font-bold">
                         AI Score: {photo.aiVerification.score}/100
                       </span>
@@ -375,14 +375,14 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                     <>
                       <button
                         onClick={() => setPreviewPhoto(photo!)}
-                        className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                        className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
                       >
                         <Eye className="w-3 h-3" /> View Photo
                       </button>
                       <button
                         onClick={() => handleInspectWithAi(photo!)}
                         disabled={aiInspectingId === photo!.id}
-                        className="text-[11px] text-purple-400 hover:text-purple-300 flex items-center gap-1 font-semibold"
+                        className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 font-semibold"
                       >
                         <Sparkles className="w-3 h-3" />
                         {aiInspectingId === photo!.id ? 'Checking...' : 'AI QA Check'}
@@ -404,7 +404,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                         onClick={() =>
                           setNaModalSection({ code: section.code, title: section.title })
                         }
-                        className="text-[11px] text-slate-400 hover:text-slate-200"
+                        className="text-xs text-slate-400 hover:text-slate-200"
                       >
                         Mark N/A
                       </button>
@@ -443,7 +443,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                     <Compass className="w-3.5 h-3.5" />
                     <span>{angle}°</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 mt-1 font-semibold">
+                  <p className="text-xs text-slate-300 mt-1 font-semibold">
                     {angle === 240 || angle === 210 ? 'Hop Direction ➔' : 'Line-of-Sight'}
                   </p>
 
@@ -451,7 +451,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                     {isCaptured ? (
                       <button
                         onClick={() => setPreviewPhoto(photo!)}
-                        className="text-[10px] text-emerald-400 font-bold hover:underline"
+                        className="text-xs text-emerald-400 font-bold hover:underline"
                       >
                         ✓ View 360°
                       </button>
@@ -507,7 +507,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
                   )}
                   <div className="p-3 text-xs space-y-1">
                     <p className="font-bold text-white truncate">{photo.sectionTitle}</p>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                    <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
                       <span>{new Date(photo.capturedAt).toLocaleTimeString()}</span>
                       <span className="text-cyan-400">{photo.syncStatus}</span>
                     </div>
@@ -525,7 +525,7 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
           <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-4 shadow-2xl space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-800">
               <div>
-                <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase">
+                <span className="text-xs font-mono font-bold text-cyan-400 uppercase">
                   HUD WATERMARK CAPTURE
                 </span>
                 <h3 className="font-bold text-sm text-white">{currentSection.title}</h3>
@@ -562,11 +562,11 @@ export const PhotoEngine: React.FC<PhotoEngineProps> = ({
 
               {/* Live HUD Overlay Graphic on Screen */}
               <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between">
-                <div className="flex justify-between items-start text-[10px] font-mono text-cyan-400 bg-black/60 px-2 py-1 rounded">
+                <div className="flex justify-between items-start text-xs font-mono text-cyan-400 bg-black/60 px-2 py-1 rounded">
                   <span>SITE: {site.id} ({site.name})</span>
                   <span>{new Date().toLocaleDateString()}</span>
                 </div>
-                <div className="flex justify-between items-end text-[10px] font-mono text-emerald-400 bg-black/60 px-2 py-1 rounded">
+                <div className="flex justify-between items-end text-xs font-mono text-emerald-400 bg-black/60 px-2 py-1 rounded">
                   <span>GPS: {site.lat.toFixed(5)}°N, {site.long.toFixed(5)}°E</span>
                   <span>AZ: 241.02° · TECH: {activeUser.name}</span>
                 </div>

@@ -291,7 +291,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
         >
           <Battery className="w-3.5 h-3.5 text-cyan-400" />
           <span>24h Battery Discharge Curve (Recharts)</span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+          <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
             CACHE ACTIVE
           </span>
         </button>
@@ -325,7 +325,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                   setRootCause('');
                   setActionTaken('');
                 }}
-                className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1"
+                className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
               >
                 <RotateCcw className="w-3 h-3" /> Reset Tree
               </button>
@@ -366,7 +366,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
             {/* Measurements Entry */}
             <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div>
-                <label className="text-slate-400 block text-[11px]">Measured RSL (dBm)</label>
+                <label className="text-slate-400 block text-xs">Measured RSL (dBm)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -378,12 +378,12 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                 />
               </div>
               <div>
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-xs">
                   <label className="text-slate-400">DC Voltage (V)</label>
                   <button
                     type="button"
                     onClick={() => setActiveTab('BATTERY_CHART')}
-                    className="text-[10px] text-cyan-400 hover:text-cyan-300 font-mono"
+                    className="text-xs text-cyan-400 hover:text-cyan-300 font-mono"
                   >
                     View Curve
                   </button>
@@ -399,7 +399,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                 />
               </div>
               <div>
-                <label className="text-slate-400 block text-[11px]">Bit Error Rate (BER)</label>
+                <label className="text-slate-400 block text-xs">Bit Error Rate (BER)</label>
                 <input
                   type="text"
                   value={measurements.berValue ?? ''}
@@ -408,7 +408,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                 />
               </div>
               <div>
-                <label className="text-slate-400 block text-[11px]">ODU Temp (°C)</label>
+                <label className="text-slate-400 block text-xs">ODU Temp (°C)</label>
                 <input
                   type="number"
                   value={measurements.temperatureC ?? ''}
@@ -510,7 +510,7 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="font-mono font-bold text-cyan-400">{tkt.ticketNumber}</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold ${
+                    className={`px-1.5 py-0.5 rounded font-mono text-xs font-bold ${
                       tkt.status === 'RESOLVED'
                         ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                         : 'bg-amber-950 text-amber-300 border border-amber-800'
@@ -522,10 +522,10 @@ export const TroubleshootingModule: React.FC<TroubleshootingProps> = ({
                 <p className="text-slate-200">
                   <strong>Root Cause:</strong> {tkt.rootCause}
                 </p>
-                <p className="text-slate-400 text-[11px]">
+                <p className="text-slate-400 text-xs">
                   <strong>Action:</strong> {tkt.actionTaken}
                 </p>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 font-mono pt-1">
                   <span>Tech: {tkt.assignedTechnician}</span>
                   <span>MTTR: {tkt.mttrMinutes} min</span>
                   <span>Voltage: {tkt.measurements.voltageDc ?? -48.2}V DC</span>

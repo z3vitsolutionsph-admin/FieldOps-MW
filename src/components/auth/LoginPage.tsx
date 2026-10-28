@@ -326,7 +326,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl font-extrabold text-white tracking-tight">FieldOps MW</h1>
-                  <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/80">
+                  <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/80">
                     ENTERPRISE RBAC
                   </span>
                 </div>
@@ -439,12 +439,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-100 truncate">{item.label}</span>
                         {item.isPrimary && (
-                          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-cyan-900/60 text-cyan-300 font-bold">
+                          <span className="text-xs font-mono px-1 py-0.5 rounded bg-cyan-900/60 text-cyan-300 font-bold">
                             KEY ROLE
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{item.desc}</p>
+                      <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{item.desc}</p>
                     </div>
                   </button>
                 );
@@ -454,11 +454,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
             {/* Prescribed User Flow Walkthrough Stepper */}
             <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5" />
                   Prescribed Workflow: {currentDetails.flowTitle}
                 </span>
-                <span className="text-[9px] font-mono text-slate-400">
+                <span className="text-xs font-mono text-slate-400">
                   {currentDetails.flowSteps.length} Milestones
                 </span>
               </div>
@@ -468,10 +468,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
                 {currentDetails.flowSteps.map((step, idx) => (
                   <React.Fragment key={idx}>
                     <div className="flex flex-col items-center shrink-0">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-cyan-300 border border-slate-800 whitespace-nowrap">
+                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-cyan-300 border border-slate-800 whitespace-nowrap">
                         {idx + 1}. {step.label}
                       </span>
-                      <span className="text-[8px] text-slate-500 font-mono mt-0.5 truncate max-w-[80px]">
+                      <span className="text-xs text-slate-500 font-mono mt-0.5 truncate max-w-[80px]">
                         {step.desc}
                       </span>
                     </div>
@@ -484,7 +484,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
             <span className="flex items-center gap-1.5 font-mono">
               <Building2 className="w-3.5 h-3.5 text-cyan-400" />
               TowerLink Telecom Philippines Inc.
@@ -519,13 +519,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
 
             {/* Privileges checklist */}
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 mb-4">
-              <div className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <div className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 Assigned RBAC Privileges:
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {currentDetails.privileges.map((perm, idx) => (
-                  <li key={idx} className="text-[11px] text-slate-300 flex items-start gap-1.5">
+                  <li key={idx} className="text-xs text-slate-300 flex items-start gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                     <span>{perm}</span>
                   </li>
@@ -535,7 +535,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
 
             {/* Note about TSSR Data Binding */}
             {selectedRole === 'PROJECT_MANAGER' && (
-              <div className="mb-4 p-2.5 rounded-lg bg-blue-950/50 border border-blue-800/80 text-[11px] text-blue-200 flex items-start gap-2">
+              <div className="mb-4 p-2.5 rounded-lg bg-blue-950/50 border border-blue-800/80 text-xs text-blue-200 flex items-start gap-2">
                 <Upload className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <span>
                   <strong>TSSR Authority:</strong> Microwave Hop geometry, Regional Sites Directory, and Work Orders Schedule will be derived directly from the TSSR file uploaded by the Project Manager.
@@ -670,7 +670,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-800 text-center">
-            <p className="text-[11px] text-slate-400">
+            <p className="text-xs text-slate-400">
               Need assistance? Contact the <span className="text-cyan-400 font-mono">FieldOps Administrator</span>.
             </p>
           </div>

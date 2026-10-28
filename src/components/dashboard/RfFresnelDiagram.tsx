@@ -398,21 +398,21 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
               <h3 className="font-bold text-sm tracking-tight text-white font-mono">
                 RF Fresnel Zone & Terrain Clearance Profile
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+              <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                 ITU-R P.530-17 COMPLIANT
               </span>
               {pathMath.minClearanceM >= 3.0 ? (
-                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                   100% CLEAR ({pathMath.minClearanceM}m MARGIN)
                 </span>
               ) : pathMath.minClearanceM >= 0 ? (
-                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3 text-amber-400" />
                   MARGINAL CLEARANCE ({pathMath.minClearanceM}m)
                 </span>
               ) : (
-                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3 text-rose-400" />
                   OBSTRUCTED ({Math.abs(pathMath.minClearanceM)}m ENCROACHMENT)
                 </span>
@@ -428,7 +428,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
         <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
           {/* Frequency Selector */}
           <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-            <span className="text-slate-400 text-[10px] uppercase font-bold">Freq:</span>
+            <span className="text-slate-400 text-xs uppercase font-bold">Freq:</span>
             <select
               value={selectedFreqGhz}
               onChange={(e) => setSelectedFreqGhz(parseFloat(e.target.value))}
@@ -446,7 +446,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
 
           {/* k-Factor Refraction Selector */}
           <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-            <span className="text-slate-400 text-[10px] uppercase font-bold">k-Factor:</span>
+            <span className="text-slate-400 text-xs uppercase font-bold">k-Factor:</span>
             <select
               value={kFactor}
               onChange={(e) => setKFactor(parseFloat(e.target.value))}
@@ -461,7 +461,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
 
           {/* Clutter Selector */}
           <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-            <span className="text-slate-400 text-[10px] uppercase font-bold">Clutter:</span>
+            <span className="text-slate-400 text-xs uppercase font-bold">Clutter:</span>
             <select
               value={clutterType}
               onChange={(e) => setClutterType(e.target.value as any)}
@@ -479,27 +479,27 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
       {/* KPI Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 p-3 bg-slate-950/90 border-b border-slate-800 text-xs font-mono">
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Site A ACL:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Site A ACL:</span>
           <span className="text-slate-100 font-bold text-xs">{antennaHeightA}m Leg A</span>
-          <span className="text-[10px] text-slate-400 block font-sans">AMSL: {antAmslA}m</span>
+          <span className="text-xs text-slate-400 block font-sans">AMSL: {antAmslA}m</span>
         </div>
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Site B ACL:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Site B ACL:</span>
           <span className="text-emerald-400 font-bold text-xs">{antennaHeightB}m Leg C</span>
-          <span className="text-[10px] text-slate-400 block font-sans">AMSL: {antAmslB}m</span>
+          <span className="text-xs text-slate-400 block font-sans">AMSL: {antAmslB}m</span>
         </div>
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Max F1 Radius:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Max F1 Radius:</span>
           <span className="text-cyan-400 font-bold text-xs">r = {pathMath.maxF1RadiusM} m</span>
-          <span className="text-[10px] text-slate-400 block font-sans">@ Midpoint (2.0 km)</span>
+          <span className="text-xs text-slate-400 block font-sans">@ Midpoint (2.0 km)</span>
         </div>
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Earth Bulge:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Earth Bulge:</span>
           <span className="text-purple-400 font-bold text-xs">{pathMath.maxEarthBulgeM} m</span>
-          <span className="text-[10px] text-slate-400 block font-sans">k = {kFactor.toFixed(2)}</span>
+          <span className="text-xs text-slate-400 block font-sans">k = {kFactor.toFixed(2)}</span>
         </div>
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Min Clearance:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Min Clearance:</span>
           <span
             className={`font-bold text-xs ${
               pathMath.minClearanceM >= 3.0
@@ -511,12 +511,12 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
           >
             {pathMath.minClearanceM} m
           </span>
-          <span className="text-[10px] text-slate-400 block font-sans">@ {pathMath.minClearanceKm} km</span>
+          <span className="text-xs text-slate-400 block font-sans">@ {pathMath.minClearanceKm} km</span>
         </div>
         <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-          <span className="text-slate-500 text-[10px] block uppercase font-bold">Free Space Loss:</span>
+          <span className="text-slate-500 text-xs block uppercase font-bold">Free Space Loss:</span>
           <span className="text-cyan-300 font-bold text-xs">{fsplValueDb} dB</span>
-          <span className="text-[10px] text-slate-400 block font-sans">{selectedFreqGhz} GHz</span>
+          <span className="text-xs text-slate-400 block font-sans">{selectedFreqGhz} GHz</span>
         </div>
       </div>
 
@@ -826,32 +826,32 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
                 <Compass className="w-3.5 h-3.5" />
                 PATH PROBE: {probeData.d1Km} km
               </span>
-              <span className="text-slate-400 text-[10px]">
+              <span className="text-slate-400 text-xs">
                 {((probeData.d1Km / totalPathKm) * 100).toFixed(0)}% of Link
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
               <div>
-                <span className="text-slate-500 block text-[9.5px]">LOS Ray Altitude:</span>
+                <span className="text-slate-500 block text-xs">LOS Ray Altitude:</span>
                 <span className="font-bold text-slate-200">{probeData.losM} m AMSL</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[9.5px]">Obstacle Surface:</span>
+                <span className="text-slate-500 block text-xs">Obstacle Surface:</span>
                 <span className="font-bold text-slate-200">{probeData.obstacleElevM} m</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[9.5px]">1st Fresnel Radius (F1):</span>
+                <span className="text-slate-500 block text-xs">1st Fresnel Radius (F1):</span>
                 <span className="font-bold text-cyan-300">± {probeData.f1RadiusM} m</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[9.5px]">60% Clearance Req:</span>
+                <span className="text-slate-500 block text-xs">60% Clearance Req:</span>
                 <span className="font-bold text-amber-300">± {probeData.f60M} m</span>
               </div>
             </div>
 
             <div className="pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
-              <span className="text-[10px] text-slate-400">NET CLEARANCE MARGIN:</span>
+              <span className="text-xs text-slate-400">NET CLEARANCE MARGIN:</span>
               <span
                 className={`font-bold text-xs ${
                   probeData.clearanceMarginM >= 3.0
@@ -873,7 +873,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
             <span className="w-3 h-1 bg-cyan-400 rounded-full" />
-            <span className="text-[11px]">100% 1st Fresnel Envelope</span>
+            <span className="text-xs">100% 1st Fresnel Envelope</span>
           </label>
 
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
@@ -884,7 +884,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
               className="rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0 w-3 h-3"
             />
             <span className="w-3 h-0.5 border-t border-dashed border-amber-400" />
-            <span className="text-[11px]">60% Clearance Line (ITU-R)</span>
+            <span className="text-xs">60% Clearance Line (ITU-R)</span>
           </label>
 
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
@@ -895,7 +895,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
               className="rounded bg-slate-950 border-slate-700 text-purple-500 focus:ring-0 w-3 h-3"
             />
             <span className="w-3 h-0.5 border-t border-dashed border-purple-400" />
-            <span className="text-[11px]">2nd Fresnel (F2)</span>
+            <span className="text-xs">2nd Fresnel (F2)</span>
           </label>
 
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
@@ -905,7 +905,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
               onChange={(e) => setShowEarthBulge(e.target.checked)}
               className="rounded bg-slate-950 border-slate-700 text-slate-400 focus:ring-0 w-3 h-3"
             />
-            <span className="text-[11px]">Earth Bulge Arc ({kFactor.toFixed(2)})</span>
+            <span className="text-xs">Earth Bulge Arc ({kFactor.toFixed(2)})</span>
           </label>
 
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
@@ -915,18 +915,18 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
               onChange={(e) => setShowClutter(e.target.checked)}
               className="rounded bg-slate-950 border-slate-700 text-green-500 focus:ring-0 w-3 h-3"
             />
-            <span className="text-[11px]">Vegetation Clutter (+{clutterHeightM}m)</span>
+            <span className="text-xs">Vegetation Clutter (+{clutterHeightM}m)</span>
           </label>
         </div>
 
         {/* Nudge Antenna Heights Steppers for What-If Testing */}
         <div className="flex items-center gap-2">
-          <span className="text-slate-400 text-[10px] uppercase font-bold">Nudge Heights:</span>
+          <span className="text-slate-400 text-xs uppercase font-bold">Nudge Heights:</span>
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setAntennaHeightB((h) => Math.max(10, Math.round((h - 1) * 10) / 10))}
-              className="px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[10px] font-bold text-slate-300"
+              className="px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-bold text-slate-300"
               title="Lower Site B ACL by 1m"
             >
               -1m B
@@ -934,7 +934,7 @@ export const RfFresnelDiagram: React.FC<RfFresnelDiagramProps> = ({
             <button
               type="button"
               onClick={() => setAntennaHeightB((h) => Math.round((h + 1) * 10) / 10)}
-              className="px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[10px] font-bold text-emerald-400"
+              className="px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-bold text-emerald-400"
               title="Raise Site B ACL by 1m"
             >
               +1m B

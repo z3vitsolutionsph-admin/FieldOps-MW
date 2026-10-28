@@ -329,7 +329,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
               <h2 className="text-sm sm:text-base font-bold text-white tracking-tight uppercase">
                 Resource Allocation & Crew Matching
               </h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-bold">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-bold">
                 PM MISSION CONTROL
               </span>
             </div>
@@ -350,43 +350,43 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
       {/* Resource Allocation Top Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-1">
-          <div className="text-[10px] font-mono text-slate-400 uppercase flex items-center justify-between">
+          <div className="text-xs font-mono text-slate-400 uppercase flex items-center justify-between">
             <span>Total Field Crew</span>
             <Users className="w-3.5 h-3.5 text-blue-400" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-xl font-bold font-mono text-white">{totalFieldCrew}</span>
-            <span className="text-[11px] text-slate-400 font-mono">personnel</span>
+            <span className="text-xs text-slate-400 font-mono">personnel</span>
           </div>
         </div>
 
         <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-1">
-          <div className="text-[10px] font-mono text-slate-400 uppercase flex items-center justify-between">
+          <div className="text-xs font-mono text-slate-400 uppercase flex items-center justify-between">
             <span>Crew Deployment</span>
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
           <div className="flex items-baseline gap-1.5">
             <span className="text-xl font-bold font-mono text-emerald-400">{onDutyCount}</span>
             <span className="text-xs text-slate-500 font-mono">/ {totalFieldCrew}</span>
-            <span className="text-[11px] text-slate-400 font-mono ml-auto">
+            <span className="text-xs text-slate-400 font-mono ml-auto">
               ({availableCount} standby)
             </span>
           </div>
         </div>
 
         <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-1">
-          <div className="text-[10px] font-mono text-slate-400 uppercase flex items-center justify-between">
+          <div className="text-xs font-mono text-slate-400 uppercase flex items-center justify-between">
             <span>Licensed Climbers</span>
             <Award className="w-3.5 h-3.5 text-cyan-400" />
           </div>
           <div className="flex items-baseline gap-1.5">
             <span className="text-xl font-bold font-mono text-cyan-400">{certifiedClimbersCount}</span>
-            <span className="text-[11px] text-slate-400 font-mono">certified</span>
+            <span className="text-xs text-slate-400 font-mono">certified</span>
           </div>
         </div>
 
         <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-1">
-          <div className="text-[10px] font-mono text-slate-400 uppercase flex items-center justify-between">
+          <div className="text-xs font-mono text-slate-400 uppercase flex items-center justify-between">
             <span>Unassigned Orders</span>
             <AlertTriangle className={`w-3.5 h-3.5 ${pendingOrdersWithoutCrew > 0 ? 'text-amber-400' : 'text-slate-500'}`} />
           </div>
@@ -398,7 +398,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
             >
               {pendingOrdersWithoutCrew}
             </span>
-            <span className="text-[11px] text-slate-400 font-mono">need crew</span>
+            <span className="text-xs text-slate-400 font-mono">need crew</span>
           </div>
         </div>
       </div>
@@ -415,7 +415,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
             {onNavigateToJobs && (
               <button
                 onClick={onNavigateToJobs}
-                className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
               >
                 <span>View All Jobs</span>
                 <ChevronRight className="w-3 h-3" />
@@ -427,7 +427,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
             {workOrders.length === 0 ? (
               <div className="p-6 rounded-xl bg-slate-950 border border-slate-800 text-center text-slate-400 space-y-1">
                 <p className="text-xs">No active work orders found.</p>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs text-slate-500">
                   Upload a TSSR dossier to generate scheduled rigging work orders.
                 </p>
               </div>
@@ -452,13 +452,13 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                         <span className="font-mono text-xs font-bold text-cyan-400">
                           {wo.workOrderNumber}
                         </span>
-                        <span className="text-[10px] font-mono text-slate-400">·</span>
-                        <span className="text-[10px] font-mono text-slate-300 font-semibold">
+                        <span className="text-xs font-mono text-slate-400">·</span>
+                        <span className="text-xs font-mono text-slate-300 font-semibold">
                           {wo.type}
                         </span>
                       </div>
                       <span
-                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                        className={`text-xs font-mono px-1.5 py-0.5 rounded font-bold ${
                           wo.status === 'IN_PROGRESS'
                             ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
                             : wo.status === 'APPROVED'
@@ -470,19 +470,19 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                       </span>
                     </div>
 
-                    <div className="text-[11px] text-slate-400 flex items-center justify-between">
+                    <div className="text-xs text-slate-400 flex items-center justify-between">
                       <span className="flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
                         <strong className="text-slate-200">Site {wo.siteRole}: {wo.siteId}</strong>
                         {targetSite && <span className="truncate">({targetSite.name})</span>}
                       </span>
-                      <span className="font-mono text-[10px] text-slate-500">
+                      <span className="font-mono text-xs text-slate-500">
                         {wo.scheduledDate}
                       </span>
                     </div>
 
                     {/* Assigned Crew Avatars / Names */}
-                    <div className="pt-1.5 border-t border-slate-850 flex items-center justify-between text-[10px] font-mono">
+                    <div className="pt-1.5 border-t border-slate-850 flex items-center justify-between text-xs font-mono">
                       <span className="text-slate-500">
                         Assigned ({assignedCrewMembers.length}):
                       </span>
@@ -512,7 +512,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-blue-400 font-bold uppercase tracking-wider">
+                    <span className="text-xs font-mono text-blue-400 font-bold uppercase tracking-wider">
                       Matching Work Order:
                     </span>
                     <strong className="text-xs text-white font-mono">
@@ -535,7 +535,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
               </div>
 
               {/* Required vs Recommended Skills Badges */}
-              <div className="pt-2 border-t border-slate-850 flex flex-wrap items-center gap-1 text-[10px] font-mono">
+              <div className="pt-2 border-t border-slate-850 flex flex-wrap items-center gap-1 text-xs font-mono">
                 <span className="text-slate-500 font-bold mr-1">Mandatory:</span>
                 {requiredSkills.mandatoryCerts.map((cert) => (
                   <span
@@ -572,7 +572,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                 <button
                   key={r}
                   onClick={() => setRoleFilter(r)}
-                  className={`px-2 py-1 rounded text-[10px] font-mono transition-colors whitespace-nowrap ${
+                  className={`px-2 py-1 rounded text-xs font-mono transition-colors whitespace-nowrap ${
                     roleFilter === r
                       ? 'bg-cyan-600 text-white font-bold'
                       : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
@@ -588,7 +588,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                     prev === 'ALL' ? 'AVAILABLE' : prev === 'AVAILABLE' ? 'ON_DUTY' : 'ALL'
                   )
                 }
-                className={`px-2 py-1 rounded text-[10px] font-mono border transition-colors whitespace-nowrap ${
+                className={`px-2 py-1 rounded text-xs font-mono border transition-colors whitespace-nowrap ${
                   availabilityFilter !== 'ALL'
                     ? 'bg-emerald-950 text-emerald-300 border-emerald-700 font-bold'
                     : 'bg-slate-950 text-slate-400 border-slate-800'
@@ -609,7 +609,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
             {filteredCrew.length === 0 ? (
               <div className="p-8 rounded-xl bg-slate-950 border border-slate-800 text-center text-slate-500 space-y-1">
                 <p className="text-xs">No crew members match the selected filter.</p>
-                <p className="text-[11px]">Try resetting search or role filter.</p>
+                <p className="text-xs">Try resetting search or role filter.</p>
               </div>
             ) : (
               filteredCrew.map(
@@ -631,20 +631,20 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                           <span className="font-bold text-xs text-white">
                             {crew.name}
                           </span>
-                          <span className="text-slate-500 font-mono text-[10px]">·</span>
-                          <span className="text-[10px] font-mono text-slate-300">
+                          <span className="text-slate-500 font-mono text-xs">·</span>
+                          <span className="text-xs font-mono text-slate-300">
                             {crew.role.replace('_', ' ')}
                           </span>
                           {crew.yearsExperience && (
                             <>
-                              <span className="text-slate-500 font-mono text-[10px]">·</span>
-                              <span className="text-[10px] font-mono text-slate-400">
+                              <span className="text-slate-500 font-mono text-xs">·</span>
+                              <span className="text-xs font-mono text-slate-400">
                                 {crew.yearsExperience} yrs exp
                               </span>
                             </>
                           )}
                           <span
-                            className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                            className={`text-xs font-mono px-1.5 py-0.5 rounded font-bold ${
                               crew.status === 'AVAILABLE'
                                 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                                 : 'bg-slate-900 text-slate-400 border border-slate-800'
@@ -655,17 +655,17 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                         </div>
 
                         {crew.specialization && (
-                          <p className="text-[11px] text-slate-400 truncate">
+                          <p className="text-xs text-slate-400 truncate">
                             {crew.specialization}
                           </p>
                         )}
 
                         {/* Matched vs Missing Certifications Breakdown */}
-                        <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-mono pt-0.5">
+                        <div className="flex items-center gap-1.5 flex-wrap text-xs font-mono pt-0.5">
                           {matchedMandatory.map((cert) => (
                             <span
                               key={cert}
-                              className="px-1.5 py-0.2 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-800 flex items-center gap-1"
+                              className="px-1.5 py-0.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-800 flex items-center gap-1"
                             >
                               <Check className="w-2.5 h-2.5 text-emerald-400" />
                               <span>{cert}</span>
@@ -675,7 +675,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                           {missingMandatory.map((cert) => (
                             <span
                               key={cert}
-                              className="px-1.5 py-0.2 rounded bg-slate-900 text-slate-500 border border-slate-800 line-through"
+                              className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800 line-through"
                               title={`Missing mandatory: ${cert}`}
                             >
                               {cert}
@@ -683,7 +683,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                           ))}
 
                           {isHighAltitudeCertified && (
-                            <span className="px-1.5 py-0.2 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800 flex items-center gap-1">
+                            <span className="px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800 flex items-center gap-1">
                               <ShieldCheck className="w-2.5 h-2.5 text-cyan-400" />
                               <span>Lic: {crew.climberLicenseNo}</span>
                             </span>
@@ -707,7 +707,7 @@ export const ResourceAllocationWidget: React.FC<ResourceAllocationWidgetProps> =
                             >
                               {score}%
                             </span>
-                            <span className="text-[9px] text-slate-500">match</span>
+                            <span className="text-xs text-slate-500">match</span>
                           </div>
                           <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden mt-0.5">
                             <div

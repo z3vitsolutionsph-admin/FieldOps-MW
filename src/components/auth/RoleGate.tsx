@@ -76,7 +76,7 @@ export const RoleGate: React.FC<RoleGateProps> = ({
       </div>
 
       <div className="space-y-1">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-rose-400 font-bold">
+        <span className="text-xs font-mono uppercase tracking-widest text-rose-400 font-bold">
           SECURITY ACCESS RESTRICTION · RBAC GATEWAY
         </span>
         <h3 className="text-base sm:text-lg font-bold text-white">

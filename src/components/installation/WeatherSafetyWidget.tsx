@@ -149,7 +149,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                   : '✓ ATMOSPHERIC SAFETY CLEAR'}
               </span>
 
-              <span className="text-[11px] hidden sm:inline text-slate-300">
+              <span className="text-xs hidden sm:inline text-slate-300">
                 {hasActiveHazard && !hasEhsClearance
                   ? 'Climbing blocked per 30 km/h wind / 10 km lightning limits'
                   : hasEhsClearance
@@ -167,12 +167,12 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
             <button
               type="button"
               onClick={() => setShowSimMenu(!showSimMenu)}
-              className="px-2.5 py-1 text-[11px] font-mono rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 flex items-center gap-1"
+              className="px-2.5 py-1 text-xs font-mono rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 flex items-center gap-1"
               title="Test & Simulate weather hazard scenarios"
             >
               <Sliders className="w-3 h-3 text-cyan-400" />
               <span className="hidden md:inline">Mode:</span>
-              <span className="font-bold uppercase text-[10px]">
+              <span className="font-bold uppercase text-xs">
                 {weatherService.getSimulationMode()}
               </span>
               <ChevronDown className="w-3 h-3" />
@@ -180,7 +180,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
 
             {showSimMenu && (
               <div className="absolute right-0 mt-1 w-56 rounded-lg bg-slate-900 border border-slate-700 shadow-2xl py-1 z-30 text-xs">
-                <div className="px-3 py-1 text-[10px] font-mono text-slate-400 border-b border-slate-800 uppercase">
+                <div className="px-3 py-1 text-xs font-mono text-slate-400 border-b border-slate-800 uppercase">
                   Safety Alert Test Modes
                 </div>
                 <button
@@ -190,7 +190,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 >
                   <span>🌐 Live Local Weather (API)</span>
                   {weatherService.getSimulationMode() === 'LIVE' && (
-                    <span className="text-cyan-400 text-[10px]">✓</span>
+                    <span className="text-cyan-400 text-xs">✓</span>
                   )}
                 </button>
                 <button
@@ -200,7 +200,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 >
                   <span>💨 High Wind (36.8 km/h &gt; 30)</span>
                   {weatherService.getSimulationMode() === 'HIGH_WIND' && (
-                    <span className="text-rose-400 text-[10px]">✓</span>
+                    <span className="text-rose-400 text-xs">✓</span>
                   )}
                 </button>
                 <button
@@ -210,7 +210,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 >
                   <span>⚡ Lightning Cell (5.4 km &lt; 10)</span>
                   {weatherService.getSimulationMode() === 'LIGHTNING' && (
-                    <span className="text-amber-400 text-[10px]">✓</span>
+                    <span className="text-amber-400 text-xs">✓</span>
                   )}
                 </button>
                 <button
@@ -220,7 +220,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 >
                   <span>⛈ Severe Squall (Wind + Strike)</span>
                   {weatherService.getSimulationMode() === 'SEVERE_COMBO' && (
-                    <span className="text-rose-400 text-[10px]">✓</span>
+                    <span className="text-rose-400 text-xs">✓</span>
                   )}
                 </button>
                 <button
@@ -230,7 +230,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 >
                   <span>☀️ Calm Weather (14.2 km/h)</span>
                   {weatherService.getSimulationMode() === 'CALM_SAFE' && (
-                    <span className="text-emerald-400 text-[10px]">✓</span>
+                    <span className="text-emerald-400 text-xs">✓</span>
                   )}
                 </button>
               </div>
@@ -264,12 +264,12 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider font-bold opacity-80 flex items-center gap-1">
+              <span className="text-xs font-mono uppercase tracking-wider font-bold opacity-80 flex items-center gap-1">
                 <Wind className="w-3 h-3 text-cyan-400" />
                 Wind Speed
               </span>
               <span
-                className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                className={`text-xs font-mono px-1.5 py-0.5 rounded font-bold ${
                   isWindViolated
                     ? 'bg-rose-600 text-white'
                     : 'bg-slate-800 text-slate-300'
@@ -308,7 +308,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
               />
             </div>
 
-            <p className="text-[10px] opacity-75 mt-1 font-mono">
+            <p className="text-xs opacity-75 mt-1 font-mono">
               Gusts: {report.windGustKmh} km/h
             </p>
           </div>
@@ -322,12 +322,12 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider font-bold opacity-80 flex items-center gap-1">
+              <span className="text-xs font-mono uppercase tracking-wider font-bold opacity-80 flex items-center gap-1">
                 <CloudLightning className="w-3 h-3 text-amber-400" />
                 Lightning
               </span>
               <span
-                className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                className={`text-xs font-mono px-1.5 py-0.5 rounded font-bold ${
                   isLightningViolated
                     ? 'bg-rose-600 text-white animate-pulse'
                     : 'bg-slate-800 text-slate-300'
@@ -350,7 +350,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
             </div>
 
             {/* Radar status indicator */}
-            <div className="mt-1.5 flex items-center gap-1 text-[10px] font-mono">
+            <div className="mt-1.5 flex items-center gap-1 text-xs font-mono">
               {isLightningViolated ? (
                 <span className="text-rose-300 font-bold flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
@@ -363,14 +363,14 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-[10px] opacity-75 mt-0.5 font-mono">
+            <p className="text-xs opacity-75 mt-0.5 font-mono">
               Perimeter: 10 km exclusion
             </p>
           </div>
 
           {/* Metric 3: Atmosphere / Weather Code */}
           <div className="p-2.5 rounded-lg border border-slate-800 bg-slate-950/70 text-slate-200 flex flex-col justify-between">
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold opacity-80 text-slate-400">
+            <span className="text-xs font-mono uppercase tracking-wider font-bold opacity-80 text-slate-400">
               Sky & Microclimate
             </span>
             <div className="mt-1">
@@ -381,14 +381,14 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 {report.temperatureC}°C &bull; {report.relativeHumidity}% RH
               </p>
             </div>
-            <p className="text-[10px] text-slate-400 font-mono mt-1">
+            <p className="text-xs text-slate-400 font-mono mt-1">
               WMO Code #{report.weatherCode}
             </p>
           </div>
 
           {/* Metric 4: Geolocation Anchor */}
           <div className="p-2.5 rounded-lg border border-slate-800 bg-slate-950/70 text-slate-200 flex flex-col justify-between">
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold opacity-80 text-slate-400 flex items-center gap-1">
+            <span className="text-xs font-mono uppercase tracking-wider font-bold opacity-80 text-slate-400 flex items-center gap-1">
               <MapPin className="w-3 h-3 text-rose-400" />
               Site Geolocation
             </span>
@@ -400,7 +400,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                 {report.siteLong.toFixed(5)}° E
               </p>
             </div>
-            <p className="text-[10px] text-slate-400 truncate mt-1">
+            <p className="text-xs text-slate-400 truncate mt-1">
               {siteName}
             </p>
           </div>
@@ -422,11 +422,11 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
                   <strong className="text-rose-300 font-bold uppercase tracking-wide">
                     Mandatory Tower Safety Violation Warning
                   </strong>
-                  <span className="text-[10px] font-mono text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800">
+                  <span className="text-xs font-mono text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800">
                     DOLE-OSHA / TELCO RULE 1052
                   </span>
                 </div>
-                <ul className="list-disc list-inside space-y-0.5 text-[11px] text-rose-200/90 font-medium">
+                <ul className="list-disc list-inside space-y-0.5 text-xs text-rose-200/90 font-medium">
                   {report.violations.map((v, i) => (
                     <li key={i}>{v}</li>
                   ))}
@@ -435,17 +435,17 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
             </div>
 
             {hasEhsClearance && report.clearedByOfficer && (
-              <div className="p-2.5 rounded bg-amber-900/40 border border-amber-700/80 text-[11px] space-y-1">
+              <div className="p-2.5 rounded bg-amber-900/40 border border-amber-700/80 text-xs space-y-1">
                 <div className="flex items-center justify-between text-amber-300 font-bold">
                   <span>✓ Certified Ground Anemometer Clearance Issued</span>
-                  <span className="font-mono text-[10px]">
+                  <span className="font-mono text-xs">
                     {new Date(report.clearedByOfficer.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
                 <p className="text-amber-100/90 italic">
                   &quot;{report.clearedByOfficer.reason}&quot;
                 </p>
-                <div className="flex items-center justify-between text-[10px] text-amber-300/80 pt-1 border-t border-amber-800/60">
+                <div className="flex items-center justify-between text-xs text-amber-300/80 pt-1 border-t border-amber-800/60">
                   <span>Signatory: {report.clearedByOfficer.officerName}</span>
                   <button
                     type="button"
@@ -460,7 +460,7 @@ export const WeatherSafetyWidget: React.FC<WeatherSafetyWidgetProps> = ({
 
             {!hasEhsClearance && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-rose-800/60">
-                <span className="text-[11px] text-rose-300 flex items-center gap-1.5 font-medium">
+                <span className="text-xs text-rose-300 flex items-center gap-1.5 font-medium">
                   <Lock className="w-3.5 h-3.5" />
                   Tower ascent and antenna hoisting are locked until cleared.
                 </span>

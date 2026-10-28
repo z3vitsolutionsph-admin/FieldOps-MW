@@ -252,11 +252,11 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                 <h2 className="text-base font-bold text-white tracking-tight">
                   Field Technician Shift Handover Log
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                   JOB MODULE
                 </span>
                 {pendingAckCount > 0 && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500 text-slate-950 animate-pulse">
+                  <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500 text-slate-950 animate-pulse">
                     {pendingAckCount} PENDING ACK
                   </span>
                 )}
@@ -321,7 +321,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
               {/* Operator & Live Conditions Context Card */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono">
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                  <span className="text-slate-400 block text-xs uppercase font-bold">
                     Departing Field Operator:
                   </span>
                   <div className="flex items-center gap-2 mt-1">
@@ -330,13 +330,13 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                     </div>
                     <div>
                       <p className="font-bold text-white leading-tight">{activeUser.name}</p>
-                      <p className="text-[10px] text-cyan-400">{activeUser.role.replace('_', ' ')}</p>
+                      <p className="text-xs text-cyan-400">{activeUser.role.replace('_', ' ')}</p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                  <span className="text-slate-400 block text-xs uppercase font-bold">
                     Handheld Device Telemetry:
                   </span>
                   <div className="flex items-center gap-2 mt-1 text-slate-200">
@@ -347,7 +347,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                 </div>
 
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                  <span className="text-slate-400 block text-xs uppercase font-bold">
                     Live Atmospheric Shear:
                   </span>
                   <div className="flex items-center gap-2 mt-1 text-slate-200">
@@ -398,7 +398,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                   <label className="text-xs font-mono text-slate-400 font-bold">
                     3. Work Order Status Update Summary
                   </label>
-                  <span className="text-[10px] text-cyan-400 font-mono">
+                  <span className="text-xs text-cyan-400 font-mono">
                     Current Step: #{workOrder.currentStepIndex + 1}
                   </span>
                 </div>
@@ -420,11 +420,11 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                       <CheckSquare className="w-4 h-4 text-cyan-400" />
                       4. Remaining Tasks for Incoming Shift ({remainingTasks.length})
                     </h3>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-400 mt-0.5">
                       Explicit instructions and pending milestones incoming technicians must execute.
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">
                     REQUIRED
                   </span>
                 </div>
@@ -457,7 +457,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                       className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 text-xs text-slate-200"
                     >
                       <div className="flex items-start gap-2 min-w-0">
-                        <span className="w-4 h-4 rounded-full bg-cyan-950 text-cyan-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-cyan-800">
+                        <span className="w-4 h-4 rounded-full bg-cyan-950 text-cyan-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 border border-cyan-800">
                           {idx + 1}
                         </span>
                         <span className="leading-snug">{task}</span>
@@ -611,14 +611,14 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                   {toolsHandover.map((tool, idx) => (
                     <div
                       key={idx}
-                      className="p-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between text-[11px]"
+                      className="p-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
                     >
                       <div className="min-w-0 pr-2">
                         <span className="font-bold text-white block truncate">{tool.toolName}</span>
-                        <span className="text-slate-400 text-[10px] truncate block">Loc: {tool.location}</span>
+                        <span className="text-slate-400 text-xs truncate block">Loc: {tool.location}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                        <span className="px-1.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
                           {tool.condition}
                         </span>
                         <button
@@ -641,7 +641,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                     <PenTool className="w-4 h-4 text-cyan-400" />
                     8. Departing Technician Digital Signature
                   </label>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-slate-400">
                     Signing certifies accurate remaining tasks and safe equipment condition.
                   </p>
                 </div>
@@ -735,7 +735,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                                   {log.shiftType.replace('_', ' ')}
                                 </span>
                                 <span
-                                  className={`px-2 py-0.2 rounded text-[10px] font-mono font-bold ${
+                                  className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
                                     isAcknowledged
                                       ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                                       : 'bg-amber-950 text-amber-300 border border-amber-600'
@@ -744,14 +744,14 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                                   {isAcknowledged ? 'ACKNOWLEDGED' : 'PENDING INCOMING ACCEPTANCE'}
                                 </span>
                               </div>
-                              <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                              <p className="text-xs text-slate-400 font-mono mt-0.5">
                                 Logged by <strong className="text-slate-200">{log.departingTechnicianName}</strong> ({log.departingRole.replace('_', ' ')}) on {new Date(log.timestamp).toLocaleString()}
                               </p>
                             </div>
                           </div>
 
                           {/* Telemetry pill */}
-                          <div className="flex items-center gap-2 font-mono text-[10px] text-slate-400">
+                          <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
                             {log.batteryLevelAtHandover && (
                               <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-400">
                                 🔋 {log.batteryLevelAtHandover}%
@@ -767,7 +767,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
 
                         {/* Status Summary */}
                         <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
-                          <span className="text-[10px] font-mono text-cyan-400 font-bold block uppercase mb-1">
+                          <span className="text-xs font-mono text-cyan-400 font-bold block uppercase mb-1">
                             Shift Status Update:
                           </span>
                           <p className="text-slate-200 leading-relaxed">{log.statusSummary}</p>
@@ -775,7 +775,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
 
                         {/* Remaining Tasks Section (Core Highlight) */}
                         <div className="space-y-1.5">
-                          <span className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
+                          <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
                             <CheckSquare className="w-3.5 h-3.5" />
                             Remaining Tasks for Incoming Shift ({log.remainingTasks.length}):
                           </span>
@@ -785,7 +785,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                                 key={tidx}
                                 className="p-2.5 rounded-lg bg-cyan-950/20 border border-cyan-800/40 text-xs text-slate-200 flex items-start gap-2"
                               >
-                                <span className="w-4 h-4 rounded-full bg-cyan-900 text-cyan-300 font-mono text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                <span className="w-4 h-4 rounded-full bg-cyan-900 text-cyan-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                                   {tidx + 1}
                                 </span>
                                 <span className="leading-snug">{task}</span>
@@ -798,10 +798,10 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                           {/* Completed */}
                           <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                            <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block">
+                            <span className="text-xs font-mono text-emerald-400 font-bold uppercase block">
                               Completed Items ({log.completedItems.length}):
                             </span>
-                            <ul className="space-y-1 text-slate-300 text-[11px]">
+                            <ul className="space-y-1 text-slate-300 text-xs">
                               {log.completedItems.map((c, cidx) => (
                                 <li key={cidx} className="flex items-start gap-1.5">
                                   <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
@@ -813,10 +813,10 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
 
                           {/* Hazards */}
                           <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-900/40 space-y-1">
-                            <span className="text-[10px] font-mono text-amber-400 font-bold uppercase block">
+                            <span className="text-xs font-mono text-amber-400 font-bold uppercase block">
                               Hazards & Roadblocks ({log.blockersOrHazards.length}):
                             </span>
-                            <ul className="space-y-1 text-amber-200 text-[11px]">
+                            <ul className="space-y-1 text-amber-200 text-xs">
                               {log.blockersOrHazards.map((h, hidx) => (
                                 <li key={hidx} className="flex items-start gap-1.5">
                                   <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0 mt-0.5" />
@@ -829,15 +829,15 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
 
                         {/* Tools Custody */}
                         {log.toolsHandover && log.toolsHandover.length > 0 && (
-                          <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800 text-[11px]">
-                            <span className="text-[10px] font-mono text-slate-400 font-bold block mb-1">
+                          <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800 text-xs">
+                            <span className="text-xs font-mono text-slate-400 font-bold block mb-1">
                               Tools & Staged Equipment ({log.toolsHandover.length}):
                             </span>
                             <div className="flex flex-wrap gap-1.5">
                               {log.toolsHandover.map((t, tidx) => (
                                 <span
                                   key={tidx}
-                                  className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 font-mono text-[10px]"
+                                  className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs"
                                 >
                                   {t.toolName} ({t.location}) ·{' '}
                                   <strong className="text-emerald-400">{t.condition}</strong>
@@ -855,7 +855,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
 
                           {/* Incoming acknowledgment section */}
                           {isAcknowledged ? (
-                            <div className="p-2 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[11px] flex items-center gap-2">
+                            <div className="p-2 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                               <span>
                                 Acknowledged by <strong>{log.incomingAcknowledgement?.technicianName}</strong> on{' '}
@@ -864,7 +864,7 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                             </div>
                           ) : acknowledgingLogId === log.id ? (
                             <div className="p-3 rounded-xl bg-slate-900 border border-amber-600/80 space-y-2 w-full sm:w-auto">
-                              <span className="text-[10px] text-amber-300 font-bold block uppercase">
+                              <span className="text-xs text-amber-300 font-bold block uppercase">
                                 Incoming Shift Acknowledgment:
                               </span>
                               <input
@@ -878,14 +878,14 @@ export const ShiftHandoverModal: React.FC<ShiftHandoverModalProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => setAcknowledgingLogId(null)}
-                                  className="px-2 py-1 text-slate-400 hover:text-white text-[11px]"
+                                  className="px-2 py-1 text-slate-400 hover:text-white text-xs"
                                 >
                                   Cancel
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleConfirmAcknowledgment(log.id)}
-                                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded flex items-center gap-1"
+                                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded flex items-center gap-1"
                                 >
                                   <CheckCircle2 className="w-3 h-3" />
                                   <span>Sign & Accept Handover</span>

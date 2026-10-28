@@ -162,10 +162,10 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                 <h2 className="text-base font-extrabold tracking-tight text-white">
                   Server Architecture & Cloud Infrastructure
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                   EXPRESS & FIRESTORE
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
+                <span className="px-1.5 py-0.5 rounded text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   LIVE
                 </span>
@@ -238,7 +238,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                   <div className={`text-lg font-mono font-extrabold ${health?.status === 'HEALTHY' ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {loadingHealth ? '…' : health?.status ?? 'UNKNOWN'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">
                     Latency: {pingLatency !== null ? `${pingLatency}ms` : '—'}
                   </div>
                 </div>
@@ -249,7 +249,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                     <Cpu className="w-3.5 h-3.5 text-cyan-400" />
                   </div>
                   <div className="text-lg font-mono font-extrabold text-white">{health?.version ?? '—'}</div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">
                     Uptime: {typeof health?.uptimeSeconds === 'number' ? `${Math.floor(health.uptimeSeconds / 60)} min` : '—'}
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                   <div className="text-lg font-mono font-extrabold text-amber-400">
                     {health?.aiAvailable == null ? '—' : health.aiAvailable ? 'ONLINE' : 'OFFLINE'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">Server-side key only</div>
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">Server-side key only</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
@@ -273,7 +273,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                   <div className={`text-lg font-mono font-extrabold ${health?.database === 'UP' ? 'text-purple-300' : 'text-rose-400'}`}>
                     {health?.database ?? 'UNKNOWN'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">Readiness probe</div>
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">Readiness probe</div>
                 </div>
               </div>
 
@@ -284,7 +284,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                     <Layers className="w-4 h-4 text-cyan-400" />
                     Server-Side Architectural Pattern
                   </h3>
-                  <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
+                  <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
                     Full-Stack Modular Gateway
                   </span>
                 </div>
@@ -295,19 +295,19 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
                   <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="text-xs font-bold text-cyan-400 block mb-1">1. Edge & Client Tier</span>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Dexie.js IndexedDB local-first database on the device. Queues mutations offline with auto-retry and sync audit logs.
                     </p>
                   </div>
                   <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="text-xs font-bold text-cyan-400 block mb-1">2. Server Gateway Tier</span>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Express 4.21 with body streaming, request IDs, rate-limiting headers, Gemini API proxy, and battery curve cache.
                     </p>
                   </div>
                   <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="text-xs font-bold text-cyan-400 block mb-1">3. Cloud Persistence Tier</span>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Google Cloud Firestore document store with deployed v2 security rules and multi-region replication.
                     </p>
                   </div>
@@ -344,7 +344,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                         <div className="truncate mr-2">
                           <div className="flex items-center gap-1.5 font-mono">
                             <span
-                              className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                              className={`px-1.5 py-0.5 rounded text-xs font-bold ${
                                 ep.method === 'GET'
                                   ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
                                   : 'bg-blue-950 text-blue-400 border border-blue-800'
@@ -354,7 +354,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                             </span>
                             <span className="font-semibold">{ep.path}</span>
                           </div>
-                          <p className="text-[10px] text-slate-400 truncate mt-0.5">{ep.desc}</p>
+                          <p className="text-xs text-slate-400 truncate mt-0.5">{ep.desc}</p>
                         </div>
                         <Play className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                       </button>
@@ -390,7 +390,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
 
                   {testMethod === 'POST' && (
                     <div className="p-3 border-b border-slate-800 bg-slate-950/80">
-                      <label className="text-[10px] font-mono text-slate-400 block mb-1 uppercase">
+                      <label className="text-xs font-mono text-slate-400 block mb-1 uppercase">
                         Request Body (JSON):
                       </label>
                       <textarea
@@ -404,12 +404,12 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
 
                   {/* Output Terminal */}
                   <div className="p-3 flex-1 flex flex-col font-mono text-xs">
-                    <div className="flex items-center justify-between text-slate-400 pb-2 mb-2 border-b border-slate-900 text-[11px]">
+                    <div className="flex items-center justify-between text-slate-400 pb-2 mb-2 border-b border-slate-900 text-xs">
                       <span>Response Output</span>
                       {testResult && (
                         <div className="flex items-center gap-2">
                           <span
-                            className={`px-1.5 py-0.2 rounded font-bold ${
+                            className={`px-1.5 py-0.5 rounded font-bold ${
                               testResult.status >= 200 && testResult.status < 300
                                 ? 'bg-emerald-950 text-emerald-400'
                                 : 'bg-rose-950 text-rose-400'
@@ -422,7 +422,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                       )}
                     </div>
 
-                    <pre className="flex-1 overflow-x-auto p-2 rounded bg-slate-900/90 text-cyan-300 text-[11px] max-h-72 leading-relaxed border border-slate-800/80">
+                    <pre className="flex-1 overflow-x-auto p-2 rounded bg-slate-900/90 text-cyan-300 text-xs max-h-72 leading-relaxed border border-slate-800/80">
                       {testResult
                         ? JSON.stringify(testResult.data || testResult.error, null, 2)
                         : '// Select an endpoint from the left or click Execute Request to inspect real server response.'}
@@ -444,7 +444,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                       <Database className="w-4 h-4 text-purple-400" />
                       Google Cloud Firestore
                     </h3>
-                    <span className="text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded">
                       Enterprise Document DB
                     </span>
                   </div>
@@ -478,7 +478,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                       <Layers className="w-4 h-4 text-cyan-400" />
                       Dexie.js IndexedDB (Edge Layer)
                     </h3>
-                    <span className="text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded">
                       Local-First Client Cache
                     </span>
                   </div>
@@ -512,21 +512,21 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono p-3 rounded-lg bg-slate-900 border border-slate-800">
                   <div className="p-2.5 rounded bg-slate-950 border border-slate-800 text-center w-full sm:w-auto">
                     <div className="text-cyan-400 font-bold">Field Technician PWA</div>
-                    <div className="text-[10px] text-slate-400">IndexedDB Dexie.js Store</div>
+                    <div className="text-xs text-slate-400">IndexedDB Dexie.js Store</div>
                   </div>
 
                   <div className="text-slate-500 font-bold">⟷ 2-Way Batch Sync ⟷</div>
 
                   <div className="p-2.5 rounded bg-slate-950 border border-slate-800 text-center w-full sm:w-auto">
                     <div className="text-emerald-400 font-bold">Express Gateway (server.ts)</div>
-                    <div className="text-[10px] text-slate-400">RBAC / Validation / Telemetry</div>
+                    <div className="text-xs text-slate-400">RBAC / Validation / Telemetry</div>
                   </div>
 
                   <div className="text-slate-500 font-bold">⟷ Cloud Transport ⟷</div>
 
                   <div className="p-2.5 rounded bg-slate-950 border border-slate-800 text-center w-full sm:w-auto">
                     <div className="text-purple-400 font-bold">Cloud Firestore</div>
-                    <div className="text-[10px] text-slate-400">Global Replica & Master</div>
+                    <div className="text-xs text-slate-400">Global Replica & Master</div>
                   </div>
                 </div>
               </div>
@@ -542,7 +542,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     Security & Server-Side Key Vault Protection
                   </h3>
-                  <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded">
                     Zero Client Leaks
                   </span>
                 </div>
@@ -583,7 +583,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
 
         {/* Modal Bottom Footer */}
         <div className="p-3 px-5 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs text-slate-400 shrink-0">
-          <div className="flex items-center gap-2 font-mono text-[11px]">
+          <div className="flex items-center gap-2 font-mono text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>FieldOps MW Gateway 3.0.0 · Port 3000 · Firestore Connected</span>
           </div>

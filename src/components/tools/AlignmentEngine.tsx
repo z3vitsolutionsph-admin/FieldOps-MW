@@ -113,9 +113,9 @@ const AlignmentTrendTooltip = ({ active, payload, label }: any) => {
 
   return (
     <div className="p-2.5 rounded-lg bg-slate-950/95 border border-slate-700 shadow-2xl backdrop-blur-md text-xs font-mono space-y-1.5 z-50 min-w-44">
-      <div className="text-slate-400 font-bold border-b border-slate-800 pb-1 flex justify-between items-center text-[11px]">
+      <div className="text-slate-400 font-bold border-b border-slate-800 pb-1 flex justify-between items-center text-xs">
         <span>Time Offset: {label}</span>
-        <span className="text-cyan-400 text-[10px]">1 Hz Live</span>
+        <span className="text-cyan-400 text-xs">1 Hz Live</span>
       </div>
       {payload.map((entry: any, index: number) => {
         let unit = '°';
@@ -123,7 +123,7 @@ const AlignmentTrendTooltip = ({ active, payload, label }: any) => {
         if (entry.dataKey === 'vibration') unit = ' m/s²';
 
         return (
-          <div key={`item-${index}`} className="flex items-center justify-between gap-3 text-[11px]">
+          <div key={`item-${index}`} className="flex items-center justify-between gap-3 text-xs">
             <span className="flex items-center gap-1.5" style={{ color: entry.color }}>
               <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: entry.color }} />
               {entry.name}:
@@ -536,7 +536,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
               AlignmentEngine™ Sensor & Data Logging HUD
             </h2>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+              className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
                 isSensorActive || useSimulation
                   ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                   : 'bg-amber-950 text-amber-300 border border-amber-700'
@@ -574,7 +574,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
             title={hapticEnabled ? 'Haptic Feedback: Enabled (Vibrates at ≤0.5° Optimal Target)' : 'Haptic Feedback: Disabled'}
           >
             <Vibrate className={`w-3.5 h-3.5 ${hapticPulseActive ? 'animate-ping text-emerald-400' : ''}`} />
-            <span className="hidden sm:inline text-[11px] font-bold">{hapticEnabled ? 'Haptics ON' : 'Haptics OFF'}</span>
+            <span className="hidden sm:inline text-xs font-bold">{hapticEnabled ? 'Haptics ON' : 'Haptics OFF'}</span>
           </button>
           <button
             type="button"
@@ -599,7 +599,8 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
         {/* Left 2 Cols: Visual Compass & Inclinometer Guidance HUD */}
         <div className="lg:col-span-2 p-5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center space-y-6 relative overflow-hidden">
           {/* Stability Score Banner */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-xs font-mono">
+          {/* In flow (not absolute) so it never collides with the dial on narrow screens */}
+          <div className="w-full flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs font-mono">
             <div className="flex items-center gap-1.5">
               <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
               <span className="text-slate-400">Signal Stability:</span>
@@ -614,7 +615,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
 
           {/* Compass & Tilt Target Circle */}
           <div
-            className={`relative w-56 h-56 sm:w-64 sm:h-64 rounded-full border-4 bg-slate-900/90 flex items-center justify-center shadow-2xl mt-6 transition-all duration-200 ${
+            className={`relative w-56 h-56 sm:w-64 sm:h-64 rounded-full border-4 bg-slate-900/90 flex items-center justify-center shadow-2xl mt-4 transition-all duration-200 ${
               isOptimalOrientation
                 ? 'border-emerald-400 shadow-emerald-950/80 ring-4 ring-emerald-500/30'
                 : 'border-slate-800 shadow-slate-950/70'
@@ -627,7 +628,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
 
             {/* Optimal Orientation (≤0.5°) Haptic Lock Badge */}
             {isOptimalOrientation && (
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-emerald-950/95 border border-emerald-500 text-emerald-300 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-950/70 z-20 animate-bounce">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-emerald-950/95 border border-emerald-500 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-950/70 z-20 animate-bounce">
                 <Vibrate className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
                 <span>HAPTIC LOCK (≤ 0.5°)</span>
               </div>
@@ -639,7 +640,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
               style={{ transform: `rotate(${targetAzimuth}deg)` }}
             >
               <div className="w-2.5 h-28 bg-emerald-500/35 rounded-t-full mb-28 border-x border-emerald-400" />
-              <span className="absolute top-5 text-[10px] font-mono font-bold text-emerald-400 bg-slate-950/90 px-1 rounded border border-emerald-800/80">
+              <span className="absolute top-5 text-xs font-mono font-bold text-emerald-400 bg-slate-950/90 px-1 rounded border border-emerald-800/80">
                 TARGET {targetAzimuth}°
               </span>
             </div>
@@ -679,7 +680,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                   )}px)`,
                 }}
               />
-              <span className="absolute text-[9px] font-mono font-bold z-10">
+              <span className="absolute text-xs font-mono font-bold z-10">
                 {isOptimalOrientation ? '≤0.5°' : `${elevation.toFixed(1)}°`}
               </span>
             </div>
@@ -688,19 +689,19 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
           {/* Readouts */}
           <div className="grid grid-cols-3 gap-3 w-full">
             <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono">
-              <span className="text-[10px] text-slate-400 block uppercase">Azimuth</span>
+              <span className="text-xs text-slate-400 block uppercase">Azimuth</span>
               <span className="text-lg font-extrabold text-white">{azimuth}°</span>
-              <p className="text-[10px] text-slate-500">Δ {azDelta.toFixed(1)}°</p>
+              <p className="text-xs text-slate-500">Δ {azDelta.toFixed(1)}°</p>
             </div>
             <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono">
-              <span className="text-[10px] text-slate-400 block uppercase">Elevation Tilt</span>
+              <span className="text-xs text-slate-400 block uppercase">Elevation Tilt</span>
               <span className="text-lg font-extrabold text-white">{elevation}°</span>
-              <p className="text-[10px] text-slate-500">Δ {elDelta.toFixed(1)}°</p>
+              <p className="text-xs text-slate-500">Δ {elDelta.toFixed(1)}°</p>
             </div>
             <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-center font-mono">
-              <span className="text-[10px] text-slate-400 block uppercase">Roll Stability</span>
+              <span className="text-xs text-slate-400 block uppercase">Roll Stability</span>
               <span className="text-lg font-extrabold text-white">{roll}°</span>
-              <p className="text-[10px] text-slate-500">Level: ±0.5°</p>
+              <p className="text-xs text-slate-500">Level: ±0.5°</p>
             </div>
           </div>
 
@@ -720,7 +721,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                       setElevation(targetElevation);
                       triggerHaptic([70, 40, 70]);
                     }}
-                    className="px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 hover:bg-emerald-900 text-[10px] font-mono font-bold flex items-center gap-1"
+                    className="px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 hover:bg-emerald-900 text-xs font-mono font-bold flex items-center gap-1"
                   >
                     <Vibrate className="w-3 h-3 text-emerald-400" />
                     <span>Snap to Optimal Target (≤0.5°)</span>
@@ -728,7 +729,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                   <button
                     type="button"
                     onClick={() => triggerHaptic([70, 40, 70])}
-                    className="px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-mono"
+                    className="px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-xs font-mono"
                   >
                     Test Vibration
                   </button>
@@ -737,7 +738,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
 
               <div className="space-y-2 text-xs">
                 <div>
-                  <div className="flex justify-between text-slate-400 font-mono mb-1 text-[11px]">
+                  <div className="flex justify-between text-slate-400 font-mono mb-1 text-xs">
                     <span>Azimuth Adjustment (Target: {targetAzimuth}°):</span>
                     <span className="text-white font-bold">{azimuth.toFixed(2)}° (Δ {azDelta.toFixed(2)}°)</span>
                   </div>
@@ -753,7 +754,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-slate-400 font-mono mb-1 text-[11px]">
+                  <div className="flex justify-between text-slate-400 font-mono mb-1 text-xs">
                     <span>Elevation Tilt Adjustment (Target: {targetElevation}°):</span>
                     <span className="text-white font-bold">{elevation.toFixed(2)}° (Δ {elDelta.toFixed(2)}°)</span>
                   </div>
@@ -797,7 +798,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
             </div>
 
             <div>
-              <label className="text-[11px] font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-300 block mb-1">
                 Technician Session Notes
               </label>
               <input
@@ -850,12 +851,12 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                 <h3 className="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5 font-mono">
                   30-Second Stabilization Trend
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1">
                   <span className={`w-1.5 h-1.5 rounded-full ${isChartPaused ? 'bg-amber-400' : 'bg-emerald-400 animate-ping'}`} />
                   {isChartPaused ? 'PAUSED' : 'LIVE 1 Hz'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 Rolling accelerometer & gyroscope stabilization dynamics showing mast vibration dampening and bore-sight stability.
               </p>
             </div>
@@ -865,7 +866,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
             <button
               type="button"
               onClick={() => setIsChartPaused(!isChartPaused)}
-              className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px] flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs flex items-center gap-1.5 transition-colors"
             >
               {isChartPaused ? (
                 <>
@@ -893,45 +894,45 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
         {/* 30s Trend Statistics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
           <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase block font-sans font-semibold">
+            <span className="text-xs text-slate-400 uppercase block font-sans font-semibold">
               30s Avg Stability
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className={`text-base font-extrabold ${avg30sStability >= 85 ? 'text-emerald-400' : 'text-cyan-400'}`}>
                 {avg30sStability}%
               </span>
-              <span className="text-[10px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 {avg30sStability >= 85 ? '(Aligned)' : '(Adjusting)'}
               </span>
             </div>
           </div>
 
           <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase block font-sans font-semibold">
+            <span className="text-xs text-slate-400 uppercase block font-sans font-semibold">
               30s Peak Stability
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-base font-extrabold text-emerald-400">
                 {peak30sStability}%
               </span>
-              <span className="text-[10px] text-slate-500">Target: 90%+</span>
+              <span className="text-xs text-slate-500">Target: 90%+</span>
             </div>
           </div>
 
           <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase block font-sans font-semibold">
+            <span className="text-xs text-slate-400 uppercase block font-sans font-semibold">
               Peak Mast Vibration
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-base font-extrabold text-purple-400">
                 {max30sVibration.toFixed(2)} m/s²
               </span>
-              <span className="text-[10px] text-slate-500">Max &lt; 0.25</span>
+              <span className="text-xs text-slate-500">Max &lt; 0.25</span>
             </div>
           </div>
 
           <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase block font-sans font-semibold">
+            <span className="text-xs text-slate-400 uppercase block font-sans font-semibold">
               Lock-On Status
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -998,7 +999,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
             </label>
           </div>
 
-          <div className="text-[11px] font-mono text-slate-500">
+          <div className="text-xs font-mono text-slate-500">
             Window: -30s to 0s · Sample Rate: 1.0s
           </div>
         </div>
@@ -1143,7 +1144,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
             <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
               Saved Alignment Logs ({sessions.length})
             </h3>
-            <span className="text-[11px] text-slate-400">Persisted in IndexedDB / Local Cache</span>
+            <span className="text-xs text-slate-400">Persisted in IndexedDB / Local Cache</span>
           </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -1155,12 +1156,12 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                 <div>
                   <div className="flex items-center gap-2 font-mono">
                     <span className="font-bold text-cyan-400">{new Date(sess.startTime).toLocaleString()}</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">
+                    <span className="px-1.5 py-0.5 rounded text-xs bg-slate-800 text-slate-300">
                       {sess.samples.length} samples
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 mt-0.5">{sess.notes}</p>
-                  <p className="text-[10px] font-mono text-slate-400 mt-1">
+                  <p className="text-xs text-slate-300 mt-0.5">{sess.notes}</p>
+                  <p className="text-xs font-mono text-slate-400 mt-1">
                     Avg Az: <span className="text-white font-bold">{sess.averageAzimuth}°</span> · Avg Tilt: <span className="text-white font-bold">{sess.averageElevation}°</span> · Peak Stability: <span className="text-emerald-400 font-bold">{sess.peakStability}%</span>
                   </p>
                 </div>
@@ -1177,7 +1178,7 @@ export const AlignmentEngine: React.FC<AlignmentEngineProps> = ({
                       downloadAnchor.click();
                       downloadAnchor.remove();
                     }}
-                    className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px] flex items-center gap-1 transition-colors"
+                    className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs flex items-center gap-1 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5 text-cyan-400" />
                     <span>Export JSON</span>

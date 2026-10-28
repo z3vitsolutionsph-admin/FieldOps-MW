@@ -261,7 +261,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
             </div>
             {/* Survey Incomplete / Unenergized Warning Badge */}
             {!rectifierEnergized && (
-              <div className="px-2.5 py-1 rounded bg-amber-950/80 border border-amber-700 text-amber-300 text-[11px] font-mono flex items-center gap-1.5">
+              <div className="px-2.5 py-1 rounded bg-amber-950/80 border border-amber-700 text-amber-300 text-xs font-mono flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 <span>Site B TSSR: Commercial MCB not yet energized</span>
               </div>
@@ -272,7 +272,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {/* Rectifier Setup */}
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-cyan-300 block uppercase font-mono text-[11px]">
+              <span className="font-bold text-cyan-300 block uppercase font-mono text-xs">
                 1. Rectifier System
               </span>
               <div>
@@ -294,7 +294,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   className="w-full px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 font-mono text-white text-sm"
                 />
               </div>
-              <label className="flex items-center gap-2 pt-1 text-[11px] text-slate-300 cursor-pointer">
+              <label className="flex items-center gap-2 pt-1 text-xs text-slate-300 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={rectifierEnergized}
@@ -307,7 +307,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
 
             {/* Battery Banks */}
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-purple-300 block uppercase font-mono text-[11px]">
+              <span className="font-bold text-purple-300 block uppercase font-mono text-xs">
                 2. Battery Bank Reserve
               </span>
               <div>
@@ -343,10 +343,10 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
 
             {/* Added MW Equipment */}
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-              <span className="font-bold text-emerald-300 block uppercase font-mono text-[11px]">
+              <span className="font-bold text-emerald-300 block uppercase font-mono text-xs">
                 3. Microwave Added Loads
               </span>
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <span>Huawei NR9150 IDU (120.84W):</span>
                 <input
                   type="number"
@@ -357,7 +357,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   className="w-16 px-2 py-1 rounded bg-slate-900 border border-slate-700 text-center font-mono text-xs"
                 />
               </div>
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <span>ER2020 Radio (50.88W):</span>
                 <input
                   type="number"
@@ -368,7 +368,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   className="w-16 px-2 py-1 rounded bg-slate-900 border border-slate-700 text-center font-mono text-xs"
                 />
               </div>
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <span>SRU3D/HRU3D (127.2W):</span>
                 <input
                   type="number"
@@ -379,7 +379,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   className="w-16 px-2 py-1 rounded bg-slate-900 border border-slate-700 text-center font-mono text-xs"
                 />
               </div>
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <span>Cable & Conversion Loss (%):</span>
                 <input
                   type="number"
@@ -394,27 +394,27 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
           {/* Results Summary Dashboard */}
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px]">Total Added Current:</span>
+              <span className="text-slate-400 block text-xs">Total Added Current:</span>
               <p className="font-mono text-lg font-bold text-cyan-400 mt-0.5">
                 {totalAddedCurrentA.toFixed(2)} A
               </p>
-              <p className="text-[10px] text-slate-500 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 {totalWattsWithLoss.toFixed(1)} Watts at -48V
               </p>
             </div>
 
             <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px]">Usable Rectifier (N+1):</span>
+              <span className="text-slate-400 block text-xs">Usable Rectifier (N+1):</span>
               <p className="font-mono text-lg font-bold text-white mt-0.5">
                 {usableRectifierCapacityA.toFixed(1)} A
               </p>
-              <p className="text-[10px] text-slate-500 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 Minus 1 module & 10% chg
               </p>
             </div>
 
             <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px]">Rectifier Margin:</span>
+              <span className="text-slate-400 block text-xs">Rectifier Margin:</span>
               <p
                 className={`font-mono text-lg font-bold mt-0.5 ${
                   capacitySurplusA >= 0 ? 'text-emerald-400' : 'text-rose-400'
@@ -422,17 +422,17 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               >
                 {capacitySurplusA >= 0 ? `+${capacitySurplusA.toFixed(1)}` : capacitySurplusA.toFixed(1)} A
               </p>
-              <p className="text-[10px] text-slate-500 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 {capacitySurplusA >= 0 ? 'Adequate capacity' : `Deficit! Add ${additionalModulesNeeded} mod`}
               </p>
             </div>
 
             <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px]">Battery Runtime:</span>
+              <span className="text-slate-400 block text-xs">Battery Runtime:</span>
               <p className="font-mono text-lg font-bold text-purple-400 mt-0.5">
                 {backupHoursAfter} hrs
               </p>
-              <p className="text-[10px] text-slate-500 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 Was {backupHoursBefore} hrs (80% DoD)
               </p>
             </div>
@@ -455,7 +455,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-xs">
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">Freq (GHz)</label>
+              <label className="text-slate-400 block text-xs">Freq (GHz)</label>
               <input
                 type="number"
                 step="0.5"
@@ -465,7 +465,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               />
             </div>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">Distance (km)</label>
+              <label className="text-slate-400 block text-xs">Distance (km)</label>
               <input
                 type="number"
                 step="0.01"
@@ -475,7 +475,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               />
             </div>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">TX Power (dBm)</label>
+              <label className="text-slate-400 block text-xs">TX Power (dBm)</label>
               <input
                 type="number"
                 step="0.5"
@@ -485,7 +485,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               />
             </div>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">TX Ant Gain (dBi)</label>
+              <label className="text-slate-400 block text-xs">TX Ant Gain (dBi)</label>
               <input
                 type="number"
                 step="0.1"
@@ -495,7 +495,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               />
             </div>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">RX Ant Gain (dBi)</label>
+              <label className="text-slate-400 block text-xs">RX Ant Gain (dBi)</label>
               <input
                 type="number"
                 step="0.1"
@@ -505,7 +505,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               />
             </div>
             <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-              <label className="text-slate-400 block text-[11px]">Misc Loss (dB)</label>
+              <label className="text-slate-400 block text-xs">Misc Loss (dB)</label>
               <input
                 type="number"
                 step="0.1"
@@ -523,7 +523,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               <p className="text-xl font-bold font-mono text-cyan-400 mt-1">
                 {freeSpaceLoss.toFixed(2)} dB
               </p>
-              <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+              <p className="text-xs text-slate-500 font-mono mt-0.5">
                 Formula: 92.45 + 20·log(f) + 20·log(d)
               </p>
             </div>
@@ -533,7 +533,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               <p className="text-xl font-bold font-mono text-emerald-400 mt-1">
                 {computedExpectedRsl.toFixed(2)} dBm
               </p>
-              <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+              <p className="text-xs text-slate-500 font-mono mt-0.5">
                 TSSR Target: {hop.expectedRslDbm} dBm
               </p>
             </div>
@@ -545,7 +545,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   ? (54.0 - Math.abs(computedExpectedRsl)).toFixed(2)
                   : (Math.abs(-54.0) - Math.abs(computedExpectedRsl)).toFixed(2))} dB
               </p>
-              <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+              <p className="text-xs text-slate-500 font-mono mt-0.5">
                 Above -54.0 dBm threshold (Passed)
               </p>
             </div>
@@ -614,7 +614,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
                   style={{ transform: `rotate(${bearingBtoA}deg)` }}
                 >
                   <div className="w-1 h-24 bg-cyan-400 origin-bottom mb-24 rounded-full shadow-lg shadow-cyan-400/80" />
-                  <span className="absolute top-2 text-[10px] font-mono font-bold text-cyan-300">
+                  <span className="absolute top-2 text-xs font-mono font-bold text-cyan-300">
                     TARGET 241°
                   </span>
                 </div>
@@ -635,7 +635,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
               <p className="text-xs font-mono font-bold text-slate-200 mt-3">
                 {deviceHeading !== null ? `Heading: ${deviceHeading}°` : 'Heading: 241.0° (Locked to Target)'}
               </p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-xs text-slate-500">
                 Align green needle with top target pointer for primary antenna boresight
               </p>
 
@@ -668,7 +668,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             {/* Decimal Input Box */}
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-              <span className="font-bold text-cyan-300 block uppercase font-mono text-[11px]">
+              <span className="font-bold text-cyan-300 block uppercase font-mono text-xs">
                 Decimal Degrees (DD)
               </span>
               <div>
@@ -700,7 +700,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({
 
             {/* DMS Input Box */}
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-              <span className="font-bold text-emerald-300 block uppercase font-mono text-[11px]">
+              <span className="font-bold text-emerald-300 block uppercase font-mono text-xs">
                 Degrees, Minutes, Seconds (DMS)
               </span>
 

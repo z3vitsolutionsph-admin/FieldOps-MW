@@ -526,7 +526,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
               <button
                 key={style}
                 onClick={() => setMapStyle(style)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
+                className={`px-2 py-0.5 rounded text-xs font-bold uppercase transition-colors ${
                   mapStyle === style
                     ? 'bg-cyan-600 text-white shadow'
                     : 'text-slate-400 hover:text-white'
@@ -538,7 +538,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
           </div>
 
           {/* Quick Layer Overlay Toggles */}
-          <div className="hidden sm:flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px]">
+          <div className="hidden sm:flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-xs">
             <button
               onClick={() => setShowFresnelSwath(!showFresnelSwath)}
               className={`px-1.5 py-0.5 rounded font-bold transition-colors ${
@@ -593,7 +593,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
         <div ref={mapContainerRef} className="w-full h-full" />
 
         {/* Floating Legend Overlay */}
-        <div className="absolute bottom-3 left-3 z-[1000] p-2.5 rounded-lg bg-slate-950/90 backdrop-blur-md border border-slate-800 text-[10px] font-mono text-slate-200 space-y-1 shadow-lg pointer-events-none">
+        <div className="absolute bottom-3 left-3 z-[1000] p-2.5 rounded-lg bg-slate-950/90 backdrop-blur-md border border-slate-800 text-xs font-mono text-slate-200 space-y-1 shadow-lg pointer-events-none">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block border border-white" />
             <span>Site A: {siteA.id} ({siteA.elevationM || 32}m AMSL)</span>
@@ -644,7 +644,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
                   <h3 className="font-bold text-sm text-white font-mono">
                     {selectedSiteModal.id} — {selectedSiteModal.name}
                   </h3>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     {selectedSiteModal.ownerTowerProvider} Tower ({selectedSiteModal.siteType})
                   </span>
                 </div>
@@ -662,7 +662,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 font-mono text-xs">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold">Decimal Coordinates:</span>
+                  <span className="text-xs text-slate-500 block uppercase font-bold">Decimal Coordinates:</span>
                   <span className="text-white font-bold">
                     {selectedSiteModal.lat.toFixed(5)}°, {selectedSiteModal.long.toFixed(5)}°
                   </span>
@@ -670,7 +670,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(`${selectedSiteModal.lat}, ${selectedSiteModal.long}`, 'dd')}
-                  className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 flex items-center gap-1 font-bold"
+                  className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-cyan-300 flex items-center gap-1 font-bold"
                 >
                   {copiedKey === 'dd' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedKey === 'dd' ? 'Copied' : 'Copy Lat/Long'}</span>
@@ -680,7 +680,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
               {selectedSiteModal.latDms && (
                 <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
                   <div>
-                    <span className="text-[10px] text-slate-500 block uppercase font-bold">DMS Coordinates:</span>
+                    <span className="text-xs text-slate-500 block uppercase font-bold">DMS Coordinates:</span>
                     <span className="text-slate-300">
                       {selectedSiteModal.latDms}, {selectedSiteModal.longDms}
                     </span>
@@ -688,7 +688,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
                   <button
                     type="button"
                     onClick={() => handleCopy(`${selectedSiteModal.latDms}, ${selectedSiteModal.longDms}`, 'dms')}
-                    className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 flex items-center gap-1 font-bold"
+                    className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-cyan-300 flex items-center gap-1 font-bold"
                   >
                     {copiedKey === 'dms' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                     <span>{copiedKey === 'dms' ? 'Copied' : 'Copy DMS'}</span>
@@ -700,23 +700,23 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
             {/* Site Physical Specifications Grid */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-500 block uppercase font-bold">Elevation:</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold">Elevation:</span>
                 <span className="font-bold text-white">{selectedSiteModal.elevationM} m AMSL</span>
               </div>
               <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-500 block uppercase font-bold">Tower Structure:</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold">Tower Structure:</span>
                 <span className="font-bold text-white">
                   {selectedSiteModal.tower?.type || 'SST'} ({selectedSiteModal.tower?.heightM || 45}m)
                 </span>
               </div>
               <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-500 block uppercase font-bold">Access Road & Hauling:</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold">Access Road & Hauling:</span>
                 <span className="text-slate-300">
                   {selectedSiteModal.accessRoad?.haulingMethod} ({selectedSiteModal.accessRoad?.type})
                 </span>
               </div>
               <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-500 block uppercase font-bold">Keyholder Contact:</span>
+                <span className="text-xs text-slate-500 block uppercase font-bold">Keyholder Contact:</span>
                 <span className="text-slate-300 truncate block">
                   {selectedSiteModal.keyholder} ({selectedSiteModal.keyholderContact})
                 </span>
@@ -727,7 +727,7 @@ export const SiteMapLeaflet: React.FC<SiteMapLeafletProps> = ({
             {selectedSiteModal.id === siteB.id && siteB.approvedAclHeightM && (
               <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/80 text-xs flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-emerald-400 block uppercase">
+                  <span className="text-xs font-mono font-bold text-emerald-400 block uppercase">
                     Transport Engineering Approved ACL:
                   </span>
                   <p className="font-bold text-white">

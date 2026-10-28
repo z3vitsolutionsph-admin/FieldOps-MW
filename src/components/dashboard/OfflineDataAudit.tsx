@@ -606,28 +606,28 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
     switch (status) {
       case 'FAILED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-950/80 text-rose-300 border border-rose-700/80">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-950/80 text-rose-300 border border-rose-700/80">
             <XCircle className="w-3 h-3 text-rose-400" />
             FAILED ({retryCount} {retryCount === 1 ? 'try' : 'retries'})
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-700/80">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-700/80">
             <Clock className="w-3 h-3 text-amber-400" />
             QUEUED
           </span>
         );
       case 'SYNCING':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-700/80">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-700/80">
             <RefreshCw className="w-3 h-3 text-cyan-400 animate-spin" />
             SYNCING...
           </span>
         );
       case 'SYNCED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-700/80">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-700/80">
             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
             SYNCED
           </span>
@@ -648,7 +648,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
     };
     const c = colors[name] || 'bg-slate-800 text-slate-300 border-slate-700';
     return (
-      <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${c}`}>
+      <span className={`px-1.5 py-0.5 rounded text-xs font-mono font-bold uppercase border ${c}`}>
         {name.replace('_', ' ')}
       </span>
     );
@@ -676,7 +676,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
             <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
               Offline Data Audit & IndexedDB Diagnostic Inspector
             </h2>
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
               FIELD TECH DIAGNOSTICS
             </span>
           </div>
@@ -746,7 +746,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+            <span className="text-xs font-mono uppercase text-slate-400 font-bold">
               Failed Uploads
             </span>
             <AlertTriangle className={`w-4 h-4 ${counts.failed > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-600'}`} />
@@ -754,7 +754,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
           <p className={`text-2xl font-bold font-mono mt-1 ${counts.failed > 0 ? 'text-rose-400' : 'text-slate-400'}`}>
             {counts.failed}
           </p>
-          <p className="text-[10px] text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             {counts.failed > 0 ? 'Requires field diagnostic attention' : 'Zero failed uploads'}
           </p>
         </div>
@@ -765,19 +765,19 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
           className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+            <span className="text-xs font-mono uppercase text-slate-400 font-bold">
               Pending in Queue
             </span>
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{counts.pending}</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Awaiting network trigger</p>
+          <p className="text-xs text-slate-400 mt-0.5">Awaiting network trigger</p>
         </div>
 
         {/* Local Storage Quota */}
         <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+            <span className="text-xs font-mono uppercase text-slate-400 font-bold">
               IndexedDB Storage
             </span>
             <HardDrive className="w-4 h-4 text-cyan-400" />
@@ -785,7 +785,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
           <p className="text-2xl font-bold font-mono text-cyan-400 mt-1">
             {metrics ? `${metrics.usageMb} MB` : '...'}
           </p>
-          <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+          <p className="text-xs text-slate-400 mt-0.5 truncate">
             {metrics ? `${metrics.photoCount} photos · ${metrics.percentageUsed}% quota` : 'Calculating quota...'}
           </p>
         </div>
@@ -793,7 +793,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
         {/* Cloud Connection State */}
         <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+            <span className="text-xs font-mono uppercase text-slate-400 font-bold">
               Cloud Uplink
             </span>
             {firestoreSync.isOnline() ? (
@@ -806,7 +806,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
             <p className={`text-sm font-bold font-mono uppercase ${firestoreSync.isOnline() ? 'text-emerald-400' : 'text-amber-400'}`}>
               {firestoreSync.isOnline() ? 'ONLINE (4G/LTE)' : 'OFF-GRID MODE'}
             </p>
-            <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+            <p className="text-xs text-slate-400 mt-0.5 truncate">
               {syncState.lastSyncTimestamp
                 ? `Last sync: ${new Date(syncState.lastSyncTimestamp).toLocaleTimeString()}`
                 : 'No sync completed yet'}
@@ -828,7 +828,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
             <button
               key={tab.id}
               onClick={() => setStatusFilter(tab.id)}
-              className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
+              className={`px-2.5 py-1 rounded text-xs font-bold transition-colors ${
                 statusFilter === tab.id
                   ? tab.alert
                     ? 'bg-rose-900 text-white border border-rose-600'
@@ -945,7 +945,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                     <span className="font-mono text-xs font-bold text-white">
                       {item.entityId}
                     </span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
+                    <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
                       {item.operation}
                     </span>
                   </div>
@@ -955,7 +955,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                       Created: {formatRelativeTime(item.timestamp)}
                     </span>
                     <span className="text-slate-600">·</span>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-xs text-slate-500 font-mono">
                       ID: {item.id.slice(0, 16)}...
                     </span>
                   </div>
@@ -968,10 +968,10 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                       <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <span className="font-bold text-rose-200 uppercase tracking-wide text-[11px] font-mono">
+                          <span className="font-bold text-rose-200 uppercase tracking-wide text-xs font-mono">
                             Diagnostic Category: {diag.category}
                           </span>
-                          <span className="text-[10px] font-mono text-rose-300 bg-rose-900/80 px-2 py-0.5 rounded font-bold">
+                          <span className="text-xs font-mono text-rose-300 bg-rose-900/80 px-2 py-0.5 rounded font-bold">
                             ATTEMPT #{item.retryCount} FAILED
                           </span>
                         </div>
@@ -982,8 +982,8 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                     </div>
 
                     {/* Exact Error Log Message */}
-                    <div className="p-2.5 rounded bg-black/60 border border-rose-900/80 font-mono text-[11px] text-rose-300 break-all space-y-1">
-                      <div className="flex items-center justify-between text-[10px] text-rose-400">
+                    <div className="p-2.5 rounded bg-black/60 border border-rose-900/80 font-mono text-xs text-rose-300 break-all space-y-1">
+                      <div className="flex items-center justify-between text-xs text-rose-400">
                         <span className="flex items-center gap-1 font-bold uppercase">
                           <Terminal className="w-3 h-3" />
                           Firestore Upload Error Trace:
@@ -1009,14 +1009,14 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                     </div>
 
                     {/* Field Technician Remediation Action */}
-                    <div className="p-2.5 rounded bg-slate-950/80 border border-slate-800 text-[11px] space-y-1">
-                      <div className="flex items-center gap-1.5 text-cyan-400 font-bold uppercase text-[10px] font-mono">
+                    <div className="p-2.5 rounded bg-slate-950/80 border border-slate-800 text-xs space-y-1">
+                      <div className="flex items-center gap-1.5 text-cyan-400 font-bold uppercase text-xs font-mono">
                         <HelpCircle className="w-3.5 h-3.5" />
                         Technician Recommended Field Action:
                       </div>
                       <p className="text-slate-200 leading-relaxed">{diag.fieldAction}</p>
                       {diag.telemetryHint && (
-                        <p className="text-[10px] text-slate-400 font-mono pt-1 border-t border-slate-800/80">
+                        <p className="text-xs text-slate-400 font-mono pt-1 border-t border-slate-800/80">
                           ℹ {diag.telemetryHint}
                         </p>
                       )}
@@ -1027,11 +1027,11 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 {/* Non-failed pending message or info */}
                 {item.status === 'PENDING' && (
                   <div className="p-2.5 rounded-lg bg-amber-950/30 border border-amber-900/60 text-xs flex items-center justify-between gap-2 text-amber-300">
-                    <span className="flex items-center gap-1.5 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-xs">
                       <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                       Queued locally in Dexie IndexedDB. Auto-uploads once connection to Firestore is established.
                     </span>
-                    <span className="text-[10px] font-mono text-amber-400 font-bold">
+                    <span className="text-xs font-mono text-amber-400 font-bold">
                       Pending Trigger
                     </span>
                   </div>
@@ -1040,12 +1040,12 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 {/* Synced confirmation */}
                 {item.status === 'SYNCED' && (
                   <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-900/60 text-xs flex items-center justify-between gap-2 text-emerald-300">
-                    <span className="flex items-center gap-1.5 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-xs">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       Successfully verified and written to Firestore collection{' '}
                       <strong className="font-mono">"{item.collectionName}"</strong>.
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-400 font-bold">VERIFIED</span>
+                    <span className="text-xs font-mono text-emerald-400 font-bold">VERIFIED</span>
                   </div>
                 )}
 
@@ -1061,7 +1061,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                         onClick={() =>
                           handleCopyJson(JSON.stringify(item.payload, null, 2), item.id + '_payload')
                         }
-                        className="hover:text-white flex items-center gap-1 text-[11px]"
+                        className="hover:text-white flex items-center gap-1 text-xs"
                       >
                         {copiedId === item.id + '_payload' ? (
                           <>
@@ -1077,7 +1077,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                       </button>
                     </div>
 
-                    <pre className="max-h-60 overflow-y-auto text-[11px] text-slate-300 p-2 rounded bg-black/60 font-mono">
+                    <pre className="max-h-60 overflow-y-auto text-xs text-slate-300 p-2 rounded bg-black/60 font-mono">
                       {JSON.stringify(item.payload, null, 2)}
                     </pre>
                   </div>
@@ -1130,7 +1130,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
           <Info className="w-4 h-4 text-cyan-400" />
           Offline FieldOps Architecture & Resilient Upload Guide
         </h3>
-        <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px] leading-relaxed">
+        <ul className="list-disc list-inside space-y-1 text-slate-400 text-xs leading-relaxed">
           <li>
             <strong className="text-slate-200">Local-First Persistence:</strong> All microwave work orders, TSSR photos, inventory returns, and troubleshooting measurements are committed immediately to browser IndexedDB (<span className="text-cyan-300 font-mono">Dexie.js</span>) before attempting cloud network transmission.
           </li>
@@ -1172,7 +1172,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold block">1. Remote Site Cellular Uplink Drop (408)</span>
-                  <span className="text-[11px] text-rose-300">
+                  <span className="text-xs text-rose-300">
                     Simulates high-resolution photo blob transmission timeout in remote mountain terrain.
                   </span>
                 </div>
@@ -1185,7 +1185,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold block">2. Security Rules / Token Expiry (403)</span>
-                  <span className="text-[11px] text-rose-300">
+                  <span className="text-xs text-rose-300">
                     Simulates expired credentials during off-grid TSSR routing sign-off.
                   </span>
                 </div>
@@ -1198,7 +1198,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 <HardDrive className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold block">3. Payload Size Exceeded (413)</span>
-                  <span className="text-[11px] text-amber-300">
+                  <span className="text-xs text-amber-300">
                     Simulates uncompressed panoramic blob exceeding single transaction limits.
                   </span>
                 </div>
@@ -1211,7 +1211,7 @@ export const OfflineDataAudit: React.FC<OfflineDataAuditProps> = ({
                 <Clock className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold block">4. Normal Pending Mutation</span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     Simulates pending equipment return inventory record awaiting upload.
                   </span>
                 </div>

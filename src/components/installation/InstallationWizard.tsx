@@ -267,21 +267,22 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
             : 'bg-slate-900/90 border-slate-800 text-slate-100'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+        {/* Stacks on phones: job identity first, then step actions, so nothing wraps letter by letter */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 whitespace-nowrap">
                 {workOrder.workOrderNumber}
               </span>
-              <span className="text-xs font-medium text-slate-400">
+              <span className="text-xs font-medium text-slate-400 whitespace-nowrap">
                 Site {site.role}: <strong className="text-slate-200">{site.id}</strong>
               </span>
             </div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-white mt-0.5">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-white mt-1 text-balance">
               Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
             </h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setShowShiftHandoverModal(true)}
@@ -293,7 +294,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               <span className="sm:hidden">Handover</span>
               {handovers.length > 0 ? (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                     pendingAckCount > 0
                       ? 'bg-amber-500 text-slate-950 animate-pulse'
                       : 'bg-slate-800 text-slate-300'
@@ -302,7 +303,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   {handovers.length}
                 </span>
               ) : (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-400">
+                <span className="px-1.5 py-0.5 rounded-full text-xs bg-slate-800 text-slate-400">
                   0
                 </span>
               )}
@@ -311,7 +312,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               <span className="text-xs font-mono font-bold text-cyan-400">
                 {Math.round(((currentStep + 1) / steps.length) * 100)}%
               </span>
-              <p className="text-[10px] text-slate-400">Progress</p>
+              <p className="text-xs text-slate-400">Progress</p>
             </div>
           </div>
         </div>
@@ -347,7 +348,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               <button
                 key={idx}
                 onClick={() => setCurrentStep(idx)}
-                className={`px-2 py-1 rounded text-[11px] font-mono whitespace-nowrap flex items-center gap-1 transition-colors border ${
+                className={`px-2 py-1 rounded text-xs font-mono whitespace-nowrap flex items-center gap-1 transition-colors border ${
                   isCurr
                     ? 'bg-cyan-600 text-white border-cyan-500 font-bold shadow'
                     : isDone
@@ -400,16 +401,16 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     Shift Turnover: {latestHandover.shiftType.replace('_', ' ')}
                   </h3>
                   {!latestHandover.incomingAcknowledgement ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-amber-500 text-slate-950 animate-pulse">
+                    <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-amber-500 text-slate-950 animate-pulse">
                       PENDING INCOMING ACKNOWLEDGEMENT
                     </span>
                   ) : (
-                    <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                    <span className="text-xs px-2 py-0.5 rounded font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
                       ✓ ACCEPTED BY {latestHandover.incomingAcknowledgement.technicianName}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                <p className="text-xs text-slate-400 font-mono mt-0.5">
                   Departing Tech: <strong className="text-slate-200">{latestHandover.departingTechnicianName}</strong> ({latestHandover.departingRole.replace('_', ' ')}) · Handover at {new Date(latestHandover.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -430,7 +431,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
 
           {/* Departing status update snippet */}
           <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800/90 text-xs">
-            <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase block mb-1">
+            <span className="text-xs font-mono font-bold text-cyan-400 uppercase block mb-1">
               Departing Crew Status Update:
             </span>
             <p className="text-slate-300 leading-relaxed font-sans">
@@ -442,11 +443,11 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
           {latestHandover.remainingTasks && latestHandover.remainingTasks.length > 0 && (
             <div className="p-3 rounded-lg bg-cyan-950/20 border border-cyan-800/50 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono font-bold text-cyan-300 uppercase flex items-center gap-1.5">
+                <span className="text-xs font-mono font-bold text-cyan-300 uppercase flex items-center gap-1.5">
                   <ListTodo className="w-4 h-4 text-cyan-400" />
                   Remaining Tasks Transferred to Incoming Shift ({latestHandover.remainingTasks.length})
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-xs text-slate-400 font-mono">
                   Assigned Lead: <strong className="text-white">{latestHandover.incomingShiftLeadName || 'Incoming Crew'}</strong>
                 </span>
               </div>
@@ -454,9 +455,9 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 {latestHandover.remainingTasks.map((task, idx) => (
                   <div
                     key={idx}
-                    className="p-2 rounded-lg bg-slate-950/90 border border-slate-800 text-[11px] text-slate-200 flex items-start gap-2 shadow-sm"
+                    className="p-2 rounded-lg bg-slate-950/90 border border-slate-800 text-xs text-slate-200 flex items-start gap-2 shadow-sm"
                   >
-                    <span className="w-4 h-4 rounded-full bg-cyan-900 text-cyan-300 text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-4 h-4 rounded-full bg-cyan-900 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {idx + 1}
                     </span>
                     <span className="leading-snug">{task}</span>
@@ -470,16 +471,16 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
           {(latestHandover.blockersOrHazards.length > 0 || (latestHandover.toolsHandover && latestHandover.toolsHandover.length > 0)) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {latestHandover.blockersOrHazards.length > 0 && (
-                <div className="p-2 rounded-lg bg-amber-950/30 border border-amber-900/40 text-[11px] text-amber-200">
-                  <span className="font-mono font-bold uppercase text-[10px] text-amber-400 block mb-0.5">
+                <div className="p-2 rounded-lg bg-amber-950/30 border border-amber-900/40 text-xs text-amber-200">
+                  <span className="font-mono font-bold uppercase text-xs text-amber-400 block mb-0.5">
                     Active Handover Hazard / Blocker:
                   </span>
                   <p className="truncate">⚠ {latestHandover.blockersOrHazards[0]}</p>
                 </div>
               )}
               {latestHandover.toolsHandover && latestHandover.toolsHandover.length > 0 && (
-                <div className="p-2 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] text-slate-300">
-                  <span className="font-mono font-bold uppercase text-[10px] text-slate-400 block mb-0.5">
+                <div className="p-2 rounded-lg bg-slate-950/60 border border-slate-800 text-xs text-slate-300">
+                  <span className="font-mono font-bold uppercase text-xs text-slate-400 block mb-0.5">
                     Accounted Tools Handover:
                   </span>
                   <p className="truncate">🔧 {latestHandover.toolsHandover.length} items logged ({latestHandover.toolsHandover[0].toolName})</p>
@@ -530,37 +531,37 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
             {/* Approvals Routing Sheet Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold">
+                <span className="text-xs font-mono text-cyan-400 uppercase font-bold">
                   Transport Engineering ACL
                 </span>
                 <p className="text-xs font-bold text-slate-100 mt-1">
                   Approved Height: {approvals.transportEng.aclApprovedM} m ({approvals.transportEng.legApproved})
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {approvals.transportEng.remarks}
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold">
+                <span className="text-xs font-mono text-emerald-400 uppercase font-bold">
                   Facility Engineering
                 </span>
                 <p className="text-xs font-bold text-slate-100 mt-1">
                   Outdoor Cabinet & -48V DC
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {approvals.facilityEng.powerApprovalRemarks}
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <span className="text-[10px] font-mono text-purple-400 uppercase font-bold">
+                <span className="text-xs font-mono text-purple-400 uppercase font-bold">
                   Tower Assessment
                 </span>
                 <p className="text-xs font-bold text-slate-100 mt-1">
                   {site.tower.type} ({site.tower.heightM} m)
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {approvals.towerAssessment.structuralCapacityRemarks}
                 </p>
               </div>
@@ -573,7 +574,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 <p className="text-xs text-slate-400">
                   {site.keyholder} ({site.ownerTowerProvider} Tower)
                 </p>
-                <p className="text-[11px] text-slate-500 mt-0.5">{site.securityNotes}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{site.securityNotes}</p>
               </div>
               <div className="flex items-center gap-2">
                 <a
@@ -605,7 +606,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowShiftHandoverModal(true)}
-                  className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-bold"
+                  className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-bold"
                 >
                   <History className="w-3.5 h-3.5" />
                   <span>Open Shift Handover Log</span>
@@ -614,7 +615,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
 
               {latestHandover ? (
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between flex-wrap gap-1 text-[11px] text-slate-400">
+                  <div className="flex items-center justify-between flex-wrap gap-1 text-xs text-slate-400">
                     <span>
                       Prior Shift: <strong className="text-slate-200">{latestHandover.departingTechnicianName}</strong> ({latestHandover.shiftType.replace('_', ' ')})
                     </span>
@@ -627,12 +628,12 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   </p>
                   {latestHandover.remainingTasks && latestHandover.remainingTasks.length > 0 && (
                     <div className="space-y-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-cyan-300">
+                      <span className="text-xs font-mono font-bold uppercase text-cyan-300">
                         Remaining Tasks Transferred for This Shift:
                       </span>
                       <ul className="space-y-1">
                         {latestHandover.remainingTasks.map((t, idx) => (
-                          <li key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-200">
+                          <li key={idx} className="flex items-start gap-1.5 text-xs text-slate-200">
                             <span className="text-cyan-400 font-bold">•</span>
                             <span>{t}</span>
                           </li>
@@ -742,7 +743,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   <div className="flex-1">
                     <span>{item.label}</span>
                     {item.isHighPriority && (
-                      <span className="ml-1.5 text-[9px] font-mono px-1 py-0.2 rounded bg-rose-600 text-white font-bold">
+                      <span className="ml-1.5 text-xs font-mono px-1 py-0.5 rounded bg-rose-600 text-white font-bold">
                         RISK MITIGATION
                       </span>
                     )}
@@ -848,12 +849,12 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                           {item.title}
                         </p>
                         {isItemHazard && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-600 text-white font-bold animate-pulse">
+                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-rose-600 text-white font-bold animate-pulse">
                             HAZARD ACTIVE
                           </span>
                         )}
                       </div>
-                      <p className={`text-[11px] mt-0.5 ${isItemHazard ? 'text-rose-200 font-medium' : 'text-slate-400'}`}>
+                      <p className={`text-xs mt-0.5 ${isItemHazard ? 'text-rose-200 font-medium' : 'text-slate-400'}`}>
                         {item.desc}
                       </p>
                     </div>
@@ -868,7 +869,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 <span className="text-xs font-bold text-slate-200 block">
                   Supervisor Safety Authorization (Mandatory Gate)
                 </span>
-                <span className="text-[10px] font-mono text-cyan-400">
+                <span className="text-xs font-mono text-cyan-400">
                   {activeUser.role === 'SUPERVISOR' || activeUser.role === 'ADMIN'
                     ? '✓ Authorized as ' + activeUser.role
                     : '⚠ Requires Supervisor/Admin PIN Sign-off'}
@@ -893,7 +894,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 </button>
               </div>
               {stepData.supervisorSigned && (
-                <p className="text-[11px] text-emerald-400 font-mono mt-1">
+                <p className="text-xs text-emerald-400 font-mono mt-1">
                   ✓ Safety Gate signed by Engr. Jun Arboleda (Site Safety Supervisor)
                 </p>
               )}
@@ -914,14 +915,14 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   <p className="font-mono font-bold text-slate-100">
                     {site.lat.toFixed(5)}° N, {site.long.toFixed(5)}° E
                   </p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-xs text-slate-500">
                     {site.latDms} / {site.longDms}
                   </p>
                 </div>
                 <div>
                   <span className="text-slate-400">Elevation:</span>
                   <p className="font-mono font-bold text-slate-100">{site.elevationM} m AMSL</p>
-                  <p className="text-[10px] text-slate-500">{site.siteType}</p>
+                  <p className="text-xs text-slate-500">{site.siteType}</p>
                 </div>
               </div>
             </div>
@@ -950,16 +951,16 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                       ? '✓ GPS Check-in Verified (Within Site Geofence)'
                       : '⚠ Warning: Current location exceeds 100m from surveyed site coords!'}
                   </p>
-                  <p className="text-[11px] text-slate-300 mt-1">
+                  <p className="text-xs text-slate-300 mt-1">
                     Distance to Site Tower: <strong>{stepData.distanceToSiteM} meters</strong>
                   </p>
-                  <p className="text-[10px] font-mono text-slate-400">
+                  <p className="text-xs font-mono text-slate-400">
                     Timestamp: {new Date(stepData.checkInTimestamp).toLocaleString()}
                   </p>
 
                   {!stepData.withinGeofence && (
                     <div className="mt-2 pt-2 border-t border-amber-800/80">
-                      <label className="text-[11px] text-amber-200 block mb-1">
+                      <label className="text-xs text-amber-200 block mb-1">
                         Override Reason Required:
                       </label>
                       <input
@@ -1017,12 +1018,12 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   onChange={(e) => handleUpdateField('measuredVoltage', parseFloat(e.target.value))}
                   className="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm font-mono text-cyan-400"
                 />
-                <span className="text-[10px] text-slate-500">
+                <span className="text-xs text-slate-500">
                   Target: -48.0V (Standard tolerance: -43.2V to -56.0V)
                 </span>
                 {stepData.measuredVoltage && (
                   <p
-                    className={`text-[11px] font-mono ${
+                    className={`text-xs font-mono ${
                       stepData.measuredVoltage <= -43.2 && stepData.measuredVoltage >= -57.0
                         ? 'text-emerald-400'
                         : 'text-rose-400 font-bold'
@@ -1046,7 +1047,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   onChange={(e) => handleUpdateField('breakerRating', parseInt(e.target.value))}
                   className="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm font-mono text-cyan-400"
                 />
-                <span className="text-[10px] text-slate-500">
+                <span className="text-xs text-slate-500">
                   Per TSSR: DCPDB-01 60A/63A breaker slot #4
                 </span>
               </div>
@@ -1120,7 +1121,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                       <h3 className="font-black text-sm uppercase tracking-wide text-rose-200">
                         ⛔ TOWER CLIMBING SUSPENDED — LIVE WEATHER HAZARD LOCKOUT
                       </h3>
-                      <span className="text-[10px] font-mono bg-rose-900 border border-rose-700 px-2 py-0.5 rounded text-rose-300 font-bold">
+                      <span className="text-xs font-mono bg-rose-900 border border-rose-700 px-2 py-0.5 rounded text-rose-300 font-bold">
                         DOLE-OSHA / TELCO SAFETY SHUTDOWN
                       </span>
                     </div>
@@ -1129,26 +1130,26 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-rose-800 text-xs">
                       <div className={`p-2 rounded bg-rose-900/60 border ${weatherReport.windSpeedKmh > 30 ? 'border-rose-500 font-bold' : 'border-rose-800'}`}>
-                        <span className="text-[10px] text-rose-300 block">WIND SPEED THRESHOLD (&le; 30 km/h):</span>
+                        <span className="text-xs text-rose-300 block">WIND SPEED THRESHOLD (&le; 30 km/h):</span>
                         <span className="font-mono text-sm text-white">{weatherReport.windSpeedKmh} km/h</span>
                         {weatherReport.windSpeedKmh > 30 ? (
-                          <span className="text-rose-300 text-[10px] block font-bold">⛔ EXCEEDS 30 km/h SAFETY LIMIT</span>
+                          <span className="text-rose-300 text-xs block font-bold">⛔ EXCEEDS 30 km/h SAFETY LIMIT</span>
                         ) : (
-                          <span className="text-emerald-400 text-[10px] block">✓ Safe (&le; 30 km/h)</span>
+                          <span className="text-emerald-400 text-xs block">✓ Safe (&le; 30 km/h)</span>
                         )}
                       </div>
                       <div className={`p-2 rounded bg-rose-900/60 border ${weatherReport.lightningDetectedWithin10Km ? 'border-rose-500 font-bold' : 'border-rose-800'}`}>
-                        <span className="text-[10px] text-rose-300 block">LIGHTNING EXCLUSION (&gt; 10 km):</span>
+                        <span className="text-xs text-rose-300 block">LIGHTNING EXCLUSION (&gt; 10 km):</span>
                         <span className="font-mono text-sm text-white">{weatherReport.nearestLightningDistanceKm} km</span>
                         {weatherReport.lightningDetectedWithin10Km ? (
-                          <span className="text-rose-300 text-[10px] block font-bold">⛔ STRIKE WITHIN 10 km SAFETY ZONE</span>
+                          <span className="text-rose-300 text-xs block font-bold">⛔ STRIKE WITHIN 10 km SAFETY ZONE</span>
                         ) : (
-                          <span className="text-emerald-400 text-[10px] block">✓ Safe (&gt; 10 km)</span>
+                          <span className="text-emerald-400 text-xs block">✓ Safe (&gt; 10 km)</span>
                         )}
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-rose-800/80 mt-2">
-                      <span className="text-[11px] text-rose-200 flex items-center gap-1 font-mono">
+                      <span className="text-xs text-rose-200 flex items-center gap-1 font-mono">
                         <Lock className="w-3.5 h-3.5 text-rose-400" />
                         Tower rigging form and task completion locked until cleared.
                       </span>
@@ -1179,7 +1180,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   <span className="text-xs font-mono text-cyan-400 uppercase font-bold">
                     ACL Validation Gate
                   </span>
-                  <span className="text-[11px] font-mono text-emerald-400">
+                  <span className="text-xs font-mono text-emerald-400">
                     Approved: {site.approvedAclHeightM} m ({site.approvedAclLeg})
                   </span>
                 </div>
@@ -1205,7 +1206,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   {stepData.actualHeightM !== undefined && (
                     <div>
                       {Math.abs(stepData.actualHeightM - (site.approvedAclHeightM || 40.7)) > 0.3 ? (
-                        <div className="p-2 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-[11px] mt-1 flex items-start gap-1.5">
+                        <div className="p-2 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs mt-1 flex items-start gap-1.5">
                           <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
                           <span>
                             MISMATCH FLAG: Entered {stepData.actualHeightM}m differs from approved ACL{' '}
@@ -1213,7 +1214,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                           </span>
                         </div>
                       ) : (
-                        <p className="text-emerald-400 font-mono text-[11px]">
+                        <p className="text-emerald-400 font-mono text-xs">
                           ✓ Matches approved ACL height within ±0.3m
                         </p>
                       )}
@@ -1233,7 +1234,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     <option value="Leg C">Leg C (Approved)</option>
                   </select>
                   {stepData.installedLeg && stepData.installedLeg !== site.approvedAclLeg && (
-                    <p className="text-amber-400 text-[11px] font-mono mt-1">
+                    <p className="text-amber-400 text-xs font-mono mt-1">
                       ⚠ Warning: Installed on {stepData.installedLeg} instead of approved {site.approvedAclLeg}.
                     </p>
                   )}
@@ -1388,26 +1389,26 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               <div>
                 <span className="text-slate-400">Target Azimuth:</span>
                 <p className="font-mono font-bold text-lg text-cyan-400">241.02°</p>
-                <p className="text-[10px] text-slate-500">True Heading to Site A</p>
+                <p className="text-xs text-slate-500">True Heading to Site A</p>
               </div>
               <div>
                 <span className="text-slate-400">Path Distance:</span>
                 <p className="font-mono font-bold text-lg text-slate-200">{hop.pathLengthKm} km</p>
-                <p className="text-[10px] text-slate-500">11 GHz Microwave</p>
+                <p className="text-xs text-slate-500">11 GHz Microwave</p>
               </div>
               <div>
                 <span className="text-slate-400">Expected RSL:</span>
                 <p className="font-mono font-bold text-lg text-emerald-400">
                   {hop.expectedRslDbm} dBm
                 </p>
-                <p className="text-[10px] text-slate-500">Tolerance: ±3.0 dB</p>
+                <p className="text-xs text-slate-500">Tolerance: ±3.0 dB</p>
               </div>
               <div>
                 <span className="text-slate-400">Link Mode:</span>
                 <p className="font-mono font-bold text-lg text-purple-400">
                   {hop.configuration}
                 </p>
-                <p className="text-[10px] text-slate-500">XPIC Dual-Pol</p>
+                <p className="text-xs text-slate-500">XPIC Dual-Pol</p>
               </div>
             </div>
 
@@ -1421,7 +1422,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   <span className="text-xs font-bold text-white block">
                     Real-Time Sensor Alignment HUD (Compass & Inclinometer)
                   </span>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-slate-400">
                     {stepData.aligned_azimuth
                       ? `Aligned Data Locked: ${stepData.aligned_azimuth}° Azimuth / ${stepData.aligned_elevation >= 0 ? `+${stepData.aligned_elevation}` : stepData.aligned_elevation}° Tilt`
                       : 'Hold mobile device flat on antenna bracket collar for live magnetic azimuth and elevation pitch guidance'}
@@ -1456,7 +1457,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                         : null;
                     return (
                       <div key={key} className="p-2.5 rounded bg-slate-900 border border-slate-800">
-                        <span className="text-[11px] text-slate-400 block">{cName}</span>
+                        <span className="text-xs text-slate-400 block">{cName}</span>
                         <input
                           type="number"
                           step="0.1"
@@ -1466,7 +1467,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                           className="w-full mt-1 px-2 py-1.5 rounded bg-slate-950 border border-slate-700 font-mono text-sm font-bold text-white"
                         />
                         {variance && (
-                          <div className="mt-1 flex items-center justify-between text-[10px] font-mono">
+                          <div className="mt-1 flex items-center justify-between text-xs font-mono">
                             <span className="text-slate-500">Var:</span>
                             <span
                               className={
@@ -1499,7 +1500,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     onChange={(e) => handleUpdateField('xpdDb', parseFloat(e.target.value))}
                     className="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm font-mono text-cyan-400"
                   />
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     Recommended XPD ≥ 30 dB for 4096QAM stability
                   </span>
                 </div>
@@ -1516,7 +1517,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     ).toFixed(1)}
                     className="w-full px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-sm font-mono text-emerald-400"
                   />
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     Calculated above 4096QAM threshold (-54.0 dBm)
                   </span>
                 </div>
@@ -1651,7 +1652,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     </td>
                     <td className="py-2.5 px-2.5 text-emerald-400">0.0 m</td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs">
                         PASS
                       </span>
                     </td>
@@ -1664,7 +1665,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     </td>
                     <td className="py-2.5 px-2.5 text-emerald-400">Match</td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs">
                         PASS
                       </span>
                     </td>
@@ -1675,7 +1676,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     <td className="py-2.5 px-2.5 text-slate-100 font-bold">241.0°</td>
                     <td className="py-2.5 px-2.5 text-emerald-400">-0.02°</td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs">
                         PASS
                       </span>
                     </td>
@@ -1688,7 +1689,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     </td>
                     <td className="py-2.5 px-2.5 text-emerald-400">-0.03 dB</td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs">
                         PASS
                       </span>
                     </td>
@@ -1699,7 +1700,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     <td className="py-2.5 px-2.5 text-slate-100 font-bold">57.0 m</td>
                     <td className="py-2.5 px-2.5 text-emerald-400">Exact</td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs">
                         PASS
                       </span>
                     </td>
@@ -1725,7 +1726,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                     setIsAiLoading(false);
                   }}
                   disabled={isAiLoading}
-                  className="px-2.5 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-[11px] font-bold text-white flex items-center gap-1"
+                  className="px-2.5 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-xs font-bold text-white flex items-center gap-1"
                 >
                   {isAiLoading ? 'Analyzing...' : 'Auto-Generate'}
                 </button>
@@ -1765,7 +1766,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-white">Generate Official PDF Report</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     Multi-page printable As-Built Certificate with photos and specs.
                   </p>
                 </div>
@@ -1778,7 +1779,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                       ? 'Reviewer Final Sign-Off'
                       : 'Submit to QA Reviewer'}
                   </h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     {activeUser.role === 'REVIEWER' || activeUser.role === 'ADMIN'
                       ? `Active User ${activeUser.name} has QA clearance to certify this link.`
                       : 'Status will transition to Pending Review for Engr. Sarah Mendoza.'}
@@ -1854,7 +1855,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               type="button"
               onClick={handleAskAiAboutStep}
               disabled={isAiLoading}
-              className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-mono"
+              className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-mono"
             >
               <Sparkles className="w-3 h-3" />
               {isAiLoading ? 'Checking...' : 'Ask AI for Step Specs'}
@@ -1871,7 +1872,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
 
           {aiAnalysis && currentStep !== 10 && (
             <div className="p-3 rounded-lg bg-slate-950/80 border border-cyan-900/60 text-xs text-slate-300 space-y-1">
-              <span className="text-[10px] font-mono text-cyan-400 font-bold block">
+              <span className="text-xs font-mono text-cyan-400 font-bold block">
                 FIELD-OPS AI RECOMMENDATION:
               </span>
               <p className="leading-relaxed whitespace-pre-line">{aiAnalysis}</p>
@@ -1880,22 +1881,23 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
         </div>
 
         {/* Navigation & Action Bar */}
-        <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
+        {/* Phones: primary action full width on top, secondary pair, then Previous */}
+        <div className="mt-5 pt-3 border-t border-slate-800 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <button
             type="button"
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
             disabled={currentStep === 0}
-            className="px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold flex items-center gap-1.5"
+            className="justify-center px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold flex items-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" />
             Previous
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
             <button
               type="button"
               onClick={() => setShowShiftHandoverModal(true)}
-              className="px-3.5 py-2.5 rounded-lg border border-cyan-800 bg-cyan-950/60 hover:bg-cyan-900 text-xs text-cyan-300 font-bold flex items-center gap-1.5 shadow transition-all"
+              className="justify-center px-3.5 py-2.5 rounded-lg border border-cyan-800 bg-cyan-950/60 hover:bg-cyan-900 text-xs text-cyan-300 font-bold flex items-center gap-1.5 shadow transition-all"
               title="Record departing technician handover & remaining tasks for incoming shift"
             >
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
@@ -1905,7 +1907,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
             <button
               type="button"
               onClick={() => handleSaveStep(false)}
-              className="px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-xs text-slate-300 font-semibold"
+              className="text-center px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-xs text-slate-300 font-semibold"
             >
               Save Draft
             </button>
@@ -1919,7 +1921,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   (currentStep === 3 && !isSafetyGateSatisfied()) ||
                   (currentStep === 6 && Boolean(weatherReport && !weatherReport.isSafeForTowerWork))
                 }
-                className={`px-4 py-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow ${
+                className={`col-span-2 order-first sm:order-none min-h-12 sm:min-h-0 justify-center text-center px-4 py-2.5 rounded-lg text-sm sm:text-xs font-bold flex items-center gap-1.5 shadow ${
                   (currentStep === 1 && !stepData.riskAnalysisSigned) ||
                   (currentStep === 3 && !isSafetyGateSatisfied()) ||
                   (currentStep === 6 && Boolean(weatherReport && !weatherReport.isSafeForTowerWork))
@@ -1953,7 +1955,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
               <button
                 type="button"
                 onClick={() => handleSaveStep(true)}
-                className="px-4 py-2.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow"
+                className="col-span-2 order-first sm:order-none min-h-12 sm:min-h-0 justify-center px-4 py-2.5 rounded-lg text-sm sm:text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Mark Step Complete</span>
@@ -1974,7 +1976,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
                   <h3 className="font-black text-sm uppercase tracking-wide text-white">
                     Tower Work Suspended — Severe Weather Lockout
                   </h3>
-                  <span className="text-[10px] font-mono text-rose-300">
+                  <span className="text-xs font-mono text-rose-300">
                     DOLE-OSHA / TELCO TECHNICAL RULE 1052
                   </span>
                 </div>
@@ -1995,21 +1997,21 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
 
               <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-rose-800">
                 <div className={`p-2 rounded bg-rose-900/60 border ${weatherReport.windSpeedKmh > 30 ? 'border-rose-500 font-bold' : 'border-rose-800'}`}>
-                  <span className="text-[10px] text-rose-300 block">WIND SPEED:</span>
+                  <span className="text-xs text-rose-300 block">WIND SPEED:</span>
                   <span className="text-sm font-mono text-white font-bold">{weatherReport.windSpeedKmh} km/h</span>
-                  <span className="text-[10px] block text-rose-300 font-mono">Limit: 30 km/h</span>
+                  <span className="text-xs block text-rose-300 font-mono">Limit: 30 km/h</span>
                 </div>
                 <div className={`p-2 rounded bg-rose-900/60 border ${weatherReport.lightningDetectedWithin10Km ? 'border-rose-500 font-bold' : 'border-rose-800'}`}>
-                  <span className="text-[10px] text-rose-300 block">LIGHTNING PROXIMITY:</span>
+                  <span className="text-xs text-rose-300 block">LIGHTNING PROXIMITY:</span>
                   <span className="text-sm font-mono text-white font-bold">{weatherReport.nearestLightningDistanceKm} km</span>
-                  <span className="text-[10px] block text-rose-300 font-mono">Exclusion: 10 km</span>
+                  <span className="text-xs block text-rose-300 font-mono">Exclusion: 10 km</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-1.5 text-xs">
               <span className="font-bold text-slate-300 block">Active Safety Violations:</span>
-              <ul className="list-disc list-inside space-y-1 text-[11px] text-rose-300/90 font-medium bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+              <ul className="list-disc list-inside space-y-1 text-xs text-rose-300/90 font-medium bg-slate-950 p-2.5 rounded-lg border border-slate-800">
                 {weatherReport.violations.map((v, i) => (
                   <li key={i}>{v}</li>
                 ))}
@@ -2018,7 +2020,7 @@ export const InstallationWizard: React.FC<InstallationWizardProps> = ({
 
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-2">
               <span className="font-bold text-cyan-300 block">Resolution Procedures:</span>
-              <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-300">
+              <ol className="list-decimal list-inside space-y-1 text-xs text-slate-300">
                 <li>Wait at tower base shelter until wind drops below 30 km/h and thunderstorm cells pass 10 km away.</li>
                 <li>Tap &quot;Re-check Live Weather&quot; to fetch updated telemetry.</li>
                 <li>If on-ground calibrated instruments confirm microclimate safety, obtain a signed EHS Supervisor variance.</li>

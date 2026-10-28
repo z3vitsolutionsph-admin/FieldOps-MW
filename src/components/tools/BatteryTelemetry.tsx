@@ -246,11 +246,11 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-extrabold text-sm tracking-tight">{statusStyles.title}</span>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${statusStyles.badgeBg}`}>
+              <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${statusStyles.badgeBg}`}>
                 {batteryState.level}% · {batteryState.alertLevel}
               </span>
               {batteryState.isSimulated && (
-                <span className="px-1.5 py-0.2 text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-700 rounded">
+                <span className="px-1.5 py-0.5 text-xs font-mono bg-purple-950 text-purple-300 border border-purple-700 rounded">
                   SIMULATOR ACTIVE
                 </span>
               )}
@@ -280,7 +280,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
       )}
 
       {/* Main Telemetry Cockpit Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {/* Large Battery Gauge Card */}
         <div
           className={`p-4 rounded-xl border flex flex-col justify-between md:col-span-2 ${
@@ -300,7 +300,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
                 Handheld Battery Status
               </span>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="text-xs font-mono text-slate-400">
               API: {batteryState.isSupported ? 'Native Web Battery' : 'Emulated Fallback'}
             </span>
           </div>
@@ -333,7 +333,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
 
             {/* Visual Bar Indicator */}
             <div className="w-full sm:w-48 space-y-1.5">
-              <div className="flex justify-between text-[11px] font-mono text-slate-400">
+              <div className="flex justify-between text-xs font-mono text-slate-400">
                 <span>0%</span>
                 <span className="text-amber-400 font-bold">25%</span>
                 <span className="text-emerald-400 font-bold">100%</span>
@@ -347,7 +347,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
                   }}
                 />
               </div>
-              <div className="flex justify-between text-[10px] font-mono text-slate-500">
+              <div className="flex justify-between text-xs font-mono text-slate-500">
                 <span>Crit: {batteryState.criticalThreshold}%</span>
                 <span>Warn: {batteryState.warningThreshold}%</span>
               </div>
@@ -390,14 +390,14 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
                 : batteryState.dischargeRatePerHour}
               <span className="text-xs font-sans text-slate-400 ml-1">%/hr</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               {Math.abs(batteryState.dischargeRatePerHour) > 25
                 ? 'High drain: Multiple sensors (GPS + Gyro + Max Brightness)'
                 : 'Moderate drain: Normal telemetry profile'}
             </p>
           </div>
 
-          <div className="border-t border-slate-800/60 pt-2 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="border-t border-slate-800/60 pt-2 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Tower Target: &lt;18%/hr</span>
             <span
               className={
@@ -429,14 +429,14 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
               {batteryState.temperatureC}
               <span className="text-xs font-sans text-slate-400 ml-1">°C</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               {batteryState.temperatureC > 38
                 ? 'High heat: Direct solar radiation at tower elevation'
                 : 'Safe operating temperature threshold'}
             </p>
           </div>
 
-          <div className="border-t border-slate-800/60 pt-2 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="border-t border-slate-800/60 pt-2 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Limit: 45.0°C</span>
             <span
               className={
@@ -561,7 +561,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
                 deviceBatteryService.setSimulationMode(false);
                 setShowSimPanel(false);
               }}
-              className="text-[11px] font-mono text-purple-400 hover:underline"
+              className="text-xs font-mono text-purple-400 hover:underline"
             >
               Reset to Native API
             </button>
@@ -597,28 +597,28 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
               className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-emerald-600 text-emerald-400 text-left"
             >
               <div className="font-bold">Nominal (92%)</div>
-              <div className="text-[10px] text-slate-500">Normal operations</div>
+              <div className="text-xs text-slate-500">Normal operations</div>
             </button>
             <button
               onClick={() => deviceBatteryService.setSimulatedLevel(24, false, -18.5)}
               className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-amber-600 text-amber-400 text-left"
             >
               <div className="font-bold">Advisory (24%)</div>
-              <div className="text-[10px] text-slate-500">Below 25% warning</div>
+              <div className="text-xs text-slate-500">Below 25% warning</div>
             </button>
             <button
               onClick={() => deviceBatteryService.setSimulatedLevel(14, false, -24.0)}
               className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-orange-600 text-orange-400 text-left"
             >
               <div className="font-bold">Critical (14%)</div>
-              <div className="text-[10px] text-slate-500">Tower descent call</div>
+              <div className="text-xs text-slate-500">Tower descent call</div>
             </button>
             <button
               onClick={() => deviceBatteryService.setSimulatedLevel(5, false, -32.0)}
               className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-rose-600 text-rose-400 text-left"
             >
               <div className="font-bold">Emergency (5%)</div>
-              <div className="text-[10px] text-slate-500">Siren + Auto Flush</div>
+              <div className="text-xs text-slate-500">Siren + Auto Flush</div>
             </button>
             <button
               onClick={() => deviceBatteryService.setSimulatedLevel(batteryState.level, !batteryState.charging, 25.0)}
@@ -647,7 +647,7 @@ export const BatteryTelemetry: React.FC<BatteryTelemetryProps> = ({
               Multi-sample rolling discharge tracking with critical safety descent thresholds.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-[11px] font-mono">
+          <div className="flex items-center gap-2 text-xs font-mono">
             <span className="flex items-center gap-1 text-emerald-400">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Battery %
             </span>

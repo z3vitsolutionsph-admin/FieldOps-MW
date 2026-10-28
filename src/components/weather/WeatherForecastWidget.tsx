@@ -201,7 +201,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                   {isSafe ? 'TOWER WEATHER: SAFE TO CLIMB' : 'CLIMBING HOLD: HAZARD DETECTED'}
                 </span>
                 <span
-                  className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border ${
+                  className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded border ${
                     currentReport.isUserLocation
                       ? 'bg-cyan-950 text-cyan-300 border-cyan-700'
                       : 'bg-slate-800 text-slate-300 border-slate-700'
@@ -210,7 +210,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                   {currentReport.isUserLocation ? 'GPS LOCKED' : 'SITE COORDS'}
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-mono truncate max-w-xs sm:max-w-md">
+              <p className="text-xs text-slate-400 font-mono truncate max-w-xs sm:max-w-md">
                 {currentReport.locationLabel}
               </p>
             </div>
@@ -232,11 +232,11 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5">
           {/* Wind Speed at 10m */}
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800/90 font-mono">
-            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-0.5">
               <span className="flex items-center gap-1">
                 <Wind className="w-3 h-3 text-cyan-400" /> Ground Wind
               </span>
-              <span className="text-[9px]">Max 30</span>
+              <span className="text-xs">Max 30</span>
             </div>
             <div className="flex items-baseline gap-1">
               <span
@@ -246,18 +246,18 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               >
                 {currentReport.windSpeedKmh}
               </span>
-              <span className="text-[10px] text-slate-400">km/h</span>
-              <span className="text-[9px] text-slate-400 ml-auto">{currentReport.windDirectionCardinal}</span>
+              <span className="text-xs text-slate-400">km/h</span>
+              <span className="text-xs text-slate-400 ml-auto">{currentReport.windDirectionCardinal}</span>
             </div>
           </div>
 
           {/* Tower Top Wind at 45m */}
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800/90 font-mono">
-            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-0.5">
               <span className="flex items-center gap-1">
                 <Gauge className="w-3 h-3 text-cyan-400" /> Tower 45m
               </span>
-              <span className="text-[9px]">Shear 1.3x</span>
+              <span className="text-xs">Shear 1.3x</span>
             </div>
             <div className="flex items-baseline gap-1">
               <span
@@ -271,18 +271,18 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               >
                 {currentReport.windTowerHeightKmh}
               </span>
-              <span className="text-[10px] text-slate-400">km/h</span>
-              <span className="text-[9px] text-slate-400 ml-auto">Gust {currentReport.windGustKmh}</span>
+              <span className="text-xs text-slate-400">km/h</span>
+              <span className="text-xs text-slate-400 ml-auto">Gust {currentReport.windGustKmh}</span>
             </div>
           </div>
 
           {/* Line of Sight Visibility */}
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800/90 font-mono">
-            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-0.5">
               <span className="flex items-center gap-1">
                 <Eye className="w-3 h-3 text-cyan-400" /> Visibility
               </span>
-              <span className="text-[9px]">Min 4.0</span>
+              <span className="text-xs">Min 4.0</span>
             </div>
             <div className="flex items-baseline gap-1">
               <span
@@ -292,9 +292,9 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               >
                 {currentReport.visibilityKm}
               </span>
-              <span className="text-[10px] text-slate-400">km</span>
+              <span className="text-xs text-slate-400">km</span>
               <span
-                className={`text-[9px] ml-auto font-bold ${
+                className={`text-xs ml-auto font-bold ${
                   currentReport.visibilityStatus === 'EXCELLENT'
                     ? 'text-emerald-400'
                     : currentReport.visibilityStatus === 'GOOD'
@@ -311,11 +311,11 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
 
           {/* Condition & Lightning */}
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800/90 font-mono">
-            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-0.5">
               <span className="flex items-center gap-1">
                 <Zap className="w-3 h-3 text-cyan-400" /> Lightning
               </span>
-              <span className="text-[9px]">10km Gate</span>
+              <span className="text-xs">10km Gate</span>
             </div>
             <div className="flex items-center justify-between">
               <span
@@ -327,20 +327,20 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                   ? `STRIKE ${currentReport.nearestLightningDistanceKm}km`
                   : 'CLEAR (>10km)'}
               </span>
-              <span className="text-[10px] text-slate-300">{currentReport.temperatureC}°C</span>
+              <span className="text-xs text-slate-300">{currentReport.temperatureC}°C</span>
             </div>
           </div>
         </div>
 
         {/* Violations Warning Bar (if unsafe) */}
         {!isSafe && currentReport.violations.length > 0 && (
-          <div className="mt-2.5 p-2 rounded-lg bg-rose-950/80 border border-rose-600 text-[11px] font-mono text-rose-200 space-y-1">
+          <div className="mt-2.5 p-2 rounded-lg bg-rose-950/80 border border-rose-600 text-xs font-mono text-rose-200 space-y-1">
             <div className="font-bold flex items-center gap-1 text-rose-300">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
               <span>Tower Work Clearance Restrained:</span>
             </div>
             {currentReport.violations.map((v, i) => (
-              <p key={i} className="pl-4 text-[10px] opacity-90">
+              <p key={i} className="pl-4 text-xs opacity-90">
                 • {v}
               </p>
             ))}
@@ -377,7 +377,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                 Localized Tower Weather & Environmental Telemetry
               </h3>
               <span
-                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${
                   isSafe
                     ? 'bg-emerald-950 text-emerald-300 border-emerald-600'
                     : 'bg-rose-950 text-rose-300 border-rose-600 animate-pulse'
@@ -394,7 +394,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <span>·</span>
               <span>{currentReport.weatherCondition}</span>
               <span>·</span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-xs text-slate-400">
                 Updated {new Date(currentReport.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
@@ -404,7 +404,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
         {/* Location Controls & Simulator Toggle */}
         <div className="flex items-center gap-1.5 flex-wrap self-end sm:self-auto">
           {/* Location Mode Switchers */}
-          <div className="flex items-center p-0.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono">
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono">
             <button
               onClick={handleSwitchToGps}
               className={`px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${
@@ -458,7 +458,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
       </div>
 
       {gpsError && (
-        <div className="mt-2.5 p-2 rounded bg-amber-950/60 border border-amber-700 text-[11px] font-mono text-amber-300 flex items-center gap-2">
+        <div className="mt-2.5 p-2 rounded bg-amber-950/60 border border-amber-700 text-xs font-mono text-amber-300 flex items-center gap-2">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>{gpsError}</span>
         </div>
@@ -472,7 +472,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Sliders className="w-3.5 h-3.5" />
               EHS Weather Safety Simulation Sandbox:
             </span>
-            <span className="text-[10px] text-purple-400">Telecom Tower Compliance Testing</span>
+            <span className="text-xs text-purple-400">Telecom Tower Compliance Testing</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
             {[
@@ -491,8 +491,8 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                     : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-purple-700'
                 }`}
               >
-                <div className="text-[11px] font-bold">{s.label}</div>
-                <div className="text-[9px] opacity-75">{s.desc}</div>
+                <div className="text-xs font-bold">{s.label}</div>
+                <div className="text-xs opacity-75">{s.desc}</div>
               </button>
             ))}
           </div>
@@ -500,7 +500,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
       )}
 
       {/* Primary Telemetry Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mt-4">
         {/* Wind Speed (Ground & 45m Tower Top) */}
         <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
           <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
@@ -508,7 +508,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Wind className="w-4 h-4 text-cyan-400" />
               Wind Speed
             </span>
-            <span className="text-[10px] text-slate-400 font-bold">OSHA Max: 30</span>
+            <span className="text-xs text-slate-400 font-bold">OSHA Max: 30</span>
           </div>
 
           <div className="flex items-baseline gap-1.5 pt-1">
@@ -525,7 +525,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Tower 45m Mast:</span>
             <span
               className={`font-bold ${
@@ -540,7 +540,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Peak Gusts / Heading:</span>
             <span className="text-slate-300 font-semibold">
               {currentReport.windGustKmh} km/h · {currentReport.windDirectionCardinal} ({currentReport.windDirectionDeg}°)
@@ -555,7 +555,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Eye className="w-4 h-4 text-cyan-400" />
               Optical Visibility
             </span>
-            <span className="text-[10px] text-slate-400 font-bold">Min: 4.0 km</span>
+            <span className="text-xs text-slate-400 font-bold">Min: 4.0 km</span>
           </div>
 
           <div className="flex items-baseline gap-1.5 pt-1">
@@ -572,7 +572,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] font-mono">
+          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-xs font-mono">
             <span className="text-slate-400">Optical Status:</span>
             <span
               className={`font-bold ${
@@ -589,7 +589,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Hop Path Clear:</span>
             <span className="text-slate-300 font-semibold">
               {currentReport.visibilityKm >= 7.42 ? 'Full 7.42km Hop Clear' : 'Path Partially Obscured'}
@@ -604,7 +604,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Zap className="w-4 h-4 text-cyan-400" />
               Lightning Radius
             </span>
-            <span className="text-[10px] text-slate-400 font-bold">10 km Gate</span>
+            <span className="text-xs text-slate-400 font-bold">10 km Gate</span>
           </div>
 
           <div className="flex items-baseline gap-1.5 pt-1">
@@ -622,7 +622,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Electrocution Risk:</span>
             <span
               className={`font-bold ${
@@ -633,7 +633,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Safe Ascent Zone:</span>
             <span className="text-slate-300 font-semibold">
               {currentReport.lightningDetectedWithin10Km ? 'Ascent Prohibited' : 'Perimeter Safe'}
@@ -648,7 +648,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Thermometer className="w-4 h-4 text-cyan-400" />
               Ambient / Humidity
             </span>
-            <span className="text-[10px] text-slate-400 font-bold">Heat Index</span>
+            <span className="text-xs text-slate-400 font-bold">Heat Index</span>
           </div>
 
           <div className="flex items-baseline gap-1.5 pt-1">
@@ -663,14 +663,14 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             </span>
           </div>
 
-          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Rigger Hydration:</span>
             <span className="text-slate-200 font-bold">
               {currentReport.temperatureC > 32 ? 'High Heat (Mandatory Rest)' : 'Normal Hydration'}
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Data Source:</span>
             <span className="text-cyan-400 font-semibold">{currentReport.source}</span>
           </div>
@@ -684,7 +684,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
             <ShieldAlert className="w-4 h-4 animate-bounce" />
             <span>MANDATORY EHS SAFETY HOLD — CONDITIONS EXCEED OPERATIONAL ENVELOPE:</span>
           </div>
-          <div className="space-y-1 pl-6 text-[11px]">
+          <div className="space-y-1 pl-6 text-xs">
             {currentReport.violations.map((v, idx) => (
               <p key={idx}>• {v}</p>
             ))}
@@ -700,7 +700,7 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
               Next 6-Hour Tower Climbing Window Forecast
             </span>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-xs font-mono text-slate-400">
               Thresholds: Wind ≤ 30 km/h · Vis ≥ 4.0 km
             </span>
           </div>
@@ -715,20 +715,20 @@ export const WeatherForecastWidget: React.FC<WeatherForecastWidgetProps> = ({
                     : 'bg-rose-950/40 border-rose-700/70 text-rose-200'
                 }`}
               >
-                <div className="text-[11px] font-bold text-slate-400">{h.timeStr}</div>
+                <div className="text-xs font-bold text-slate-400">{h.timeStr}</div>
                 <div className="my-1 flex items-center justify-center">
                   {renderWeatherIcon(h.weatherCode, 'w-5 h-5')}
                 </div>
                 <div className="text-xs font-bold">{h.tempC}°C</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">
+                <div className="text-xs text-slate-400 mt-0.5">
                   Wind: <strong className={h.windSpeedKmh > 30 ? 'text-rose-400' : 'text-slate-200'}>{h.windSpeedKmh}</strong> km/h
                 </div>
-                <div className="text-[10px] text-slate-400">
+                <div className="text-xs text-slate-400">
                   Vis: <strong className={h.visibilityKm < 4 ? 'text-rose-400' : 'text-slate-200'}>{h.visibilityKm}</strong> km
                 </div>
                 <div className="mt-1">
                   <span
-                    className={`text-[8px] font-bold px-1.5 py-0.2 rounded border ${
+                    className={`text-xs font-bold px-1.5 py-0.5 rounded border ${
                       h.isSafe
                         ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
                         : 'bg-rose-950 text-rose-300 border-rose-600'

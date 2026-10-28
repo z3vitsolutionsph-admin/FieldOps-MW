@@ -24,6 +24,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Compass,
+  KeyRound,
 } from 'lucide-react';
 import { storage } from '../../services/storageService';
 import { deviceBatteryService } from '../../services/deviceBatteryService';
@@ -35,6 +36,8 @@ interface HeaderProps {
   isOnline: boolean;
   queuedCount: number;
   sunlightMode: boolean;
+  /** Whether the global sunlight theme is on (drives the toggle state only). */
+  sunlightActive?: boolean;
   language: 'EN' | 'FIL';
   onToggleSunlight: () => void;
   onToggleLanguage: () => void;
@@ -53,6 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
   isOnline,
   queuedCount,
   sunlightMode,
+  sunlightActive = false,
   language,
   onToggleSunlight,
   onToggleLanguage,
@@ -216,15 +220,15 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-colors border-b w-full ${
+      className={`sticky top-0 z-40 pt-safe transition-colors border-b w-full ${
         sunlightMode
           ? 'bg-amber-100 border-amber-300 text-neutral-900 shadow-sm'
           : 'bg-slate-950/95 backdrop-blur-md border-slate-800 text-slate-100 shadow-lg shadow-black/40'
       }`}
     >
-      <div className="w-full px-3 sm:px-4 lg:px-6 py-2 flex items-center justify-between gap-3">
+      <div className="w-full px-3 sm:px-4 lg:px-6 py-2 flex items-center justify-between gap-2 sm:gap-3 min-w-0">
         {/* Left Section: Enterprise Brand & Sidebar Alignment Footprint */}
-        <div className="w-auto lg:w-64 xl:w-72 shrink-0 flex items-center justify-between lg:border-r border-slate-800/80 lg:pr-4">
+        <div className="min-w-0 lg:w-64 xl:w-72 lg:shrink-0 flex items-center justify-between lg:border-r border-slate-800/80 lg:pr-4">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-md shadow-cyan-950/40 shrink-0">
               <Radio className="w-4 h-4 stroke-[2.2]" />
@@ -234,25 +238,25 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-extrabold tracking-tight text-sm uppercase text-cyan-400">
                   FieldOps
                 </span>
-                <span className="text-[10px] px-1 py-0.2 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                <span className="hidden sm:inline text-xs px-1 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                   MW
                 </span>
               </div>
-              <p className="text-[9px] text-slate-400 font-mono tracking-wide hidden sm:block">
+              <p className="text-xs text-slate-400 font-mono whitespace-nowrap hidden sm:block">
                 Microwave Field Operations
               </p>
             </div>
           </div>
 
           {/* Telecom Status Pill (Desktop only) */}
-          <div className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+          <div className="hidden 2xl:flex items-center gap-1.5 text-xs font-mono text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[9px] font-bold">11GHz XPIC</span>
+            <span className="text-xs font-bold">11GHz XPIC</span>
           </div>
         </div>
 
         {/* Center Section: Active Microwave Hop Context & Telemetry */}
-        <div className="hidden md:flex items-center gap-2.5 px-3 flex-1 min-w-0">
+        <div className="hidden lg:flex items-center gap-2.5 px-3 flex-1 min-w-0 overflow-hidden">
           {storage.hasActiveTssr() ? (
             <div className="flex items-center gap-2 text-xs font-mono text-slate-300 truncate">
               <span className="text-cyan-400 font-bold flex items-center gap-1 shrink-0">
@@ -269,12 +273,12 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700/80 text-amber-300 font-bold text-[10px] flex items-center gap-1">
+            <div className="flex items-center gap-2 text-xs font-mono min-w-0">
+              <span className="shrink-0 whitespace-nowrap px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700/80 text-amber-300 font-bold text-xs flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                 AWAITING TSSR INGESTION
               </span>
-              <span className="text-slate-400 text-[11px] hidden lg:inline">
+              <span className="text-slate-400 text-xs hidden xl:inline truncate">
                 Clean Slate: Project Manager upload required to bind Hop & Work Orders
               </span>
             </div>
@@ -282,12 +286,13 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {/* Online/Offline Toggle Button */}
           <button
             onClick={toggleOnlineMode}
             title={isOnline ? 'Online (Click to simulate offline field mode)' : 'Offline (Click to go online)'}
-            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono font-semibold transition-colors border ${
+            aria-label={isOnline ? 'Online. Switch to offline field mode' : 'Offline. Go online'}
+            className={`h-9 min-w-9 pointer-coarse:h-11 pointer-coarse:min-w-11 inline-flex items-center justify-center gap-1.5 px-2 rounded-md border text-xs font-mono font-semibold transition-colors ${
               isOnline
                 ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/80 hover:bg-emerald-900/60'
                 : 'bg-amber-950/80 text-amber-300 border-amber-700 animate-pulse hover:bg-amber-900'
@@ -296,12 +301,12 @@ export const Header: React.FC<HeaderProps> = ({
             {isOnline ? (
               <>
                 <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden xs:inline">ONLINE</span>
+                <span className="hidden 2xl:inline">ONLINE</span>
               </>
             ) : (
               <>
                 <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-                <span className="font-bold">OFFLINE</span>
+                <span className="hidden sm:inline font-bold">OFFLINE</span>
               </>
             )}
           </button>
@@ -324,7 +329,7 @@ export const Header: React.FC<HeaderProps> = ({
               onBlur={() => setShowBatteryTooltip(false)}
               aria-label={`Handheld battery ${deviceBattery.level}% ${batteryVisual.statusLabel}`}
               title={`Handheld Device Battery: ${deviceBattery.level}% · ${batteryVisual.statusLabel} (${deviceBattery.charging ? 'Charging' : 'Discharging'}) · Click for Full Telemetry`}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono font-semibold transition-all border shadow-sm ${batteryVisual.badgeBg} ${batteryVisual.pulse}`}
+              className={`h-9 min-w-9 pointer-coarse:h-11 pointer-coarse:min-w-11 inline-flex items-center justify-center gap-1.5 px-2 rounded-md border text-xs font-mono font-semibold transition-colors shadow-sm ${batteryVisual.badgeBg} ${batteryVisual.pulse}`}
             >
               {/* Dynamic SVG Battery Meter */}
               <svg
@@ -373,7 +378,7 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </svg>
 
-              <span className={`font-mono text-xs ${deviceBattery.level <= deviceBattery.criticalThreshold ? 'font-bold' : ''}`}>
+              <span className={`hidden sm:inline font-mono text-xs ${deviceBattery.level <= deviceBattery.criticalThreshold ? 'font-bold' : ''}`}>
                 {deviceBattery.level}%
               </span>
 
@@ -399,7 +404,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <HeartPulse className="w-4 h-4 text-cyan-400" />
                     <span className="text-xs font-bold font-mono tracking-wider">BATTERY TELEMETRY</span>
                   </div>
-                  <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${batteryVisual.badgeBg}`}>
+                  <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded border ${batteryVisual.badgeBg}`}>
                     {batteryVisual.statusLabel}
                   </span>
                 </div>
@@ -418,7 +423,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-xs font-mono font-bold text-emerald-400">
                       {deviceBattery.batteryHealthScore}% Health
                     </span>
-                    <div className="text-[10px] text-slate-400 font-mono">
+                    <div className="text-xs text-slate-400 font-mono">
                       {deviceBattery.healthStatus}
                     </div>
                   </div>
@@ -436,9 +441,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 {/* Telemetry specs grid */}
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-mono mb-3 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono mb-3 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80">
                   <div>
-                    <span className="text-slate-400 flex items-center gap-1 text-[10px]">
+                    <span className="text-slate-400 flex items-center gap-1 text-xs">
                       <Clock className="w-3 h-3 text-cyan-400" /> Runtime
                     </span>
                     <span className="text-slate-200 font-semibold">
@@ -446,7 +451,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 flex items-center gap-1 text-[10px]">
+                    <span className="text-slate-400 flex items-center gap-1 text-xs">
                       <Activity className="w-3 h-3 text-cyan-400" /> Drain Rate
                     </span>
                     <span className="text-slate-200 font-semibold">
@@ -455,7 +460,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 flex items-center gap-1 text-[10px]">
+                    <span className="text-slate-400 flex items-center gap-1 text-xs">
                       <Thermometer className="w-3 h-3 text-cyan-400" /> Core Temp
                     </span>
                     <span className="text-slate-200 font-semibold">
@@ -463,7 +468,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 flex items-center gap-1 text-[10px]">
+                    <span className="text-slate-400 flex items-center gap-1 text-xs">
                       <Zap className="w-3 h-3 text-cyan-400" /> Safety Gate
                     </span>
                     <span className={`font-semibold ${
@@ -486,7 +491,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setShowBatteryTooltip(false);
                     setShowBatteryModal(true);
                   }}
-                  className="w-full py-1.5 px-2 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/70 text-cyan-200 text-[11px] font-bold font-mono flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full py-1.5 px-2 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/70 text-cyan-200 text-xs font-bold font-mono flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <span>Open Full BatteryTelemetry™ Suite</span>
                   <ExternalLink className="w-3 h-3" />
@@ -499,7 +504,8 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenSyncModal}
             title="Sync Status & Offline Queue"
-            className={`relative flex items-center justify-center p-1.5 rounded border transition-colors ${
+            aria-label={`Sync status, ${queuedCount} queued`}
+            className={`relative h-9 min-w-9 pointer-coarse:h-11 pointer-coarse:min-w-11 inline-flex items-center justify-center gap-1.5 px-2 rounded-md border text-xs font-mono font-semibold transition-colors ${
               queuedCount > 0
                 ? 'bg-amber-900/50 text-amber-300 border-amber-600'
                 : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
@@ -507,8 +513,8 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <RefreshCw className={`w-4 h-4 ${queuedCount > 0 ? 'animate-spin' : ''}`} />
             {queuedCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-slate-950 font-bold text-[9px] rounded-full flex items-center justify-center">
-                {queuedCount}
+              <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 bg-amber-500 text-slate-950 font-bold text-[11px] rounded-full flex items-center justify-center">
+                {queuedCount > 99 ? '99+' : queuedCount}
               </span>
             )}
           </button>
@@ -517,28 +523,30 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenBlueprint}
             title="Application Blueprint & Changelog"
-            className="flex items-center gap-1 px-2 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-800 hover:border-cyan-700/60 text-xs font-mono font-semibold transition-colors"
+            className="hidden md:inline-flex h-9 items-center gap-1.5 px-2.5 rounded-md bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-800 hover:border-cyan-700/60 text-xs font-mono font-semibold transition-colors"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Blueprint</span>
+            <span className="hidden 2xl:inline">Blueprint</span>
           </button>
 
           {/* Server Architecture & Cloud Infrastructure Button */}
           <button
             onClick={onOpenBackendCloud}
             title="Server Logic, APIs & Cloud Infrastructure Console"
-            className="flex items-center gap-1 px-2 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-purple-400 border border-slate-800 hover:border-purple-700/60 text-xs font-mono font-semibold transition-colors"
+            className="hidden md:inline-flex h-9 items-center gap-1.5 px-2.5 rounded-md bg-slate-900 hover:bg-slate-800 text-purple-400 border border-slate-800 hover:border-purple-700/60 text-xs font-mono font-semibold transition-colors"
           >
             <Server className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Server & Cloud</span>
+            <span className="hidden 2xl:inline">Server & Cloud</span>
           </button>
 
           {/* High Contrast / Sunlight Mode */}
           <button
             onClick={onToggleSunlight}
-            title={sunlightMode ? 'Turn off Sunlight Mode' : 'High Contrast Sunlight Mode (for tower work)'}
-            className={`p-1.5 rounded border transition-colors ${
-              sunlightMode
+            title={sunlightActive ? 'Turn off Sunlight Mode' : 'High Contrast Sunlight Mode (for tower work)'}
+            aria-pressed={sunlightActive}
+            aria-label="Sunlight mode"
+            className={`h-9 min-w-9 pointer-coarse:h-11 pointer-coarse:min-w-11 inline-flex items-center justify-center gap-1.5 px-2 rounded-md border text-xs font-mono font-semibold transition-colors ${
+              sunlightActive
                 ? 'bg-yellow-400 text-slate-950 border-yellow-500 font-bold'
                 : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-yellow-400'
             }`}
@@ -550,7 +558,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleLanguage}
             title="Switch Language (EN / Filipino)"
-            className="flex items-center gap-1 px-1.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-mono"
+            className="hidden md:inline-flex h-9 items-center gap-1.5 px-2 rounded-md bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-mono"
           >
             <Globe className="w-3.5 h-3.5 text-slate-400" />
             <span>{language}</span>
@@ -560,38 +568,76 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-slate-200 hover:border-slate-700"
+              aria-haspopup="menu"
+              aria-expanded={showRoleMenu}
+              aria-label={`Account: ${activeUser.name}`}
+              className="h-9 inline-flex items-center gap-1.5 pl-1 pr-1.5 sm:px-2 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-200 hover:border-slate-700"
             >
-              <div className="w-5 h-5 rounded-full bg-cyan-700 text-[10px] font-bold flex items-center justify-center text-white">
+              <div className="w-7 h-7 rounded-full bg-cyan-700 text-xs font-bold flex items-center justify-center text-white">
                 {activeUser.name.charAt(0)}
               </div>
-              <div className="text-left hidden md:block">
+              <div className="text-left hidden xl:block">
                 <p className="font-semibold text-xs leading-none">{activeUser.name}</p>
-                <p className="text-[10px] text-slate-400 font-mono mt-0.5">{activeUser.role.replace('_', ' ')}</p>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">{activeUser.role.replace('_', ' ')}</p>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400" />
             </button>
 
             {showRoleMenu && (
-              <div className="absolute right-0 mt-1.5 w-64 bg-slate-900 border border-slate-700 rounded-lg shadow-xl shadow-black/80 py-1.5 z-50">
-                <div className="px-3 py-1.5 border-b border-slate-800 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+              <div role="menu" className="absolute right-0 mt-1.5 w-72 max-w-[calc(100vw-1.5rem)] max-h-[calc(100dvh-5rem)] overflow-y-auto bg-slate-900 border border-slate-700 rounded-lg shadow-xl shadow-black/80 py-1.5 z-50">
+                {/* Controls that do not fit the phone/tablet header */}
+                <div className="md:hidden grid grid-cols-3 gap-1.5 p-2 border-b border-slate-800">
+                  <button
+                    onClick={() => {
+                      setShowRoleMenu(false);
+                      onToggleLanguage();
+                    }}
+                    className="h-11 rounded-md bg-slate-950 border border-slate-800 text-xs text-slate-200 flex items-center justify-center gap-1.5"
+                  >
+                    <Globe className="w-4 h-4 text-slate-400" aria-hidden /> {language === 'EN' ? 'Filipino' : 'English'}
+                  </button>
+                  {onOpenBlueprint && (
+                    <button
+                      onClick={() => {
+                        setShowRoleMenu(false);
+                        onOpenBlueprint();
+                      }}
+                      className="h-11 rounded-md bg-slate-950 border border-slate-800 text-xs text-cyan-300 flex items-center justify-center gap-1.5"
+                    >
+                      <FileText className="w-4 h-4" aria-hidden /> Blueprint
+                    </button>
+                  )}
+                  {onOpenBackendCloud && (
+                    <button
+                      onClick={() => {
+                        setShowRoleMenu(false);
+                        onOpenBackendCloud();
+                      }}
+                      className="h-11 rounded-md bg-slate-950 border border-slate-800 text-xs text-purple-300 flex items-center justify-center gap-1.5"
+                    >
+                      <Server className="w-4 h-4" aria-hidden /> Server
+                    </button>
+                  )}
+                </div>
+                <div className="px-3 py-1.5 border-b border-slate-800 text-xs text-slate-400 font-mono flex items-center justify-between">
                   <span>SWITCH USER / ROLE</span>
-                  <span className="text-[10px] text-cyan-400">RBAC Demo</span>
+                  <span className="text-xs text-cyan-400">RBAC Demo</span>
                 </div>
                 {users.map((u) => (
                   <button
                     key={u.id}
                     onClick={() => handleSelectUser(u)}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-800 transition-colors ${
+                    role="menuitem"
+                    className={`w-full text-left px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-slate-800 transition-colors ${
                       activeUser.id === u.id ? 'bg-slate-800/80' : ''
                     }`}
                   >
                     <div>
                       <p className="text-xs font-medium text-slate-200">{u.name}</p>
-                      <p className="text-[10px] text-slate-400">{u.email}</p>
+                      <p className="text-xs text-slate-400">{u.email}</p>
                     </div>
                     <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold border ${getRoleBadgeColor(
+                      className={`text-xs px-1.5 py-0.5 rounded font-mono font-bold border ${getRoleBadgeColor(
                         u.role
                       )}`}
                     >
@@ -608,7 +654,8 @@ export const Header: React.FC<HeaderProps> = ({
                       }}
                       className="w-full py-2 px-3 bg-cyan-950 hover:bg-cyan-900 text-cyan-200 text-xs font-bold rounded border border-cyan-800 flex items-center justify-center gap-1.5 transition-colors"
                     >
-                      <span>🔐 Open Full Login & Role Gateway</span>
+                      <KeyRound className="w-4 h-4" aria-hidden />
+                      <span>Open Full Login & Role Gateway</span>
                     </button>
                   </div>
                 )}
@@ -656,10 +703,10 @@ export const Header: React.FC<HeaderProps> = ({
                     <h2 className="text-base sm:text-lg font-bold tracking-tight">
                       Handheld Device Battery Telemetry & Tower Safety
                     </h2>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${batteryVisual.badgeBg}`}>
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${batteryVisual.badgeBg}`}>
                       {deviceBattery.level}% · {batteryVisual.statusLabel}
                     </span>
-                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800 hidden sm:inline">
+                    <span className="text-xs font-mono text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800 hidden sm:inline">
                       Web Battery API
                     </span>
                   </div>
@@ -713,7 +760,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-[11px]">IndexedDB 4.x Local Edge Safeguard Active</span>
+                <span className="text-xs">IndexedDB 4.x Local Edge Safeguard Active</span>
               </div>
               <button
                 onClick={() => setShowBatteryModal(false)}

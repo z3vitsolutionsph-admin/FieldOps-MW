@@ -224,11 +224,11 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                   Real-Time Antenna Sensor Alignment
                 </h2>
                 {isFullyAligned ? (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700 animate-pulse">
+                  <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700 animate-pulse">
                     LOCKED ON
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                  <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                     ALIGNING
                   </span>
                 )}
@@ -268,7 +268,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
               </div>
               <button
                 onClick={() => setManualMode(!manualMode)}
-                className="px-2 py-1 rounded bg-amber-900 hover:bg-amber-800 text-white font-mono text-[10px] uppercase font-bold shrink-0"
+                className="px-2 py-1 rounded bg-amber-900 hover:bg-amber-800 text-white font-mono text-xs uppercase font-bold shrink-0"
               >
                 {manualMode ? 'Use Hardware' : 'Manual Sliders'}
               </button>
@@ -280,10 +280,10 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
             <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full border-4 border-slate-800 bg-slate-900/90 flex items-center justify-center shadow-2xl overflow-hidden">
               {/* Outer Heading Compass Degree Marks */}
               <div className="absolute inset-2 rounded-full border border-slate-800 pointer-events-none flex items-center justify-center">
-                <span className="absolute top-1 text-[11px] font-mono font-bold text-slate-400">N (000°)</span>
-                <span className="absolute right-2 text-[11px] font-mono font-bold text-slate-400">E (090°)</span>
-                <span className="absolute bottom-1 text-[11px] font-mono font-bold text-slate-400">S (180°)</span>
-                <span className="absolute left-2 text-[11px] font-mono font-bold text-slate-400">W (270°)</span>
+                <span className="absolute top-1 text-xs font-mono font-bold text-slate-400">N (000°)</span>
+                <span className="absolute right-2 text-xs font-mono font-bold text-slate-400">E (090°)</span>
+                <span className="absolute bottom-1 text-xs font-mono font-bold text-slate-400">S (180°)</span>
+                <span className="absolute left-2 text-xs font-mono font-bold text-slate-400">W (270°)</span>
               </div>
 
               {/* Green Target Tolerance Wedge (±1.0°) */}
@@ -292,7 +292,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                 style={{ transform: `rotate(${targetAzimuth}deg)` }}
               >
                 <div className="w-2.5 h-32 bg-emerald-500/30 rounded-t-full mb-32 border-x border-emerald-400/80 shadow-lg shadow-emerald-500/20" />
-                <span className="absolute top-7 text-[10px] font-mono font-bold text-emerald-400 px-1 bg-slate-950/80 rounded border border-emerald-800">
+                <span className="absolute top-7 text-xs font-mono font-bold text-emerald-400 px-1 bg-slate-950/80 rounded border border-emerald-800">
                   TARGET {targetAzimuth.toFixed(1)}°
                 </span>
               </div>
@@ -338,7 +338,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                   }}
                 />
 
-                <span className="text-[10px] font-mono font-bold mt-1 z-10">
+                <span className="text-xs font-mono font-bold mt-1 z-10">
                   {currentAzimuth.toFixed(1)}°
                 </span>
               </div>
@@ -353,11 +353,11 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                     : 'bg-slate-900 border-slate-800 text-slate-200'
                 }`}
               >
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                <span className="text-xs text-slate-400 uppercase font-bold block">
                   Current Azimuth
                 </span>
                 <span className="text-xl font-bold">{currentAzimuth.toFixed(1)}°</span>
-                <p className="text-[10px] text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-400 mt-0.5">
                   Δ {azimuthDelta > 0 ? `+${azimuthDelta.toFixed(1)}°` : `${azimuthDelta.toFixed(1)}°`} (Aim {azimuthDelta > 0 ? 'Left' : 'Right'})
                 </p>
               </div>
@@ -369,13 +369,13 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                     : 'bg-slate-900 border-slate-800 text-slate-200'
                 }`}
               >
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                <span className="text-xs text-slate-400 uppercase font-bold block">
                   Elevation Tilt
                 </span>
                 <span className="text-xl font-bold">
                   {currentElevation >= 0 ? `+${currentElevation.toFixed(1)}°` : `${currentElevation.toFixed(1)}°`}
                 </span>
-                <p className="text-[10px] text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-400 mt-0.5">
                   Δ {elevationDelta > 0 ? `+${elevationDelta.toFixed(1)}°` : `${elevationDelta.toFixed(1)}°`} ({elevationDelta > 0 ? 'Tilt Down' : 'Tilt Up'})
                 </p>
               </div>
@@ -395,7 +395,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
                     setCurrentAzimuth(targetAzimuth);
                     setCurrentElevation(targetElevation);
                   }}
-                  className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 hover:bg-cyan-900"
+                  className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 hover:bg-cyan-900"
                 >
                   Snap to Target
                 </button>
@@ -442,7 +442,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
           {/* Rigging Guidance Instructions */}
           <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-xs text-slate-300 space-y-1.5 leading-relaxed">
             <span className="font-bold text-cyan-400 block font-mono">Tower Alignment Procedure:</span>
-            <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
+            <ul className="list-disc list-inside space-y-1 text-slate-400 text-xs">
               <li>Place mobile smartphone flat against antenna rear mount collar or feedhorn spar.</li>
               <li>Loosen fine azimuth adjustment screw locknuts on the mast pipe clamp.</li>
               <li>Slowly pan antenna horizontally until azimuth dial needle locks into green wedge.</li>
@@ -454,7 +454,7 @@ export const SensorAlignmentModal: React.FC<SensorAlignmentModalProps> = ({
 
         {/* Footer */}
         <div className="p-3 px-5 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
             {isFullyAligned ? (
               <span className="text-emerald-400 flex items-center gap-1 font-bold">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Link Bore-Sight Aligned

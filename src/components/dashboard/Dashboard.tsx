@@ -166,32 +166,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="space-y-4">
       {/* Dashboard Top View Tabs (Operations Overview vs Offline Data Audit) */}
-      <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
-        <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center justify-between gap-3 p-1.5 sm:p-2 rounded-xl bg-slate-900 border border-slate-800">
+        <div role="tablist" aria-label="Dashboard views" className="flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-0.5 px-0.5 min-w-0">
           <button
             onClick={() => setDashboardTab('OVERVIEW')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1.5 ${
+            role="tab"
+            aria-selected={dashboardTab === 'OVERVIEW'}
+            className={`shrink-0 whitespace-nowrap min-h-10 px-3 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1.5 ${
               dashboardTab === 'OVERVIEW'
                 ? 'bg-cyan-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Activity className="w-3.5 h-3.5" />
-            Operations Overview
+            <Activity className="w-4 h-4" aria-hidden />
+            <span className="sm:hidden">Overview</span>
+            <span className="hidden sm:inline">Operations Overview</span>
           </button>
 
           <button
             onClick={() => setDashboardTab('RESOURCES')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1.5 ${
+            role="tab"
+            aria-selected={dashboardTab === 'RESOURCES'}
+            className={`shrink-0 whitespace-nowrap min-h-10 px-3 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1.5 ${
               dashboardTab === 'RESOURCES'
                 ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Users className="w-3.5 h-3.5" />
-            <span>Resource Allocation</span>
+            <Users className="w-4 h-4" aria-hidden />
+            <span className="sm:hidden">Crew</span>
+            <span className="hidden sm:inline">Resource Allocation</span>
             {activeUser?.role === 'PROJECT_MANAGER' && (
-              <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-800 font-bold ml-0.5">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-bold ml-0.5">
                 PM
               </span>
             )}
@@ -199,31 +205,34 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           <button
             onClick={() => setDashboardTab('OFFLINE_AUDIT')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-2 ${
+            role="tab"
+            aria-selected={dashboardTab === 'OFFLINE_AUDIT'}
+            className={`shrink-0 whitespace-nowrap min-h-10 px-3 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-2 ${
               dashboardTab === 'OFFLINE_AUDIT'
                 ? 'bg-cyan-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Database className="w-3.5 h-3.5" />
-            Offline Data Audit
+            <Database className="w-4 h-4" aria-hidden />
+            <span className="sm:hidden">Offline</span>
+            <span className="hidden sm:inline">Offline Data Audit</span>
             {queueStats.failed > 0 ? (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-600 text-white font-mono animate-pulse">
+              <span className="px-1.5 py-0.5 rounded-full text-xs bg-rose-600 text-white font-mono animate-pulse">
                 {queueStats.failed} failed
               </span>
             ) : queueStats.pending > 0 ? (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-slate-950 font-mono font-bold">
+              <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-500 text-slate-950 font-mono font-bold">
                 {queueStats.pending} queued
               </span>
             ) : (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
+              <span className="px-1.5 py-0.5 rounded-full text-xs bg-slate-800 text-slate-300 font-mono">
                 {queueStats.total}
               </span>
             )}
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-slate-400 pr-2">
+        <div className="hidden xl:flex shrink-0 items-center gap-2 text-xs font-mono text-slate-400 pr-2">
           <span>Dexie.js IndexedDB:</span>
           <span className="text-emerald-400 font-bold flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -246,7 +255,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <h2 className="text-sm font-bold tracking-tight text-white uppercase">
                       Active TSSR Project Data Source
                     </h2>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded text-xs font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       PM TSSR BINDING ACTIVE
                     </span>
@@ -288,7 +297,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <h2 className="text-sm font-bold tracking-tight text-white uppercase">
                       System Clean Slate · Ready for New TSSR Ingestion
                     </h2>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold">
+                    <span className="px-2 py-0.5 rounded text-xs font-mono bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold">
                       PREVIOUS TSSR DATA REMOVED
                     </span>
                   </div>
@@ -326,13 +335,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <span className="text-xs font-mono font-bold text-white uppercase">
                   User Flow: {activeUser?.role === 'PROJECT_MANAGER' ? 'Project Manager' : 'Team Leader'} Role
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
+                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
                   {activeUser?.name}
                 </span>
               </div>
 
               {/* Stepper Ribbon */}
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none font-mono text-[10px]">
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none font-mono text-xs">
                 <span className="px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
                   Login Page
                 </span>
@@ -374,7 +383,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             {/* Privileges checklist badges */}
-            <div className="pt-2 border-t border-slate-800 flex items-center gap-2 flex-wrap text-[11px] font-mono">
+            <div className="pt-2 border-t border-slate-800 flex items-center gap-2 flex-wrap text-xs font-mono">
               <span className="text-slate-400 flex items-center gap-1 font-bold">
                 <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
                 Active Privileges:
@@ -462,39 +471,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Top KPI Cards Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+              <span className="text-xs font-mono uppercase text-slate-400 font-bold block">
                 Active Jobs
               </span>
               <p className="text-2xl font-bold font-mono text-cyan-400 mt-1">
                 {inProgressCount + pendingReviewCount}
               </p>
-              <p className="text-[10px] text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 {inProgressCount} In Progress · {pendingReviewCount} Pending Review
               </p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+              <span className="text-xs font-mono uppercase text-slate-400 font-bold block">
                 First-Time-Right (FTR)
               </span>
               <p className="text-2xl font-bold font-mono text-emerald-400 mt-1">{ftrRate}%</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Zero ACL height re-works</p>
+              <p className="text-xs text-slate-400 mt-0.5">Zero ACL height re-works</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+              <span className="text-xs font-mono uppercase text-slate-400 font-bold block">
                 Average MTTR
               </span>
               <p className="text-2xl font-bold font-mono text-purple-400 mt-1">{avgMttr}m</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Mean Time to Restoration</p>
+              <p className="text-xs text-slate-400 mt-0.5">Mean Time to Restoration</p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+              <span className="text-xs font-mono uppercase text-slate-400 font-bold block">
                 Equipment Reclaimed
               </span>
               <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{inventory.length}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Assets in Return Chain</p>
+              <p className="text-xs text-slate-400 mt-0.5">Assets in Return Chain</p>
             </div>
 
             {/* Offline Data Queue Quick Audit Card */}
@@ -507,7 +516,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
+                <span className="text-xs font-mono uppercase text-slate-400 font-bold block">
                   Offline Queue Audit
                 </span>
                 <Database className={`w-3.5 h-3.5 ${queueStats.failed > 0 ? 'text-rose-400 animate-pulse' : 'text-cyan-400'}`} />
@@ -515,7 +524,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <p className={`text-2xl font-bold font-mono mt-1 ${queueStats.failed > 0 ? 'text-rose-400' : 'text-cyan-400'}`}>
                 {queueStats.total}
               </p>
-              <p className="text-[10px] text-slate-400 mt-0.5 flex items-center justify-between">
+              <p className="text-xs text-slate-400 mt-0.5 flex items-center justify-between">
                 <span>{queueStats.failed} failed · {queueStats.pending} queued</span>
                 <span className="text-cyan-400 font-bold">Audit ➔</span>
               </p>
@@ -541,7 +550,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setMapDisplayMode('LEAFLET')}
-                className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors ${
                   mapDisplayMode === 'LEAFLET'
                     ? 'bg-cyan-600 text-white shadow'
                     : 'text-slate-400 hover:text-white'
@@ -552,7 +561,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setMapDisplayMode('FRESNEL')}
-                className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors ${
                   mapDisplayMode === 'FRESNEL'
                     ? 'bg-cyan-600 text-white shadow'
                     : 'text-slate-400 hover:text-white'
@@ -563,7 +572,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setMapDisplayMode('SPLIT')}
-                className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors ${
                   mapDisplayMode === 'SPLIT'
                     ? 'bg-cyan-600 text-white shadow'
                     : 'text-slate-400 hover:text-white'
@@ -641,7 +650,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-400 font-mono">Region:</span>
+            <span className="text-xs text-slate-400 font-mono">Region:</span>
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
@@ -707,24 +716,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <span className="font-mono text-xs font-bold text-cyan-400">
                         {site.id}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold font-mono">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold font-mono">
                         Site {site.role}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono font-bold">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono font-bold">
                         Region MIN
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400 font-bold">
+                    <span className="text-xs font-mono text-slate-400 font-bold">
                       {site.ownerTowerProvider}
                     </span>
                   </div>
 
                   <div>
                     <h4 className="text-xs font-bold text-white truncate">{site.name}</h4>
-                    <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{site.address}</p>
+                    <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{site.address}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-300 pt-1 border-t border-slate-800/80">
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono text-slate-300 pt-1 border-t border-slate-800/80">
                     <div>
                       <span className="text-slate-500 block">Tower / Elevation:</span>
                       <span className="font-bold text-slate-200">
@@ -740,13 +749,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </div>
 
                   <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-xs text-slate-400 font-mono">
                       Azimuth: <strong>{site.role === 'B' ? '241.02°' : '61.02°'}</strong>
                     </span>
                     {matchedWo && (
                       <button
                         onClick={() => onSelectWorkOrder(matchedWo)}
-                        className="px-2.5 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-[11px] flex items-center gap-1 transition-colors"
+                        className="px-2.5 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-xs flex items-center gap-1 transition-colors"
                       >
                         Open Work Order ➔
                       </button>
@@ -781,7 +790,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`px-2.5 py-1 rounded text-[11px] font-mono transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-mono transition-colors ${
                   filterType === type
                     ? 'bg-cyan-600 text-white font-bold'
                     : 'bg-slate-950 text-slate-400 hover:text-white'
@@ -807,11 +816,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <span className="font-mono text-xs font-bold text-cyan-400">
                       {wo.workOrderNumber}
                     </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
                       {wo.type}
                     </span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
+                      className={`text-xs px-1.5 py-0.5 rounded font-mono font-bold ${
                         wo.status === 'IN_PROGRESS'
                           ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
                           : wo.status === 'PENDING_REVIEW'
@@ -822,7 +831,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       {wo.status.replace('_', ' ')}
                     </span>
                     {wo.shiftHandovers && wo.shiftHandovers.length > 0 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-slate-900 text-cyan-300 border border-slate-700 flex items-center gap-1">
+                      <span className="text-xs px-1.5 py-0.5 rounded font-mono font-bold bg-slate-900 text-cyan-300 border border-slate-700 flex items-center gap-1">
                         <Clock className="w-2.5 h-2.5 text-cyan-400" />
                         <span>{wo.shiftHandovers.length} Shift Log{wo.shiftHandovers.length > 1 ? 's' : ''}</span>
                         {wo.shiftHandovers[0]?.remainingTasks?.length > 0 && (
@@ -835,7 +844,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <p className="text-xs font-bold text-white mt-1">
                     Site {wo.siteRole}: {wo.siteId} ({isSiteB ? effectiveSiteB.name : effectiveSiteA.name})
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     Scheduled: {wo.scheduledDate} · Version: {wo.tssrSnapshotVersion}
                   </p>
                 </div>
@@ -871,7 +880,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {auditLogs.length === 0 ? (
           <p className="text-xs text-slate-500 py-2">No recent audit log entries.</p>
         ) : (
-          <div className="max-h-36 overflow-y-auto space-y-1 text-[11px] font-mono">
+          <div className="max-h-36 overflow-y-auto space-y-1 text-xs font-mono">
             {auditLogs.slice(0, 5).map((log) => (
               <div
                 key={log.id}
@@ -880,7 +889,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <span>
                   <strong className="text-cyan-400">{log.userName}</strong>: {log.details}
                 </span>
-                <span className="text-[10px] text-slate-600">
+                <span className="text-xs text-slate-600">
                   {new Date(log.timestamp).toLocaleTimeString()}
                 </span>
               </div>

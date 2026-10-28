@@ -142,20 +142,24 @@ export default function App() {
     storage.setLanguage(language === 'EN' ? 'FIL' : 'EN');
   };
 
+  // Sunlight mode is a theme on <html> (see styles/sunlight.css) that remaps the whole
+  // palette, so every screen and modal switches together. Components therefore always
+  // render their standard variant (componentSunlight) and need no per-component branches.
+  const componentSunlight = false;
+  useEffect(() => {
+    document.documentElement.classList.toggle('sunlight', sunlightMode);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', sunlightMode ? '#ffffff' : '#020617');
+  }, [sunlightMode]);
+
   return (
-    <div
-      className={`min-h-screen pb-20 lg:pb-0 flex flex-col font-sans transition-colors ${
-        sunlightMode
-          ? 'bg-amber-100 text-neutral-900'
-          : 'bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-white'
-      }`}
-    >
+    <div className="min-h-dvh pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0 flex flex-col font-sans bg-slate-950 text-slate-100 overflow-x-clip">
       {/* Top Application Header */}
       <Header
         activeUser={activeUser}
         isOnline={isOnline}
         queuedCount={queue.length}
-        sunlightMode={sunlightMode}
+        sunlightMode={componentSunlight}
+        sunlightActive={sunlightMode}
         language={language}
         onToggleSunlight={handleToggleSunlight}
         onToggleLanguage={handleToggleLanguage}
@@ -171,35 +175,39 @@ export default function App() {
 
       {/* Offline Alert Strip */}
       {!isOnline && (
-        <div className="bg-amber-500 text-slate-950 font-bold px-4 py-1.5 text-xs flex items-center justify-between shadow">
-          <div className="flex items-center gap-2">
-            <WifiOff className="w-4 h-4 shrink-0" />
-            <span>
-              OFFLINE REMOTE TOWER MODE: Field data & photos will save locally and auto-sync when network returns.
+        <div
+          role="status"
+          className="bg-amber-950 text-amber-200 border-b border-amber-800 px-3 sm:px-4 py-1 text-sm font-semibold flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <WifiOff className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate sm:hidden">Offline · saving on this device</span>
+            <span className="hidden sm:inline">
+              Offline: field data and photos are saved on this device and sync when the network returns.
             </span>
           </div>
           <button
             onClick={() => setShowSyncModal(true)}
-            className="underline font-mono text-[11px] hover:text-black"
+            className="shrink-0 min-h-9 px-3 rounded-md border border-amber-700 hover:bg-amber-900 font-mono text-xs"
           >
-            Queue ({queue.length})
+            Queue {queue.length}
           </button>
         </div>
       )}
 
       {/* RBAC Active Role Banner */}
-      <div className="bg-slate-900 border-b border-slate-800 px-3 py-1.5 text-[11px] font-mono text-slate-300">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-cyan-400 font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              RBAC ACTIVE:
+      <div className="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 lg:px-6 py-1.5 text-xs font-mono text-slate-300">
+        <div className="flex items-center justify-between gap-3 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex items-center gap-1 text-cyan-400 font-bold shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
+              <span className="hidden sm:inline">RBAC ACTIVE:</span>
             </span>
-            <span className="text-white font-bold">{activeUser.name}</span>
-            <span className="text-slate-400">({activeUser.role.replace('_', ' ')})</span>
+            <span className="text-white font-bold truncate">{activeUser.name}</span>
+            <span className="text-slate-400 shrink-0">({activeUser.role.replace(/_/g, ' ')})</span>
           </div>
 
-          <div className="flex items-center gap-2 text-[10px] text-slate-400">
+          <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400 min-w-0 truncate">
             {activeUser.role === 'TECHNICIAN' && (
               <span>Filter: Assigned Jobs Only ({accessibleWorkOrders.length}/{workOrders.length}) · Read-only Approvals</span>
             )}
@@ -231,7 +239,7 @@ export default function App() {
           activeUser={activeUser}
           isOnline={isOnline}
           queuedCount={queue.length}
-          sunlightMode={sunlightMode}
+          sunlightMode={componentSunlight}
           language={language}
           onToggleSunlight={handleToggleSunlight}
           onToggleLanguage={handleToggleLanguage}
@@ -244,7 +252,7 @@ export default function App() {
         />
 
         {/* Main Content Viewport */}
-        <main className="flex-1 min-w-0 max-w-7xl mx-auto p-3 sm:p-5">
+        <main className="flex-1 min-w-0 w-full max-w-7xl mx-auto px-3 py-4 sm:p-5 lg:p-6">
           <Suspense fallback={<ModuleFallback />}>
         {/* TAB 1: JOBS / WORK ORDERS */}
         {activeTab === 'JOBS' && (
@@ -276,7 +284,7 @@ export default function App() {
               <>
                 {/* Quick Job Type Switcher (Filtered by User Role Permissions!) */}
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
                     <span className="text-xs font-mono font-bold text-slate-400 uppercase">
                       ACTIVE JOB:
                     </span>
@@ -288,7 +296,7 @@ export default function App() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => setShowReportModal(true)}
@@ -308,7 +316,7 @@ export default function App() {
                       <Clock className="w-3.5 h-3.5 text-cyan-400" />
                       <span>Shift Handover</span>
                       {selectedWorkOrder.shiftHandovers && selectedWorkOrder.shiftHandovers.length > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-cyan-300 font-bold">
+                        <span className="px-1.5 py-0.5 rounded-full text-xs bg-slate-800 text-cyan-300 font-bold">
                           {selectedWorkOrder.shiftHandovers.length}
                         </span>
                       )}
@@ -355,7 +363,7 @@ export default function App() {
                       approvals={approvals}
                       onOpenPhotoCapture={handleOpenPhotoCapture}
                       onOpenReportModal={() => setShowReportModal(true)}
-                      sunlightMode={sunlightMode}
+                      sunlightMode={componentSunlight}
                     />
                   )}
 
@@ -364,7 +372,7 @@ export default function App() {
                       site={displayActiveSite}
                       activeUser={activeUser}
                       inventory={inventory}
-                      sunlightMode={sunlightMode}
+                      sunlightMode={componentSunlight}
                     />
                   )}
 
@@ -374,7 +382,7 @@ export default function App() {
                       hop={displayHop}
                       activeUser={activeUser}
                       tickets={tickets}
-                      sunlightMode={sunlightMode}
+                      sunlightMode={componentSunlight}
                     />
                   )}
                 </RoleGate>
@@ -389,7 +397,7 @@ export default function App() {
             siteA={displaySiteA}
             siteB={displaySiteB}
             hop={displayHop}
-            sunlightMode={sunlightMode}
+            sunlightMode={componentSunlight}
           />
         )}
 
@@ -401,7 +409,7 @@ export default function App() {
             photos={photos}
             targetSectionCode={photoCaptureSection?.code}
             onCloseCapture={() => setPhotoCaptureSection(null)}
-            sunlightMode={sunlightMode}
+            sunlightMode={componentSunlight}
           />
         )}
 
@@ -413,7 +421,7 @@ export default function App() {
             hop={currentHop}
             approvals={approvals}
             activeUser={activeUser}
-            sunlightMode={sunlightMode}
+            sunlightMode={componentSunlight}
             onNavigateToDashboard={() => setActiveTab('DASHBOARD')}
             onNavigateToJobs={() => setActiveTab('JOBS')}
           />
@@ -425,7 +433,7 @@ export default function App() {
             site={activeSite}
             hop={currentHop}
             workOrder={selectedWorkOrder}
-            sunlightMode={sunlightMode}
+            sunlightMode={componentSunlight}
             onNavigateToTssr={() => setActiveTab('TSSR')}
           />
         )}
@@ -448,7 +456,7 @@ export default function App() {
             onStartJob={(wo) => setSelectedWorkOrderForSafety(wo)}
             onNavigateToJobs={() => setActiveTab('JOBS')}
             onNavigateToTssr={() => setActiveTab('TSSR')}
-            sunlightMode={sunlightMode}
+            sunlightMode={componentSunlight}
           />
         )}
           </Suspense>
@@ -460,7 +468,7 @@ export default function App() {
       <BottomNav
         activeTab={activeTab}
         onChangeTab={setActiveTab}
-        sunlightMode={sunlightMode}
+        sunlightMode={componentSunlight}
       />
 
       {/* Sync Status Modal */}
@@ -525,7 +533,7 @@ export default function App() {
             setActiveTab('JOBS');
             setSelectedWorkOrderForSafety(null);
           }}
-          sunlightMode={sunlightMode}
+          sunlightMode={componentSunlight}
         />
       )}
 
@@ -551,7 +559,7 @@ export default function App() {
       <BackendCloudModal
         isOpen={showBackendCloudModal}
         onClose={() => setShowBackendCloudModal(false)}
-        sunlightMode={sunlightMode}
+        sunlightMode={componentSunlight}
       />
 
       {/* Global Shift Handover Modal for Selected Work Order */}
@@ -562,7 +570,7 @@ export default function App() {
           workOrder={selectedWorkOrder}
           site={activeSite}
           activeUser={activeUser}
-          sunlightMode={sunlightMode}
+          sunlightMode={componentSunlight}
         />
       )}
       </Suspense>
