@@ -133,7 +133,27 @@ Maximizes screen real estate on mobile devices (< lg viewport) while preserving 
 - **Type Check**: `npm run lint` (`tsc --noEmit`) - Clean (0 errors).
 - **Build Verification**: `npm run build` - Clean production build.
 - **REST Endpoints**:
-  - `GET /api/health` -> System health & runtime metrics.
-  - `GET /api/health/db` -> Cloud Firestore connectivity probe.
-  - `POST /api/ai/parse-tssr` -> Multimodal TSSR extraction endpoint.
-  - `POST /api/ai/ask` -> Grounded field operations assistant.
+  - `GET /api/health` -> Public health probe: `{ status: "HEALTHY", version: "4.0.0", uptimeSeconds }`.
+  - `GET /api/health/ready` -> Real database round-trip probe: 200 `{ database: "UP" }` or 503 `{ database: "DOWN" }`.
+  - `GET /api/me` -> Authenticated user identity and role claims.
+  - `GET /api/metrics` -> Protected metrics accumulator (requires `MANAGE_USERS_ROLES`).
+  - `GET /api/audit-logs` -> Protected audit trail scoped to org (requires `VIEW_AUDIT_LOGS`).
+  - `POST /api/work-orders` -> Strict creation with initial status (`ASSIGNED` or `DRAFT`) and `version: 1`.
+  - `PATCH /api/work-orders/:id` -> Concurrency-safe updates (`expectedVersion`, 409 conflict, locked states 422).
+  - `POST /api/work-orders/:id/transition` -> Finite state machine with RBAC permissions, audit trail, and side-effects.
+  - `DELETE /api/work-orders/:id` -> Scoped deletion requiring `EDIT_WORK_ORDER_SETTINGS`.
+  - `GET /api/sites`, `GET /api/sites/:id`, `GET /api/hops`, `GET /api/tssr-approvals` -> Scoped organization entity reads.
+  - `GET /api/battery-cache/:siteId` -> Discharge curve with `simulated: true` (requires `BATTERY_TELEMETRY`).
+  - `GET /api/inventory` & `POST /api/inventory/verify` -> Exact-match asset tag/serial query (requires `QR_INVENTORY_SCAN`, `MANAGE_INVENTORY_LEDGER` or `SIGN_CHAIN_OF_CUSTODY`).
+  - `POST /api/sync/batch` & `POST /api/sync` -> Atomic per-mutation offline synchronization gateway (10MB body limit, max 200 mutations).
+  - `GET /api/ai/status` -> Model availability probe.
+  - `POST /api/ai/ask` -> Untrusted-input hardened FieldOps assistant proxy.
+  - `POST /api/ai/inspect-photo` -> Computer vision photo QA verification in JSON mode (requires `PHOTO_CAPTURE_UPLOAD`).
+  - `POST /api/ai/as-built-summary` -> Executive summary and punch list generation in JSON mode.
+  - `POST /api/ai/parse-tssr` -> Multimodal TSSR extraction pipeline in JSON mode (requires `UPLOAD_TSSR`).
+
+## 5. Storage Layer Architecture
+- **`DocStore` Interface**: Scoped to organizations (`orgs/{orgId}/{collection}/{id}`).
+- **`FirestoreDocStore`**: Native Firebase Admin Firestore integration with transaction support (`runTransaction`), `stripUndefined` serialization, and non-throwing 3-second ping health probe.
+- **`MemoryDocStore`**: In-process `Map` backing store with `structuredClone` boundary isolation for development and testing.
+- **Organization Integrity**: User organization dynamically derived from verified token (`req.user.orgId`), eliminating cross-tenant leakage. Seed data strictly mapped to `org-crane-ph`.

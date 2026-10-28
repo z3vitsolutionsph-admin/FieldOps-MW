@@ -6,14 +6,14 @@
       "type": "object",
       "properties": {
         "id": { "type": "string" },
+        "version": { "type": "number" },
         "workOrderNumber": { "type": "string" },
         "type": { "type": "string", "enum": ["INSTALLATION", "DISMANTLING", "TROUBLESHOOTING"] },
         "siteId": { "type": "string" },
         "siteRole": { "type": "string", "enum": ["A", "B"] },
         "hopId": { "type": "string" },
-        "status": { "type": "string", "enum": ["DRAFT", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "APPROVED", "REJECTED", "CLOSED"] },
+        "status": { "type": "string", "enum": ["DRAFT", "ASSIGNED", "SCHEDULED", "IN_PROGRESS", "PENDING_REVIEW", "APPROVED", "REJECTED", "CLOSED"] },
         "currentStepIndex": { "type": "number" },
-        "totalSteps": { "type": "number" },
         "assigneeIds": { "type": "array" },
         "orgId": { "type": "string" },
         "updatedAt": { "type": "string" }
@@ -29,13 +29,12 @@
         "sectionCode": { "type": "string" },
         "sectionTitle": { "type": "string" },
         "siteId": { "type": "string" },
-        "url": { "type": "string" },
+        "dataUrl": { "type": "string" },
         "timestamp": { "type": "string" },
         "capturedBy": { "type": "string" },
-        "syncStatus": { "type": "string", "enum": ["PENDING", "SYNCED", "FAILED"] },
         "orgId": { "type": "string" }
       },
-      "required": ["id", "sectionCode", "siteId", "url", "timestamp", "orgId"]
+      "required": ["id", "sectionCode", "siteId", "dataUrl", "timestamp", "orgId"]
     },
     "TssrApprovalSheet": {
       "title": "TssrApprovalSheet",
@@ -92,36 +91,67 @@
         "targetType": { "type": "string" },
         "details": { "type": "string" },
         "userId": { "type": "string" },
+        "userName": { "type": "string" },
         "timestamp": { "type": "string" },
         "orgId": { "type": "string" }
       },
       "required": ["id", "action", "targetId", "userId", "timestamp", "orgId"]
+    },
+    "Site": {
+      "title": "Site",
+      "description": "Microwave telecom tower site",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "name", "orgId"]
+    },
+    "Hop": {
+      "title": "Hop",
+      "description": "Microwave link hop geometry and RF profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "hopName": { "type": "string" },
+        "orgId": { "type": "string" }
+      },
+      "required": ["id", "hopName", "orgId"]
     }
   },
   "firestore": {
-    "/work_orders/{workOrderId}": {
+    "/orgs/{orgId}/work_orders/{workOrderId}": {
       "schema": { "$ref": "#/entities/WorkOrder" },
-      "description": "Collection of microwave work orders"
+      "description": "Organization-scoped collection of microwave work orders"
     },
-    "/photos/{photoId}": {
+    "/orgs/{orgId}/photos/{photoId}": {
       "schema": { "$ref": "#/entities/PhotoEvidence" },
-      "description": "Collection of TSSR and installation photo evidence"
+      "description": "Organization-scoped collection of installation photo evidence"
     },
-    "/tssr_approvals/{approvalId}": {
+    "/orgs/{orgId}/tssr_approvals/{approvalId}": {
       "schema": { "$ref": "#/entities/TssrApprovalSheet" },
-      "description": "Collection of TSSR approval documents"
+      "description": "Organization-scoped collection of TSSR approval documents"
     },
-    "/inventory/{inventoryId}": {
+    "/orgs/{orgId}/inventory/{inventoryId}": {
       "schema": { "$ref": "#/entities/InventoryItem" },
-      "description": "Collection of decommissioned hardware inventory items"
+      "description": "Organization-scoped collection of decommissioned hardware inventory items"
     },
-    "/tickets/{ticketId}": {
+    "/orgs/{orgId}/tickets/{ticketId}": {
       "schema": { "$ref": "#/entities/TroubleshootingTicket" },
-      "description": "Collection of troubleshooting diagnostic tickets"
+      "description": "Organization-scoped collection of troubleshooting diagnostic tickets"
     },
-    "/audit_logs/{logId}": {
+    "/orgs/{orgId}/audit_logs/{logId}": {
       "schema": { "$ref": "#/entities/AuditLogItem" },
-      "description": "Collection of system and operational audit logs"
+      "description": "Organization-scoped collection of operational audit logs"
+    },
+    "/orgs/{orgId}/sites/{siteId}": {
+      "schema": { "$ref": "#/entities/Site" },
+      "description": "Organization-scoped collection of telecom site profiles"
+    },
+    "/orgs/{orgId}/hops/{hopId}": {
+      "schema": { "$ref": "#/entities/Hop" },
+      "description": "Organization-scoped collection of microwave hops"
     }
   }
 }

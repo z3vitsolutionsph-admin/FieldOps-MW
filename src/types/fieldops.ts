@@ -198,6 +198,7 @@ export interface InstallationStepData {
 
 export interface WorkOrder {
   id: string;
+  version?: number;
   orgId: string;
   workOrderNumber: string; // e.g. "WO-2026-CRANE-002"
   type: WorkOrderType;

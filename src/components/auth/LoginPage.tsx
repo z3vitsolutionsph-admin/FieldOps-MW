@@ -3,28 +3,22 @@ import {
   Radio,
   ShieldCheck,
   UserCheck,
-  Lock,
   HardHat,
   Wrench,
   ClipboardCheck,
   Briefcase,
-  Key,
-  CheckCircle2,
   ArrowRight,
   ShieldAlert,
-  Sparkles,
-  Building2,
-  UserPlus,
-  LogIn,
-  Upload,
-  Layers,
-  FileText,
-  Activity,
-  CheckSquare,
+  AlertCircle,
+  LogOut,
+  X,
+  User,
+  Building,
 } from 'lucide-react';
 import { UserProfile, UserRole } from '../../types/fieldops';
 import { storage } from '../../services/storageService';
 import { SEED_USERS } from '../../data/seedData';
+import { AUTH_MODE, signOut } from '../../services/authService';
 
 interface LoginPageProps {
   onLoginSuccess: (user: UserProfile, targetFlowStep?: 'TSSR' | 'DASHBOARD' | 'JOBS') => void;
@@ -32,20 +26,105 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose }) => {
-  const [authMode, setAuthMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
+  const activeUser = storage.getActiveUser();
+
+  // -------------------------------------------------------------
+  // FIREBASE PRODUCTION MODE: ACCOUNT PANEL (NO ROLE PICKER)
+  // -------------------------------------------------------------
+  if (AUTH_MODE === 'firebase') {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+                <User className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white font-mono">Authenticated Account</h2>
+                <p className="text-xs text-slate-400 font-mono">FieldOps Enterprise Session</p>
+              </div>
+            </div>
+            {onClose && (
+              <button
+                onClick={onClose}
+                aria-label="Close"
+                className="min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-5 space-y-4">
+            <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+              <div className="text-xs text-slate-500 font-mono uppercase tracking-wider mb-1">
+                Full Name
+              </div>
+              <div className="text-sm font-semibold text-white">{activeUser.name}</div>
+
+              <div className="text-xs text-slate-500 font-mono uppercase tracking-wider mt-3 mb-1">
+                Email Address
+              </div>
+              <div className="text-sm font-mono text-slate-300">{activeUser.email}</div>
+
+              <div className="text-xs text-slate-500 font-mono uppercase tracking-wider mt-3 mb-1">
+                Assigned Operational Role
+              </div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-cyan-950 text-cyan-300 border border-cyan-800 text-xs font-mono font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                {activeUser.role}
+              </div>
+
+              <div className="text-xs text-slate-500 font-mono uppercase tracking-wider mt-3 mb-1">
+                Organization Tenant
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
+                <Building className="w-3.5 h-3.5 text-slate-500" />
+                {activeUser.orgId || 'org-crane-ph'}
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-xl text-xs text-slate-400 font-mono flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+              <span>Need a different role? Ask your administrator to update your organization and role claims.</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-slate-800">
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="w-full min-h-[44px] bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg flex items-center justify-center transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            )}
+            <button
+              onClick={async () => {
+                await signOut();
+                if (onClose) onClose();
+              }}
+              className="w-full min-h-[44px] bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/60 text-rose-300 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // DEV MODE: ROLE PICKER WITH AMBER DEMO NOTICE (PIN FIELD REMOVED)
+  // -------------------------------------------------------------
   const allUsers = SEED_USERS;
   const [selectedRole, setSelectedRole] = useState<UserRole>('PROJECT_MANAGER');
   const [selectedUser, setSelectedUser] = useState<UserProfile>(
     allUsers.find((u) => u.role === 'PROJECT_MANAGER') || allUsers[0]
   );
-
-  // Form states
-  const [pinCode, setPinCode] = useState('1234');
   const [customEmail, setCustomEmail] = useState(selectedUser.email);
-  const [signupName, setSignupName] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPhone, setSignupPhone] = useState('+63 917 555 0199');
-  const [signupCert, setSignupCert] = useState('Certified Microwave Engineering Lead');
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,17 +144,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           title: 'Project Manager',
           badgeColor: 'bg-blue-950 text-blue-300 border-blue-700',
           icon: <Briefcase className="w-5 h-5 text-blue-400" />,
-          description: 'Oversees project schedules, milestone tracking, resource allocation, and PDF report generation. Uploads TSSR to bind Microwave Hop, Regional Sites, and Work Orders.',
-          flowTitle: 'Project Manager Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Secure RBAC auth' },
-            { label: 'Signup', desc: 'Register / PMP Creds' },
-            { label: 'Upload TSSR', desc: 'Ingest Hop & Sites' },
-            { label: 'Dashboard', desc: 'Regional directory' },
-            { label: 'Jobs', desc: 'Work order schedule' },
-            { label: 'Steps', desc: 'Field milestone check' },
-            { label: 'Completed', desc: 'Executive dossier signoff' },
-          ],
+          description:
+            'Oversees project schedules, milestone tracking, resource allocation, and PDF report generation. Uploads TSSR to bind Microwave Hop, Regional Sites, and Work Orders.',
           privileges: [
             'View All Work Orders',
             'Assigned Work Orders (Team Leader)',
@@ -90,16 +160,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           title: 'Team Leader',
           badgeColor: 'bg-emerald-950 text-emerald-300 border-emerald-700',
           icon: <UserCheck className="w-5 h-5 text-emerald-400" />,
-          description: 'Manages field crews, reviews pre-climb safety checklists, and authorizes high-risk tower operations. Performs ground equipment installation, IDU/ODU configuration, inventory QR scans, and cable tests.',
-          flowTitle: 'Team Leader Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Field gateway' },
-            { label: 'Signup', desc: 'Crew leader creds' },
-            { label: 'Dashboard', desc: 'Active site & weather' },
-            { label: 'Jobs', desc: 'Select active hop' },
-            { label: 'Steps', desc: 'Pre-climb & rigging' },
-            { label: 'Completed', desc: 'Safety gate signoff' },
-          ],
+          description:
+            'Manages field crews, reviews pre-climb safety checklists, and authorizes high-risk tower operations.',
           privileges: [
             'QR/Barcode Inventory Scan',
             'Battery Discharge Telemetry',
@@ -108,8 +170,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
             'Incident & Hazard Logging',
             'Crew Safety Oversight',
             'Photo Capture & Upload',
-            'Mandatory Pre-Climb Check',
-            'Height & Rigging Execution',
           ],
         };
       case 'ADMIN':
@@ -117,14 +177,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           title: 'System Administrator',
           badgeColor: 'bg-purple-950 text-purple-300 border-purple-700',
           icon: <ShieldCheck className="w-5 h-5 text-purple-400" />,
-          description: 'Full system control, global RBAC configuration, user management, and offline cache synchronization.',
-          flowTitle: 'Admin Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Superuser portal' },
-            { label: 'Dashboard', desc: 'Full infrastructure' },
-            { label: 'Jobs', desc: 'Global execution' },
-            { label: 'Completed', desc: 'All privileges granted' },
-          ],
+          description:
+            'Full system control, global RBAC configuration, user management, and offline cache synchronization.',
           privileges: [
             'View All Work Orders',
             'Upload TSSR & Override Hops',
@@ -138,60 +192,41 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           title: 'TSSR & Engineering Reviewer',
           badgeColor: 'bg-indigo-950 text-indigo-300 border-indigo-700',
           icon: <ClipboardCheck className="w-5 h-5 text-indigo-400" />,
-          description: 'Validates microwave path calculations, azimuth angles, antenna specs, and as-built photo evidence.',
-          flowTitle: 'Reviewer Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'QA auth' },
-            { label: 'Dashboard', desc: 'Audit dashboard' },
-            { label: 'Jobs', desc: 'Reviewer clearance' },
-            { label: 'Completed', desc: 'QA technical signoff' },
-          ],
+          description:
+            'Reviews transport RF parameters, approves antenna centerline heights, and verifies regulatory clearance.',
           privileges: [
-            'Approve/Reject TSSR Sheets',
-            'Audit Photo Evidence',
-            'Verify RF Path Margins',
-            'Compliance Sign-off',
+            '3-Gate TSSR Approvals',
+            'Engineering Elevation Audits',
+            'Reject Incomplete Dossiers',
+            'View All Work Orders',
           ],
         };
       case 'SUPERVISOR':
         return {
-          title: 'Site Operations Supervisor',
+          title: 'Regional Field Supervisor',
           badgeColor: 'bg-amber-950 text-amber-300 border-amber-700',
-          icon: <UserCheck className="w-5 h-5 text-amber-400" />,
-          description: 'Manages regional logistics, authorizes high-risk permits, and coordinates client site access.',
-          flowTitle: 'Supervisor Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Field supervisor' },
-            { label: 'Dashboard', desc: 'Regional operations' },
-            { label: 'Jobs', desc: 'Safety permits' },
-            { label: 'Completed', desc: 'Site signoff' },
-          ],
+          icon: <HardHat className="w-5 h-5 text-amber-400" />,
+          description:
+            'Conducts job hazard analysis (JHA), validates PPE, logs weather aborts, and executes safety override signs.',
           privileges: [
-            'Approve Pre-Climb Checklists',
-            'Assign Work Orders',
-            'Incident & Hazard Logging',
-            'Crew Safety Oversight',
+            'Safety Gate Authorization',
+            'Pre-Climb Clearance Override',
+            'Weather Abort Protocol',
+            'Job Hazard Analysis (JHA)',
           ],
         };
       case 'TOWER_CLIMBER':
         return {
-          title: 'Certified Tower Climber',
+          title: 'Certified Tower Climber & Rigger',
           badgeColor: 'bg-rose-950 text-rose-300 border-rose-700',
           icon: <HardHat className="w-5 h-5 text-rose-400" />,
-          description: 'Executes high-altitude antenna rigging, TMA installation, cabling, and safety harness logs.',
-          flowTitle: 'Climber Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Climber terminal' },
-            { label: 'Dashboard', desc: 'Weather & wind shear' },
-            { label: 'Jobs', desc: 'Mandatory PPE' },
-            { label: 'Steps', desc: 'Rigging execution' },
-            { label: 'Completed', desc: 'Climb log saved' },
-          ],
+          description:
+            'High-altitude tower rigging, parabolic antenna mounting, azimuth alignment, and waveguide weatherproofing.',
           privileges: [
-            'Mandatory Pre-Climb Check',
-            'Height & Rigging Execution',
-            'Photo Capture & Upload',
-            'Battery Discharge Telemetry',
+            'Tower Rigging Checklist',
+            'High-Altitude Antenna Alignment',
+            'Visual & Torque Proof Photos',
+            'Fall Arrest Equipment Check',
           ],
         };
       case 'TECHNICIAN':
@@ -200,15 +235,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
           title: 'Field Installation Technician',
           badgeColor: 'bg-cyan-950 text-cyan-300 border-cyan-700',
           icon: <Wrench className="w-5 h-5 text-cyan-400" />,
-          description: 'Performs ground equipment installation, IDU/ODU configuration, inventory QR scans, and cable tests.',
-          flowTitle: 'Technician Flow',
-          flowSteps: [
-            { label: 'Login Page', desc: 'Tech terminal' },
-            { label: 'Dashboard', desc: 'Assigned jobs' },
-            { label: 'Jobs', desc: 'Equipment install' },
-            { label: 'Steps', desc: 'Field data logging' },
-            { label: 'Completed', desc: 'As-built submission' },
-          ],
+          description:
+            'Performs ground equipment installation, IDU/ODU configuration, inventory QR scans, and cable tests.',
           privileges: [
             'QR/Barcode Inventory Scan',
             'Battery Discharge Telemetry',
@@ -218,6 +246,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
         };
     }
   };
+
+  const roleInfo = getRoleDetails(selectedRole);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,7 +263,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
         storage.setActiveUser(updatedUser);
         setIsLoading(false);
 
-        // Prescribed User Flow Navigation
         const targetStep = selectedRole === 'PROJECT_MANAGER' ? 'TSSR' : 'DASHBOARD';
         onLoginSuccess(updatedUser, targetStep);
         if (onClose) onClose();
@@ -241,322 +270,152 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
         setIsLoading(false);
         setErrorMsg(err.message || 'Authentication failed');
       }
-    }, 350);
+    }, 200);
   };
-
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!signupName.trim() || !signupEmail.trim()) {
-      setErrorMsg('Please enter your full name and valid corporate email.');
-      return;
-    }
-
-    setIsLoading(true);
-    setErrorMsg('');
-
-    setTimeout(() => {
-      try {
-        const newUser: UserProfile = {
-          id: `user-${Date.now()}`,
-          name: signupName.trim(),
-          email: signupEmail.trim(),
-          role: selectedRole,
-          orgId: 'org-crane-ph',
-          phone: signupPhone.trim(),
-          certifications: [signupCert],
-          climberLicenseNo: selectedRole === 'TEAM_LEADER' ? `LEAD-PH-${new Date().getFullYear()}-01` : undefined,
-        };
-
-        storage.setActiveUser(newUser);
-        setIsLoading(false);
-
-        // Prescribed User Flow Navigation
-        // Project Manager: Login Page > Signup > Upload TSSR > Dashboard > Jobs > Steps > Completed
-        // Team Leader: Login Page > Signup > Dashboard > Jobs > Steps > Completed
-        const targetStep = selectedRole === 'PROJECT_MANAGER' ? 'TSSR' : 'DASHBOARD';
-        onLoginSuccess(newUser, targetStep);
-        if (onClose) onClose();
-      } catch (err: any) {
-        setIsLoading(false);
-        setErrorMsg(err.message || 'Signup failed');
-      }
-    }, 400);
-  };
-
-  const currentDetails = getRoleDetails(selectedRole);
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="max-w-5xl w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-cyan-950/60 overflow-hidden flex flex-col lg:flex-row my-auto">
-        
-        {/* Left Side: Role Selector Grid & Prescribed Flow Visualization */}
-        <div className="w-full lg:w-1/2 p-5 sm:p-6 bg-slate-950/80 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col justify-between">
-          <div>
-            {/* Header branding */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-900/40">
-                <Radio className="w-6 h-6 stroke-[2.2]" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-extrabold text-white tracking-tight">FieldOps MW</h1>
-                  <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/80">
-                    ENTERPRISE RBAC
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400">Microwave Link & TSSR Portal</p>
-              </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-auto">
+        {/* Top Header */}
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800 bg-slate-950/60">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/10">
+              <Radio className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white font-mono flex items-center gap-2">
+                FIELDOPS <span className="text-cyan-400">TELECOM</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700/60">
+                  DEV MODE
+                </span>
+              </h1>
+              <p className="text-xs text-slate-400 font-mono">Role-Based Access Control Simulation</p>
+            </div>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
+          {/* Role Selection Palette */}
+          <div className="md:col-span-5 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-950/40 space-y-3">
+            <div className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+              <span>Select Sample Identity</span>
+              <span className="text-cyan-400 text-[10px]">7 Preset Roles</span>
             </div>
 
-            {/* Mode Switcher: Sign In vs Sign Up */}
-            <div className="flex p-1 rounded-xl bg-slate-900 border border-slate-800 mb-4">
-              <button
-                type="button"
-                onClick={() => setAuthMode('LOGIN')}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
-                  authMode === 'LOGIN'
-                    ? 'bg-cyan-600 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>1. Sign In</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('SIGNUP');
-                  if (!signupEmail) setSignupEmail(selectedUser.email);
-                  if (!signupName) setSignupName(selectedUser.name);
-                }}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all ${
-                  authMode === 'SIGNUP'
-                    ? 'bg-cyan-600 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>2. Signup / Register</span>
-              </button>
-            </div>
-
-            <p className="text-xs text-slate-300 mb-3">
-              Select your operational role. Workflow routing and permissions adapt to role requirements:
-            </p>
-
-            {/* Role Cards Grid with Primary Roles Highlighted */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="space-y-1.5">
               {(
                 [
-                  {
-                    role: 'PROJECT_MANAGER',
-                    label: 'Project Manager',
-                    desc: 'Oversees schedules, audits & uploads TSSR',
-                    icon: <Briefcase className="w-4 h-4 text-blue-400" />,
-                    isPrimary: true,
-                  },
-                  {
-                    role: 'TEAM_LEADER',
-                    label: 'Team Leader',
-                    desc: 'Crews, pre-climb safety & rigging',
-                    icon: <UserCheck className="w-4 h-4 text-emerald-400" />,
-                    isPrimary: true,
-                  },
-                  {
-                    role: 'TECHNICIAN',
-                    label: 'Technician',
-                    desc: 'Ground equipment & IDU/ODU',
-                    icon: <Wrench className="w-4 h-4 text-cyan-400" />,
-                    isPrimary: false,
-                  },
-                  {
-                    role: 'TOWER_CLIMBER',
-                    label: 'Tower Climber',
-                    desc: 'High-altitude antenna rigging',
-                    icon: <HardHat className="w-4 h-4 text-rose-400" />,
-                    isPrimary: false,
-                  },
-                  {
-                    role: 'REVIEWER',
-                    label: 'Reviewer',
-                    desc: 'TSSR QA & technical audit',
-                    icon: <ClipboardCheck className="w-4 h-4 text-indigo-400" />,
-                    isPrimary: false,
-                  },
-                  {
-                    role: 'ADMIN',
-                    label: 'System Admin',
-                    desc: 'Full system & schema access',
-                    icon: <ShieldCheck className="w-4 h-4 text-purple-400" />,
-                    isPrimary: false,
-                  },
-                ] as const
-              ).map((item) => {
-                const isSelected = selectedRole === item.role;
+                  'PROJECT_MANAGER',
+                  'TEAM_LEADER',
+                  'TECHNICIAN',
+                  'TOWER_CLIMBER',
+                  'SUPERVISOR',
+                  'REVIEWER',
+                  'ADMIN',
+                ] as UserRole[]
+              ).map((role) => {
+                const info = getRoleDetails(role);
+                const isSelected = selectedRole === role;
                 return (
                   <button
-                    key={item.role}
+                    key={role}
                     type="button"
-                    onClick={() => handleRoleSelect(item.role)}
-                    className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-left transition-all relative ${
+                    onClick={() => handleRoleSelect(role)}
+                    className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between min-h-[44px] ${
                       isSelected
-                        ? 'bg-cyan-950/90 border-cyan-400 text-white ring-1 ring-cyan-500/50 shadow-md'
-                        : item.isPrimary
-                        ? 'bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-cyan-700'
-                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                        ? 'bg-slate-800/90 border-cyan-500 shadow-md shadow-cyan-950'
+                        : 'bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/40 text-slate-400'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-cyan-900/80' : 'bg-slate-800'}`}>
-                      {item.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-100 truncate">{item.label}</span>
-                        {item.isPrimary && (
-                          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-cyan-900/60 text-cyan-300 font-bold">
-                            KEY ROLE
-                          </span>
-                        )}
+                    <div className="flex items-center gap-2.5">
+                      <div className={`p-1.5 rounded-lg border ${info.badgeColor}`}>{info.icon}</div>
+                      <div>
+                        <div className={`text-xs font-bold font-mono ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                          {info.title}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">
+                          {role === 'PROJECT_MANAGER' && 'Ingests TSSR & Schedules'}
+                          {role === 'TEAM_LEADER' && 'Pre-Climb Sign-Off'}
+                          {role === 'TECHNICIAN' && 'Commissioning & Telemetry'}
+                          {role === 'TOWER_CLIMBER' && 'Rigging & Parabolic Alignment'}
+                          {role === 'SUPERVISOR' && 'Safety Oversight & JHA'}
+                          {role === 'REVIEWER' && 'Transport ACL Clearance'}
+                          {role === 'ADMIN' && 'Full Root Control'}
+                        </div>
                       </div>
-                      <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{item.desc}</p>
                     </div>
+                    {isSelected && <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />}
                   </button>
                 );
               })}
             </div>
-
-            {/* Prescribed User Flow Walkthrough Stepper */}
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5" />
-                  Prescribed Workflow: {currentDetails.flowTitle}
-                </span>
-                <span className="text-[9px] font-mono text-slate-400">
-                  {currentDetails.flowSteps.length} Milestones
-                </span>
-              </div>
-
-              {/* Stepper horizontal ribbon */}
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-1">
-                {currentDetails.flowSteps.map((step, idx) => (
-                  <React.Fragment key={idx}>
-                    <div className="flex flex-col items-center shrink-0">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-cyan-300 border border-slate-800 whitespace-nowrap">
-                        {idx + 1}. {step.label}
-                      </span>
-                      <span className="text-[8px] text-slate-500 font-mono mt-0.5 truncate max-w-[80px]">
-                        {step.desc}
-                      </span>
-                    </div>
-                    {idx < currentDetails.flowSteps.length - 1 && (
-                      <span className="text-slate-600 text-xs shrink-0 mx-0.5 font-bold">→</span>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-            <span className="flex items-center gap-1.5 font-mono">
-              <Building2 className="w-3.5 h-3.5 text-cyan-400" />
-              TowerLink Telecom Philippines Inc.
-            </span>
-            <span className="font-mono text-cyan-400 font-bold">v2.6 Enterprise</span>
-          </div>
-        </div>
-
-        {/* Right Side: Credentials & Role Privileges Form */}
-        <div className="w-full lg:w-1/2 p-5 sm:p-6 flex flex-col justify-between bg-slate-900">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className={`text-xs px-2.5 py-1 rounded-full border font-mono font-bold flex items-center gap-1.5 ${currentDetails.badgeColor}`}>
-                  {currentDetails.icon}
-                  {currentDetails.title}
-                </span>
+          {/* Identity Confirmation Form */}
+          <div className="md:col-span-7 p-4 sm:p-6 space-y-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-0.5 rounded-md border text-xs font-mono font-bold ${roleInfo.badgeColor}`}>
+                    {roleInfo.title}
+                  </span>
+                </div>
               </div>
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="text-slate-400 hover:text-white text-xs font-mono px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700"
-                >
-                  ✕ Close
-                </button>
-              )}
-            </div>
 
-            <p className="text-xs text-slate-300 mb-3 leading-relaxed">
-              {currentDetails.description}
-            </p>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4 bg-slate-950/60 border border-slate-800/60 p-3 rounded-xl">
+                {roleInfo.description}
+              </p>
 
-            {/* Privileges checklist */}
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 mb-4">
-              <div className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                Assigned RBAC Privileges:
+              {/* AMBER DEMO NOTICE: REPLACING OLD PIN FIELD */}
+              <div className="p-3.5 bg-amber-950/40 border border-amber-500/30 rounded-xl text-amber-300 text-xs font-mono flex items-start gap-2.5 mb-4">
+                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <span>Demo mode: you are choosing a sample identity, not signing in. Production builds require a real account.</span>
               </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                {currentDetails.privileges.map((perm, idx) => (
-                  <li key={idx} className="text-[11px] text-slate-300 flex items-start gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>{perm}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
 
-            {/* Note about TSSR Data Binding */}
-            {selectedRole === 'PROJECT_MANAGER' && (
-              <div className="mb-4 p-2.5 rounded-lg bg-blue-950/50 border border-blue-800/80 text-[11px] text-blue-200 flex items-start gap-2">
-                <Upload className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span>
-                  <strong>TSSR Authority:</strong> Microwave Hop geometry, Regional Sites Directory, and Work Orders Schedule will be derived directly from the TSSR file uploaded by the Project Manager.
-                </span>
-              </div>
-            )}
-
-            {/* LOGIN FORM */}
-            {authMode === 'LOGIN' && (
-              <form onSubmit={handleLogin} className="space-y-3">
+              <form onSubmit={handleLogin} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1">Personnel Profile</label>
-                  <input
-                    type="text"
-                    value={selectedUser.name}
-                    disabled
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-semibold text-slate-200 cursor-not-allowed"
-                  />
+                  <label className="block text-xs font-mono text-slate-400 mb-1">Corporate Identity / Active User</label>
+                  <select
+                    value={selectedUser.id}
+                    onChange={(e) => {
+                      const u = allUsers.find((usr) => usr.id === e.target.value);
+                      if (u) {
+                        setSelectedUser(u);
+                        setCustomEmail(u.email);
+                      }
+                    }}
+                    className="w-full min-h-[44px] bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 outline-none cursor-pointer"
+                  >
+                    {allUsers
+                      .filter((u) => u.role === selectedRole)
+                      .map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.name} ({u.email})
+                        </option>
+                      ))}
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1">Corporate Email</label>
+                  <label className="block text-xs font-mono text-slate-400 mb-1">Assigned Email</label>
                   <input
                     type="email"
                     value={customEmail}
                     onChange={(e) => setCustomEmail(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-500 outline-none"
+                    className="w-full min-h-[44px] bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 outline-none"
                     required
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1">Security PIN / Access Token</label>
-                  <div className="relative">
-                    <Key className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
-                    <input
-                      type="password"
-                      value={pinCode}
-                      onChange={(e) => setPinCode(e.target.value)}
-                      placeholder="••••"
-                      maxLength={6}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs font-mono tracking-widest text-white focus:border-cyan-500 outline-none"
-                      required
-                    />
-                  </div>
-                </div>
-
                 {errorMsg && (
                   <div className="p-2.5 bg-rose-950/80 border border-rose-800 rounded-lg text-xs text-rose-200 flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 shrink-0" />
@@ -567,101 +426,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onClose })
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-2 py-2.5 px-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white text-xs font-bold font-mono rounded-xl shadow-lg shadow-cyan-950 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                  className="w-full min-h-[44px] py-2.5 px-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white text-xs font-bold font-mono rounded-xl shadow-lg shadow-cyan-950 flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer mt-2"
                 >
                   {isLoading ? (
-                    <span className="animate-spin text-xs">Authenticating Session...</span>
+                    <span className="animate-spin text-xs">Switching Identity...</span>
                   ) : (
                     <>
-                      <span>Sign In & Enter {selectedRole === 'PROJECT_MANAGER' ? 'Upload TSSR Flow' : 'Dashboard Flow'}</span>
+                      <span>Assume {roleInfo.title} Identity</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
               </form>
-            )}
+            </div>
 
-            {/* SIGNUP FORM */}
-            {authMode === 'SIGNUP' && (
-              <form onSubmit={handleSignup} className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1">Full Legal Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Engr. Juan Dela Cruz"
-                      value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-500 outline-none"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1">Corporate Email</label>
-                    <input
-                      type="email"
-                      placeholder="e.g. juan.delacruz@fieldops.ph"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-500 outline-none"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1">Mobile Contact</label>
-                    <input
-                      type="text"
-                      value={signupPhone}
-                      onChange={(e) => setSignupPhone(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1">Primary Certification</label>
-                    <input
-                      type="text"
-                      value={signupCert}
-                      onChange={(e) => setSignupCert(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {errorMsg && (
-                  <div className="p-2.5 bg-rose-950/80 border border-rose-800 rounded-lg text-xs text-rose-200 flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 shrink-0" />
-                    <span>{errorMsg}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full mt-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold font-mono rounded-xl shadow-lg shadow-emerald-950 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                >
-                  {isLoading ? (
-                    <span className="animate-spin text-xs">Registering Account...</span>
-                  ) : (
-                    <>
-                      <span>Complete Signup & Start {selectedRole === 'PROJECT_MANAGER' ? 'TSSR Upload' : 'Dashboard'}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-slate-800 text-center">
-            <p className="text-[11px] text-slate-400">
-              Need assistance? Contact the <span className="text-cyan-400 font-mono">FieldOps Administrator</span>.
-            </p>
+            <div className="pt-3 border-t border-slate-800 text-center">
+              <p className="text-[11px] text-slate-500 font-mono">
+                Assumed role claims will be attached to outgoing REST API calls via <span className="text-cyan-400">Bearer dev:{selectedUser.id}</span>
+              </p>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,44 +1,24 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isAuthenticated() {
-      return request.auth != null;
+    function signedIn() { return request.auth != null; }
+    function inOrg(orgId) { return signedIn() && request.auth.token.orgId == orgId; }
+    function hasRole(roles) { return signedIn() && request.auth.token.role in roles; }
+    function oversight() { return hasRole(['ADMIN', 'PROJECT_MANAGER', 'REVIEWER', 'SUPERVISOR']); }
+    match /orgs/{orgId} {
+      match /work_orders/{id} {
+        allow read: if inOrg(orgId) && (oversight() || request.auth.uid in resource.data.assigneeIds);
+        allow write: if false;
+      }
+      match /{collection}/{id} {
+        allow read: if inOrg(orgId) && collection in ['sites', 'hops', 'inventory', 'tickets', 'photos', 'tssr_approvals'];
+        allow write: if false;
+      }
+      match /audit_logs/{id} {
+        allow read: if inOrg(orgId) && hasRole(['ADMIN', 'PROJECT_MANAGER', 'REVIEWER']);
+        allow write: if false;
+      }
     }
-
-    // Work Orders
-    match /work_orders/{workOrderId} {
-      allow read, write: if true;
-    }
-
-    // Photo Evidence
-    match /photos/{photoId} {
-      allow read, write: if true;
-    }
-
-    // TSSR Approvals
-    match /tssr_approvals/{approvalId} {
-      allow read, write: if true;
-    }
-
-    // Decommissioned Inventory
-    match /inventory/{inventoryId} {
-      allow read, write: if true;
-    }
-
-    // Troubleshooting Tickets
-    match /tickets/{ticketId} {
-      allow read, write: if true;
-    }
-
-    // Audit Logs
-    match /audit_logs/{logId} {
-      allow read, write: if true;
-    }
-
-    // Connectivity test doc
-    match /test/{docId} {
-      allow read, write: if true;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }

@@ -1,20 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Header } from './components/common/Header';
 import { BottomNav, ActiveTab, SyncModal } from './components/common/BottomNav';
-import { InstallationWizard } from './components/installation/InstallationWizard';
-import { DismantlingModule } from './components/dismantling/DismantlingModule';
-import { TroubleshootingModule } from './components/troubleshooting/TroubleshootingModule';
-import { ToolsPage } from './components/tools/ToolsPage';
-import { PhotoEngine } from './components/photos/PhotoEngine';
-import { TssrModule } from './components/tssr/TssrModule';
-import { AIAssistant } from './components/ai/AIAssistant';
-import { Dashboard } from './components/dashboard/Dashboard';
-import { ReportExportModal } from './components/reports/ReportExportModal';
-import { AppBlueprintModal } from './components/common/AppBlueprintModal';
-import { PreClimbSafetyModal } from './components/common/PreClimbSafetyModal';
-import { BackendCloudModal } from './components/common/BackendCloudModal';
 import { RoleGate } from './components/auth/RoleGate';
-import { LoginPage } from './components/auth/LoginPage';
 import { EnterpriseSidebar } from './components/common/EnterpriseSidebar';
 import { hasPermission } from './services/rbacService';
 import { storage } from './services/storageService';
@@ -34,13 +21,52 @@ import {
   SEED_SITE_B,
   SEED_HOP,
   SEED_WORK_ORDERS,
-  SEED_INVENTORY,
-  SEED_TICKETS,
-  SEED_TSSR_APPROVALS,
-  SEED_USERS,
 } from './data/seedData';
-import { WifiOff, AlertTriangle, ArrowRight, ShieldCheck, UserCheck, Lock, FileText, Clock, Upload, Menu } from 'lucide-react';
-import { ShiftHandoverModal } from './components/installation/ShiftHandoverModal';
+import { WifiOff, FileText, Clock, Upload, Menu, ShieldCheck } from 'lucide-react';
+
+// Lazy-loaded components for optimal initial bundle performance
+const InstallationWizard = lazy(() =>
+  import('./components/installation/InstallationWizard').then((m) => ({ default: m.InstallationWizard }))
+);
+const DismantlingModule = lazy(() =>
+  import('./components/dismantling/DismantlingModule').then((m) => ({ default: m.DismantlingModule }))
+);
+const TroubleshootingModule = lazy(() =>
+  import('./components/troubleshooting/TroubleshootingModule').then((m) => ({ default: m.TroubleshootingModule }))
+);
+const ToolsPage = lazy(() =>
+  import('./components/tools/ToolsPage').then((m) => ({ default: m.ToolsPage }))
+);
+const PhotoEngine = lazy(() =>
+  import('./components/photos/PhotoEngine').then((m) => ({ default: m.PhotoEngine }))
+);
+const TssrModule = lazy(() =>
+  import('./components/tssr/TssrModule').then((m) => ({ default: m.TssrModule }))
+);
+const AIAssistant = lazy(() =>
+  import('./components/ai/AIAssistant').then((m) => ({ default: m.AIAssistant }))
+);
+const Dashboard = lazy(() =>
+  import('./components/dashboard/Dashboard').then((m) => ({ default: m.Dashboard }))
+);
+const ReportExportModal = lazy(() =>
+  import('./components/reports/ReportExportModal').then((m) => ({ default: m.ReportExportModal }))
+);
+const AppBlueprintModal = lazy(() =>
+  import('./components/common/AppBlueprintModal').then((m) => ({ default: m.AppBlueprintModal }))
+);
+const PreClimbSafetyModal = lazy(() =>
+  import('./components/common/PreClimbSafetyModal').then((m) => ({ default: m.PreClimbSafetyModal }))
+);
+const BackendCloudModal = lazy(() =>
+  import('./components/common/BackendCloudModal').then((m) => ({ default: m.BackendCloudModal }))
+);
+const LoginPage = lazy(() =>
+  import('./components/auth/LoginPage').then((m) => ({ default: m.LoginPage }))
+);
+const ShiftHandoverModal = lazy(() =>
+  import('./components/installation/ShiftHandoverModal').then((m) => ({ default: m.ShiftHandoverModal }))
+);
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('DASHBOARD');
@@ -129,8 +155,10 @@ export default function App() {
   const displaySiteB = siteB || SEED_SITE_B;
   const displayHop = currentHop || SEED_HOP;
   const activeSite = selectedWorkOrder
-    ? (selectedWorkOrder.siteRole === 'A' ? siteA : siteB)
-    : (siteB || siteA);
+    ? selectedWorkOrder.siteRole === 'A'
+      ? siteA
+      : siteB
+    : siteB || siteA;
   const displayActiveSite = activeSite || displaySiteB;
 
   // RBAC: Technicians and Climbers only see jobs assigned to them
@@ -198,7 +226,7 @@ export default function App() {
           </div>
           <button
             onClick={() => setShowSyncModal(true)}
-            className="underline font-mono text-[11px] hover:text-black"
+            className="underline font-mono text-[11px] hover:text-black min-h-[44px] flex items-center"
           >
             Queue ({queue.length})
           </button>
@@ -277,221 +305,233 @@ export default function App() {
           onToggleDesktopCollapse={() => setIsDesktopCollapsed((prev) => !prev)}
         />
 
-        {/* Main Content Viewport */}
+        {/* Main Content Viewport with Suspense fallback */}
         <main className="flex-1 min-w-0 max-w-7xl mx-auto p-3 sm:p-5">
-        {/* TAB 1: JOBS / WORK ORDERS */}
-        {activeTab === 'JOBS' && (
-          <div className="space-y-4">
-            {!selectedWorkOrder || workOrders.length === 0 ? (
-              <div className="p-8 sm:p-12 rounded-2xl bg-slate-900 border border-slate-800 text-center max-w-xl mx-auto space-y-4 my-8">
-                <div className="w-16 h-16 rounded-2xl bg-blue-950/80 border border-blue-700/80 text-blue-400 flex items-center justify-center mx-auto shadow-inner">
-                  <FileText className="w-8 h-8" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-base sm:text-lg font-bold text-white uppercase tracking-tight">
-                    No Active Work Orders (Awaiting TSSR Ingestion)
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
-                    All previous TSSR data has been removed to test AI capabilities. When a Project Manager uploads a new TSSR dossier, the AI will automatically parse site geometry and generate assigned Work Orders with safety checkpoints and step checklists.
-                  </p>
-                </div>
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <button
-                    onClick={() => setActiveTab('TSSR')}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold shadow flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>Upload TSSR Dossier (Project Manager)</span>
-                  </button>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center p-12 text-slate-400 font-mono text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                  <span>Loading module…</span>
                 </div>
               </div>
-            ) : (
-              <>
-                {/* Quick Job Type Switcher (Filtered by User Role Permissions!) */}
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-slate-400 uppercase">
-                      ACTIVE JOB:
-                    </span>
-                    <span className="text-xs font-bold text-cyan-400">
-                      {selectedWorkOrder.workOrderNumber} ({selectedWorkOrder.type})
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      Site {selectedWorkOrder.siteRole}: {selectedWorkOrder.siteId}
-                    </span>
+            }
+          >
+            {/* TAB 1: JOBS / WORK ORDERS */}
+            {activeTab === 'JOBS' && (
+              <div className="space-y-4">
+                {!selectedWorkOrder || workOrders.length === 0 ? (
+                  <div className="p-8 sm:p-12 rounded-2xl bg-slate-900 border border-slate-800 text-center max-w-xl mx-auto space-y-4 my-8">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-950/80 border border-blue-700/80 text-blue-400 flex items-center justify-center mx-auto shadow-inner">
+                      <FileText className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <h3 className="text-base sm:text-lg font-bold text-white uppercase tracking-tight">
+                        No Active Work Orders (Awaiting TSSR Ingestion)
+                      </h3>
+                      <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
+                        All previous TSSR data has been removed to test AI capabilities. When a Project Manager uploads a new TSSR dossier, the AI will automatically parse site geometry and generate assigned Work Orders with safety checkpoints and step checklists.
+                      </p>
+                    </div>
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+                      <button
+                        onClick={() => setActiveTab('TSSR')}
+                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold shadow flex items-center justify-center gap-2 transition-all min-h-[44px]"
+                      >
+                        <Upload className="w-4 h-4" />
+                        <span>Upload TSSR Dossier (Project Manager)</span>
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-                    <button
-                      type="button"
-                      onClick={() => setShowReportModal(true)}
-                      className="px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/70 flex items-center gap-1.5 shadow transition-colors"
-                      title="Generate Official As-Built PDF Report with Selected Photo Evidence"
-                    >
-                      <FileText className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>As-Built Dossier PDF</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowShiftHandoverModal(true)}
-                      className="px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/70 flex items-center gap-1.5 shadow transition-colors"
-                      title="Shift Handover Log - Record status updates & remaining tasks for incoming shifts"
-                    >
-                      <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Shift Handover</span>
-                      {selectedWorkOrder.shiftHandovers && selectedWorkOrder.shiftHandovers.length > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-cyan-300 font-bold">
-                          {selectedWorkOrder.shiftHandovers.length}
+                ) : (
+                  <>
+                    {/* Quick Job Type Switcher */}
+                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold text-slate-400 uppercase">
+                          ACTIVE JOB:
                         </span>
-                      )}
-                    </button>
+                        <span className="text-xs font-bold text-cyan-400">
+                          {selectedWorkOrder.workOrderNumber} ({selectedWorkOrder.type})
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          Site {selectedWorkOrder.siteRole}: {selectedWorkOrder.siteId}
+                        </span>
+                      </div>
 
-                    <div className="h-4 w-px bg-slate-800 mx-1 shrink-0" />
-
-                    {accessibleWorkOrders.length === 0 ? (
-                      <span className="text-xs text-slate-500 italic">No jobs assigned to this technician</span>
-                    ) : (
-                      accessibleWorkOrders.map((wo) => (
+                      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
                         <button
-                          key={wo.id}
-                          onClick={() => setSelectedWorkOrder(wo)}
-                          className={`px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
-                            selectedWorkOrder.id === wo.id
-                              ? 'bg-cyan-600 text-white font-bold shadow'
-                              : 'bg-slate-950 text-slate-400 hover:text-white'
-                          }`}
+                          type="button"
+                          onClick={() => setShowReportModal(true)}
+                          className="px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/70 flex items-center gap-1.5 shadow transition-colors min-h-[44px]"
+                          title="Generate Official As-Built PDF Report with Selected Photo Evidence"
                         >
-                          {wo.type === 'INSTALLATION'
-                            ? `Install Site ${wo.siteRole}`
-                            : wo.type === 'DISMANTLING'
-                            ? 'Dismantle'
-                            : 'Troubleshoot'}
+                          <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>As-Built Dossier PDF</span>
                         </button>
-                      ))
-                    )}
-                  </div>
-                </div>
 
-                {/* Guard Work Order Execution with RoleGate */}
-                <RoleGate
-                  currentUser={activeUser}
-                  allowedRoles={['ADMIN', 'PROJECT_MANAGER', 'TEAM_LEADER', 'REVIEWER', 'SUPERVISOR', 'TECHNICIAN', 'TOWER_CLIMBER']}
-                  sectionName="Work Order Execution"
-                >
-                  {selectedWorkOrder.type === 'INSTALLATION' && (
-                    <InstallationWizard
-                      workOrder={selectedWorkOrder}
-                      site={displayActiveSite}
-                      hop={displayHop}
-                      activeUser={activeUser}
-                      approvals={approvals}
-                      onOpenPhotoCapture={handleOpenPhotoCapture}
-                      onOpenReportModal={() => setShowReportModal(true)}
-                      sunlightMode={sunlightMode}
-                    />
-                  )}
+                        <button
+                          type="button"
+                          onClick={() => setShowShiftHandoverModal(true)}
+                          className="px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/70 flex items-center gap-1.5 shadow transition-colors min-h-[44px]"
+                          title="Shift Handover Log - Record status updates & remaining tasks for incoming shifts"
+                        >
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>Shift Handover</span>
+                          {selectedWorkOrder.shiftHandovers && selectedWorkOrder.shiftHandovers.length > 0 && (
+                            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-cyan-300 font-bold">
+                              {selectedWorkOrder.shiftHandovers.length}
+                            </span>
+                          )}
+                        </button>
 
-                  {selectedWorkOrder.type === 'DISMANTLING' && (
-                    <DismantlingModule
-                      site={displayActiveSite}
-                      activeUser={activeUser}
-                      inventory={inventory}
-                      sunlightMode={sunlightMode}
-                    />
-                  )}
+                        <div className="h-4 w-px bg-slate-800 mx-1 shrink-0" />
 
-                  {selectedWorkOrder.type === 'TROUBLESHOOTING' && (
-                    <TroubleshootingModule
-                      site={displayActiveSite}
-                      hop={displayHop}
-                      activeUser={activeUser}
-                      tickets={tickets}
-                      sunlightMode={sunlightMode}
-                    />
-                  )}
-                </RoleGate>
-              </>
+                        {accessibleWorkOrders.length === 0 ? (
+                          <span className="text-xs text-slate-500 italic">No jobs assigned to this technician</span>
+                        ) : (
+                          accessibleWorkOrders.map((wo) => (
+                            <button
+                              key={wo.id}
+                              onClick={() => setSelectedWorkOrder(wo)}
+                              className={`px-2.5 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors min-h-[44px] ${
+                                selectedWorkOrder.id === wo.id
+                                  ? 'bg-cyan-600 text-white font-bold shadow'
+                                  : 'bg-slate-950 text-slate-400 hover:text-white'
+                              }`}
+                            >
+                              {wo.type === 'INSTALLATION'
+                                ? `Install Site ${wo.siteRole}`
+                                : wo.type === 'DISMANTLING'
+                                ? 'Dismantle'
+                                : 'Troubleshoot'}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Guard Work Order Execution with RoleGate */}
+                    <RoleGate
+                      currentUser={activeUser}
+                      allowedRoles={['ADMIN', 'PROJECT_MANAGER', 'TEAM_LEADER', 'REVIEWER', 'SUPERVISOR', 'TECHNICIAN', 'TOWER_CLIMBER']}
+                      sectionName="Work Order Execution"
+                    >
+                      {selectedWorkOrder.type === 'INSTALLATION' && (
+                        <InstallationWizard
+                          workOrder={selectedWorkOrder}
+                          site={displayActiveSite}
+                          hop={displayHop}
+                          activeUser={activeUser}
+                          approvals={approvals}
+                          onOpenPhotoCapture={handleOpenPhotoCapture}
+                          onOpenReportModal={() => setShowReportModal(true)}
+                          sunlightMode={sunlightMode}
+                        />
+                      )}
+
+                      {selectedWorkOrder.type === 'DISMANTLING' && (
+                        <DismantlingModule
+                          site={displayActiveSite}
+                          activeUser={activeUser}
+                          inventory={inventory}
+                          sunlightMode={sunlightMode}
+                        />
+                      )}
+
+                      {selectedWorkOrder.type === 'TROUBLESHOOTING' && (
+                        <TroubleshootingModule
+                          site={displayActiveSite}
+                          hop={displayHop}
+                          activeUser={activeUser}
+                          tickets={tickets}
+                          sunlightMode={sunlightMode}
+                        />
+                      )}
+                    </RoleGate>
+                  </>
+                )}
+              </div>
             )}
-          </div>
-        )}
 
-        {/* TAB 2: MICROWAVE FIELD TOOLS */}
-        {activeTab === 'TOOLS' && (
-          <ToolsPage
-            siteA={displaySiteA}
-            siteB={displaySiteB}
-            hop={displayHop}
-            sunlightMode={sunlightMode}
-          />
-        )}
+            {/* TAB 2: MICROWAVE FIELD TOOLS */}
+            {activeTab === 'TOOLS' && (
+              <ToolsPage
+                siteA={displaySiteA}
+                siteB={displaySiteB}
+                hop={displayHop}
+                sunlightMode={sunlightMode}
+              />
+            )}
 
-        {/* TAB 3: PHOTO EVIDENCE ENGINE */}
-        {activeTab === 'PHOTOS' && (
-          <PhotoEngine
-            site={displayActiveSite}
-            activeUser={activeUser}
-            photos={photos}
-            targetSectionCode={photoCaptureSection?.code}
-            onCloseCapture={() => setPhotoCaptureSection(null)}
-            sunlightMode={sunlightMode}
-          />
-        )}
+            {/* TAB 3: PHOTO EVIDENCE ENGINE */}
+            {activeTab === 'PHOTOS' && (
+              <PhotoEngine
+                site={displayActiveSite}
+                activeUser={activeUser}
+                photos={photos}
+                targetSectionCode={photoCaptureSection?.code}
+                onCloseCapture={() => setPhotoCaptureSection(null)}
+                sunlightMode={sunlightMode}
+              />
+            )}
 
-        {/* TAB 4: TSSR & APPROVAL ROUTING */}
-        {activeTab === 'TSSR' && (
-          <TssrModule
-            siteA={siteA}
-            siteB={siteB}
-            hop={currentHop}
-            approvals={approvals}
-            activeUser={activeUser}
-            sunlightMode={sunlightMode}
-            onNavigateToDashboard={() => setActiveTab('DASHBOARD')}
-            onNavigateToJobs={() => setActiveTab('JOBS')}
-          />
-        )}
+            {/* TAB 4: TSSR & APPROVAL ROUTING */}
+            {activeTab === 'TSSR' && (
+              <TssrModule
+                siteA={siteA}
+                siteB={siteB}
+                hop={currentHop}
+                approvals={approvals}
+                activeUser={activeUser}
+                sunlightMode={sunlightMode}
+                onNavigateToDashboard={() => setActiveTab('DASHBOARD')}
+                onNavigateToJobs={() => setActiveTab('JOBS')}
+              />
+            )}
 
-        {/* TAB 5: ASK FIELDOPS AI */}
-        {activeTab === 'AI' && (
-          <AIAssistant
-            site={activeSite}
-            hop={currentHop}
-            workOrder={selectedWorkOrder}
-            sunlightMode={sunlightMode}
-            onNavigateToTssr={() => setActiveTab('TSSR')}
-          />
-        )}
+            {/* TAB 5: ASK FIELDOPS AI */}
+            {activeTab === 'AI' && (
+              <AIAssistant
+                site={activeSite}
+                hop={currentHop}
+                workOrder={selectedWorkOrder}
+                sunlightMode={sunlightMode}
+                onNavigateToTssr={() => setActiveTab('TSSR')}
+              />
+            )}
 
-        {/* TAB 6: DASHBOARD & LANDING PAGE */}
-        {activeTab === 'DASHBOARD' && (
-          <Dashboard
-            workOrders={workOrders}
-            siteA={siteA}
-            siteB={siteB}
-            hop={currentHop}
-            photos={photos}
-            inventory={inventory}
-            tickets={tickets}
-            activeUser={activeUser}
-            onSelectWorkOrder={(wo) => {
-              setSelectedWorkOrder(wo);
-              setActiveTab('JOBS');
-            }}
-            onStartJob={(wo) => setSelectedWorkOrderForSafety(wo)}
-            onNavigateToJobs={() => setActiveTab('JOBS')}
-            onNavigateToTssr={() => setActiveTab('TSSR')}
-            sunlightMode={sunlightMode}
-          />
-        )}
-      </main>
+            {/* TAB 6: DASHBOARD & LANDING PAGE */}
+            {activeTab === 'DASHBOARD' && (
+              <Dashboard
+                workOrders={workOrders}
+                siteA={siteA}
+                siteB={siteB}
+                hop={currentHop}
+                photos={photos}
+                inventory={inventory}
+                tickets={tickets}
+                activeUser={activeUser}
+                onSelectWorkOrder={(wo) => {
+                  setSelectedWorkOrder(wo);
+                  setActiveTab('JOBS');
+                }}
+                onStartJob={(wo) => setSelectedWorkOrderForSafety(wo)}
+                onNavigateToJobs={() => setActiveTab('JOBS')}
+                onNavigateToTssr={() => setActiveTab('TSSR')}
+                sunlightMode={sunlightMode}
+              />
+            )}
+          </Suspense>
+        </main>
       </div>
-      {/* Mobile Floating Quick-Drawer Button (Thumb-accessible for tower riggers) */}
+
+      {/* Mobile Floating Quick-Drawer Button */}
       <button
         onClick={() => setIsMobileDrawerOpen(true)}
         aria-label="Open Navigation & Telemetry Drawer"
         title="Open Navigation & Telemetry Drawer"
-        className={`fixed bottom-16 left-3 z-30 lg:hidden w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90 border focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+        className={`fixed bottom-16 left-3 z-30 lg:hidden w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90 border focus-visible:ring-2 focus-visible:ring-cyan-400 min-h-[44px] min-w-[44px] ${
           sunlightMode
             ? 'bg-amber-400 text-slate-950 border-amber-600 shadow-amber-950/40'
             : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400/50 shadow-cyan-950/70'
@@ -518,100 +558,103 @@ export default function App() {
         queue={queue}
       />
 
-      {/* Official PDF Report Export Modal */}
-      <ReportExportModal
-        isOpen={showReportModal}
-        onClose={() => setShowReportModal(false)}
-        workOrder={selectedWorkOrder || SEED_WORK_ORDERS[0]}
-        site={displayActiveSite}
-        hop={displayHop}
-        activeUser={activeUser}
-        approvals={approvals}
-        photos={photos}
-      />
-
-      {/* Autonomous Application Blueprint & Changelog Modal */}
-      <AppBlueprintModal
-        isOpen={showBlueprintModal}
-        onClose={() => setShowBlueprintModal(false)}
-      />
-
-      {/* Pre-Climb Safety Check Modal */}
-      {selectedWorkOrderForSafety && (
-        <PreClimbSafetyModal
-          isOpen={Boolean(selectedWorkOrderForSafety)}
-          onClose={() => setSelectedWorkOrderForSafety(null)}
-          workOrder={selectedWorkOrderForSafety}
-          site={selectedWorkOrderForSafety.siteRole === 'A' ? displaySiteA : displaySiteB}
+      {/* Modals wrapped in Suspense fallback={null} */}
+      <Suspense fallback={null}>
+        {/* Official PDF Report Export Modal */}
+        <ReportExportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          workOrder={selectedWorkOrder || SEED_WORK_ORDERS[0]}
+          site={displayActiveSite}
+          hop={displayHop}
           activeUser={activeUser}
-          onStartJobConfirmed={async (safetyData) => {
-            const wo = selectedWorkOrderForSafety;
-            const updatedWo: WorkOrder = {
-              ...wo,
-              status: 'IN_PROGRESS',
-              startedAt: new Date().toISOString(),
-              history: [
-                ...(wo.history || []),
-                {
-                  timestamp: new Date().toISOString(),
-                  userId: activeUser.id,
-                  userName: activeUser.name,
-                  action: 'STARTED_JOB_WITH_PRE_CLIMB_SAFETY_CHECK',
-                  note: `PPE verified: ${safetyData.ppeItems.join(', ')}. Hazards acknowledged: ${safetyData.hazardItems.join(', ')}. Signed by: ${safetyData.signature}`,
-                },
-              ],
-            };
-            await storage.saveWorkOrder(updatedWo);
-            storage.logAudit(
-              'WORK_ORDER_STARTED',
-              updatedWo.id,
-              'WORK_ORDER',
-              `Started work order ${updatedWo.workOrderNumber} after Pre-Climb Safety Check sign-off by ${safetyData.signature}`
-            );
-            setSelectedWorkOrder(updatedWo);
-            setActiveTab('JOBS');
-            setSelectedWorkOrderForSafety(null);
-          }}
+          approvals={approvals}
+          photos={photos}
+        />
+
+        {/* Autonomous Application Blueprint & Changelog Modal */}
+        <AppBlueprintModal
+          isOpen={showBlueprintModal}
+          onClose={() => setShowBlueprintModal(false)}
+        />
+
+        {/* Pre-Climb Safety Check Modal */}
+        {selectedWorkOrderForSafety && (
+          <PreClimbSafetyModal
+            isOpen={Boolean(selectedWorkOrderForSafety)}
+            onClose={() => setSelectedWorkOrderForSafety(null)}
+            workOrder={selectedWorkOrderForSafety}
+            site={selectedWorkOrderForSafety.siteRole === 'A' ? displaySiteA : displaySiteB}
+            activeUser={activeUser}
+            onStartJobConfirmed={async (safetyData) => {
+              const wo = selectedWorkOrderForSafety;
+              const updatedWo: WorkOrder = {
+                ...wo,
+                status: 'IN_PROGRESS',
+                startedAt: new Date().toISOString(),
+                history: [
+                  ...(wo.history || []),
+                  {
+                    timestamp: new Date().toISOString(),
+                    userId: activeUser.id,
+                    userName: activeUser.name,
+                    action: 'STARTED_JOB_WITH_PRE_CLIMB_SAFETY_CHECK',
+                    note: `PPE verified: ${safetyData.ppeItems.join(', ')}. Hazards acknowledged: ${safetyData.hazardItems.join(', ')}. Signed by: ${safetyData.signature}`,
+                  },
+                ],
+              };
+              await storage.saveWorkOrder(updatedWo);
+              storage.logAudit(
+                'WORK_ORDER_STARTED',
+                updatedWo.id,
+                'WORK_ORDER',
+                `Started work order ${updatedWo.workOrderNumber} after Pre-Climb Safety Check sign-off by ${safetyData.signature}`
+              );
+              setSelectedWorkOrder(updatedWo);
+              setActiveTab('JOBS');
+              setSelectedWorkOrderForSafety(null);
+            }}
+            sunlightMode={sunlightMode}
+          />
+        )}
+
+        {/* Login & Role Switcher Page Modal */}
+        {showLoginModal && (
+          <LoginPage
+            onLoginSuccess={(user, targetFlowStep) => {
+              setActiveUser(user);
+              setShowLoginModal(false);
+              if (targetFlowStep) {
+                setActiveTab(targetFlowStep);
+              } else if (user.role === 'PROJECT_MANAGER') {
+                setActiveTab('TSSR');
+              } else {
+                setActiveTab('DASHBOARD');
+              }
+            }}
+            onClose={() => setShowLoginModal(false)}
+          />
+        )}
+
+        {/* Backend & Cloud Infrastructure Console Modal */}
+        <BackendCloudModal
+          isOpen={showBackendCloudModal}
+          onClose={() => setShowBackendCloudModal(false)}
           sunlightMode={sunlightMode}
         />
-      )}
 
-      {/* Login & Role Switcher Page Modal */}
-      {showLoginModal && (
-        <LoginPage
-          onLoginSuccess={(user, targetFlowStep) => {
-            setActiveUser(user);
-            setShowLoginModal(false);
-            if (targetFlowStep) {
-              setActiveTab(targetFlowStep);
-            } else if (user.role === 'PROJECT_MANAGER') {
-              setActiveTab('TSSR');
-            } else {
-              setActiveTab('DASHBOARD');
-            }
-          }}
-          onClose={() => setShowLoginModal(false)}
-        />
-      )}
-
-      {/* Backend & Cloud Infrastructure Console Modal */}
-      <BackendCloudModal
-        isOpen={showBackendCloudModal}
-        onClose={() => setShowBackendCloudModal(false)}
-        sunlightMode={sunlightMode}
-      />
-
-      {/* Global Shift Handover Modal for Selected Work Order */}
-      {showShiftHandoverModal && selectedWorkOrder && (
-        <ShiftHandoverModal
-          isOpen={showShiftHandoverModal}
-          onClose={() => setShowShiftHandoverModal(false)}
-          workOrder={selectedWorkOrder}
-          site={activeSite}
-          activeUser={activeUser}
-          sunlightMode={sunlightMode}
-        />
-      )}
+        {/* Global Shift Handover Modal for Selected Work Order */}
+        {showShiftHandoverModal && selectedWorkOrder && (
+          <ShiftHandoverModal
+            isOpen={showShiftHandoverModal}
+            onClose={() => setShowShiftHandoverModal(false)}
+            workOrder={selectedWorkOrder}
+            site={activeSite}
+            activeUser={activeUser}
+            sunlightMode={sunlightMode}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

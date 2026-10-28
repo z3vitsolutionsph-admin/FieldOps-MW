@@ -13,12 +13,11 @@ import {
   Layers,
   ShieldCheck,
   Zap,
-  Globe,
   Terminal,
-  Clock,
-  Sparkles,
+  Bot,
 } from 'lucide-react';
 import firebaseConfigJson from '../../../firebase-applet-config.json';
+import { getAuthToken } from '../../services/authService';
 
 interface BackendCloudModalProps {
   isOpen: boolean;
@@ -26,24 +25,12 @@ interface BackendCloudModalProps {
   sunlightMode?: boolean;
 }
 
-interface HealthData {
-  status: string;
-  service: string;
-  version: string;
-  uptimeSeconds: number;
-  environment: string;
-  nodeVersion: string;
-  memoryUsageMb: {
-    rss: number;
-    heapTotal: number;
-    heapUsed: number;
-  };
-  cloud: {
-    provider: string;
-    firestoreDatabaseId: string;
-    firestoreProjectId: string;
-    rulesActive: boolean;
-  };
+interface LiveHealthData {
+  serverStatus: string;
+  apiVersion: string;
+  uptimeSeconds: number | null;
+  databaseStatus: 'UP' | 'DOWN' | 'UNREACHABLE';
+  aiStatus: 'ONLINE' | 'OFFLINE' | 'UNREACHABLE';
 }
 
 export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
@@ -52,7 +39,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
   sunlightMode = false,
 }) => {
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'APIS' | 'DATABASE' | 'INFRASTRUCTURE'>('OVERVIEW');
-  const [health, setHealth] = useState<HealthData | null>(null);
+  const [health, setHealth] = useState<LiveHealthData | null>(null);
   const [loadingHealth, setLoadingHealth] = useState(false);
   const [testEndpoint, setTestEndpoint] = useState('/api/health');
   const [testMethod, setTestMethod] = useState('GET');
@@ -64,45 +51,72 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
   const fetchHealth = async () => {
     setLoadingHealth(true);
     const start = performance.now();
+    let serverStatus = 'UNREACHABLE';
+    let apiVersion = '—';
+    let uptimeSeconds: number | null = null;
+    let databaseStatus: 'UP' | 'DOWN' | 'UNREACHABLE' = 'UNREACHABLE';
+    let aiStatus: 'ONLINE' | 'OFFLINE' | 'UNREACHABLE' = 'UNREACHABLE';
+
     try {
-      const res = await fetch('/api/health');
-      const data = await res.json();
-      setPingLatency(Math.round(performance.now() - start));
-      if (data?.success && data?.data) {
-        setHealth(data.data);
-      } else {
-        // Fallback simulated health object if running during compile/SSR
-        setHealth({
-          status: 'HEALTHY',
-          service: 'FieldOps MW Backend Gateway',
-          version: '3.0.0',
-          uptimeSeconds: 120,
-          environment: 'development',
-          nodeVersion: 'v22.23.2',
-          memoryUsageMb: { rss: 64, heapTotal: 42, heapUsed: 28 },
-          cloud: {
-            provider: 'Google Cloud Platform (Cloud Run)',
-            firestoreDatabaseId: firebaseConfigJson.firestoreDatabaseId,
-            firestoreProjectId: firebaseConfigJson.projectId,
-            rulesActive: true,
-          },
-        });
+      const token = await getAuthToken();
+      const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+      // 1. Fetch /api/health
+      try {
+        const resHealth = await fetch('/api/health');
+        if (resHealth.ok) {
+          const json = await resHealth.json();
+          const d = json?.data || json;
+          serverStatus = d?.status === 'HEALTHY' ? 'HEALTHY' : 'UNREACHABLE';
+          apiVersion = d?.version || '—';
+          uptimeSeconds = typeof d?.uptimeSeconds === 'number' ? d.uptimeSeconds : null;
+        }
+      } catch {
+        serverStatus = 'UNREACHABLE';
       }
+
+      // 2. Fetch /api/health/ready
+      try {
+        const resReady = await fetch('/api/health/ready');
+        if (resReady.ok) {
+          const json = await resReady.json();
+          databaseStatus = json?.database === 'UP' ? 'UP' : 'DOWN';
+        } else {
+          databaseStatus = 'DOWN';
+        }
+      } catch {
+        databaseStatus = 'UNREACHABLE';
+      }
+
+      // 3. Fetch /api/ai/status
+      try {
+        const resAi = await fetch('/api/ai/status', { headers: authHeaders });
+        if (resAi.ok) {
+          const json = await resAi.json();
+          const d = json?.data || json;
+          aiStatus = d?.available ? 'ONLINE' : 'OFFLINE';
+        } else {
+          aiStatus = 'OFFLINE';
+        }
+      } catch {
+        aiStatus = 'UNREACHABLE';
+      }
+
+      setPingLatency(Math.round(performance.now() - start));
+      setHealth({
+        serverStatus,
+        apiVersion,
+        uptimeSeconds,
+        databaseStatus,
+        aiStatus,
+      });
     } catch {
       setHealth({
-        status: 'STANDBY',
-        service: 'FieldOps MW Backend Gateway',
-        version: '3.0.0',
-        uptimeSeconds: 60,
-        environment: 'development',
-        nodeVersion: 'v22.23.2',
-        memoryUsageMb: { rss: 58, heapTotal: 38, heapUsed: 24 },
-        cloud: {
-          provider: 'Google Cloud Platform (Cloud Run)',
-          firestoreDatabaseId: firebaseConfigJson.firestoreDatabaseId,
-          firestoreProjectId: firebaseConfigJson.projectId,
-          rulesActive: true,
-        },
+        serverStatus: 'UNREACHABLE',
+        apiVersion: '—',
+        uptimeSeconds: null,
+        databaseStatus: 'UNREACHABLE',
+        aiStatus: 'UNREACHABLE',
       });
     } finally {
       setLoadingHealth(false);
@@ -123,9 +137,13 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
     setTestMethod(method);
     const start = performance.now();
     try {
+      const token = await getAuthToken();
       const options: RequestInit = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       };
       if (body && method !== 'GET') {
         options.body = typeof body === 'string' ? body : JSON.stringify(body);
@@ -152,28 +170,27 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
   };
 
   const endpointsList = [
-    { path: '/api/health', method: 'GET', desc: 'Overall server health, memory and uptime' },
-    { path: '/api/health/db', method: 'GET', desc: 'Cloud Firestore database connectivity probe' },
-    { path: '/api/metrics', method: 'GET', desc: 'Real-time throughput, requests and sync telemetry' },
-    { path: '/api/cloud/infrastructure', method: 'GET', desc: 'Full cloud infrastructure & security specification' },
+    { path: '/api/health', method: 'GET', desc: 'Overall server status, version and uptime' },
+    { path: '/api/health/ready', method: 'GET', desc: 'DocStore and database connectivity probe' },
+    { path: '/api/me', method: 'GET', desc: 'Authenticated caller identity and role claims' },
+    { path: '/api/metrics', method: 'GET', desc: 'Real-time throughput, requests and sync telemetry (Admin Only)' },
     { path: '/api/work-orders', method: 'GET', desc: 'Work orders query with RBAC assignments' },
     { path: '/api/sites', method: 'GET', desc: 'Microwave site profiles and tower heights' },
-    { path: '/api/battery-cache/NS-TER25-A035', method: 'GET', desc: '24-hour battery discharge telemetry cache' },
     { path: '/api/hops', method: 'GET', desc: 'Microwave link hop path parameters' },
+    { path: '/api/battery-cache/NS-TER25-A035', method: 'GET', desc: '24-hour battery discharge telemetry cache (Simulated)' },
     { path: '/api/sync/status', method: 'GET', desc: 'Sync gateway health and replication epoch' },
     {
       path: '/api/inventory/verify',
       method: 'POST',
       desc: 'Verify decommissioned hardware barcode/asset tag',
-      sampleBody: { barcode: 'MW-ODU-8821' },
+      sampleBody: { assetTag: 'INV-MW-101' },
     },
     {
       path: '/api/ai/ask',
       method: 'POST',
       desc: 'Secure server-side Gemini AI telecom proxy',
-      sampleBody: { query: 'What is the expected RSL for Catangnan hop?', context: { hopName: 'NS-TER25' } },
+      sampleBody: { query: 'What is the approved ACL height for Catangnan hop?', context: { hopName: 'NS-TER25' } },
     },
-    { path: '/api/blueprint', method: 'GET', desc: 'Application schema & system architecture registry' },
   ];
 
   return (
@@ -199,9 +216,19 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
                   EXPRESS & FIRESTORE
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  LIVE
+                <span
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono border flex items-center gap-1 ${
+                    health?.serverStatus === 'HEALTHY'
+                      ? 'bg-emerald-950 text-emerald-400 border-emerald-800'
+                      : 'bg-rose-950 text-rose-400 border-rose-800'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      health?.serverStatus === 'HEALTHY' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                    }`}
+                  />
+                  {health?.serverStatus === 'HEALTHY' ? 'LIVE' : 'DOWN'}
                 </span>
               </div>
               <p className="text-xs text-slate-400">
@@ -214,7 +241,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
             <button
               onClick={fetchHealth}
               disabled={loadingHealth}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-colors border border-slate-700"
+              className="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-colors border border-slate-700 min-h-[44px] min-w-[44px]"
               title="Refresh Health"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loadingHealth ? 'animate-spin' : ''}`} />
@@ -222,7 +249,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
@@ -244,7 +271,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3 py-2 text-xs font-mono font-bold flex items-center gap-2 border-b-2 transition-all ${
+                className={`px-3 py-2 text-xs font-mono font-bold flex items-center gap-2 border-b-2 transition-all min-h-[44px] ${
                   active
                     ? 'border-cyan-400 text-cyan-400 bg-cyan-950/20'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -262,57 +289,99 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
           {/* TAB 1: SYSTEM OVERVIEW & HEALTH */}
           {activeTab === 'OVERVIEW' && (
             <div className="space-y-4">
-              {/* Top Quick Metric KPI Cards */}
+              {/* Top KPI Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {/* Server Status */}
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                     <span>Server Status</span>
-                    <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                    <Activity
+                      className={`w-3.5 h-3.5 ${
+                        health?.serverStatus === 'HEALTHY' ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-emerald-400">
-                    {health?.status || 'HEALTHY'}
+                  <div
+                    className={`text-lg font-mono font-extrabold ${
+                      health?.serverStatus === 'HEALTHY' ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                  >
+                    {health?.serverStatus || 'UNREACHABLE'}
                   </div>
                   <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Latency: {pingLatency !== null ? `${pingLatency}ms` : '< 15ms'}
+                    {health?.serverStatus === 'HEALTHY' && pingLatency !== null ? `Latency: ${pingLatency}ms` : '—'}
                   </div>
                 </div>
 
+                {/* API Version & Uptime */}
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Server Runtime</span>
+                    <span>API Version</span>
                     <Cpu className="w-3.5 h-3.5 text-cyan-400" />
                   </div>
                   <div className="text-lg font-mono font-extrabold text-white">
-                    {health?.nodeVersion || 'v22.23.2'}
+                    {health?.apiVersion && health.apiVersion !== '—' ? `v${health.apiVersion}` : '—'}
                   </div>
                   <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Express 4.21.2 · ESM
+                    {health?.uptimeSeconds !== null && health?.uptimeSeconds !== undefined
+                      ? `Uptime: ${health.uptimeSeconds}s`
+                      : 'Uptime: —'}
                   </div>
                 </div>
 
+                {/* Database UP/DOWN */}
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Memory RSS</span>
-                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Database</span>
+                    <Database
+                      className={`w-3.5 h-3.5 ${
+                        health?.databaseStatus === 'UP' ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-amber-400">
-                    {health?.memoryUsageMb?.rss || 64} MB
+                  <div
+                    className={`text-lg font-mono font-extrabold ${
+                      health?.databaseStatus === 'UP'
+                        ? 'text-emerald-400'
+                        : health?.databaseStatus === 'DOWN'
+                        ? 'text-amber-400'
+                        : 'text-rose-400'
+                    }`}
+                  >
+                    {health?.databaseStatus || 'UNREACHABLE'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                    Heap: {health?.memoryUsageMb?.heapUsed || 28} MB
+                  <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
+                    {health?.databaseStatus === 'UP' ? 'DocStore ping OK' : '—'}
                   </div>
                 </div>
 
+                {/* AI Assistant ONLINE/OFFLINE */}
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Cloud Firestore</span>
-                    <Database className="w-3.5 h-3.5 text-purple-400" />
+                    <span>AI Assistant</span>
+                    <Bot
+                      className={`w-3.5 h-3.5 ${
+                        health?.aiStatus === 'ONLINE' ? 'text-cyan-400' : 'text-amber-400'
+                      }`}
+                    />
                   </div>
-                  <div className="text-lg font-mono font-extrabold text-purple-300">
-                    CONNECTED
+                  <div
+                    className={`text-lg font-mono font-extrabold ${
+                      health?.aiStatus === 'ONLINE'
+                        ? 'text-cyan-400'
+                        : health?.aiStatus === 'OFFLINE'
+                        ? 'text-amber-400'
+                        : 'text-rose-400'
+                    }`}
+                  >
+                    {health?.aiStatus || 'UNREACHABLE'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate" title={health?.cloud?.firestoreDatabaseId}>
-                    ID: {health?.cloud?.firestoreDatabaseId?.substring(0, 16)}...
+                  <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                    {health?.aiStatus === 'ONLINE'
+                      ? 'Gemini 3.8 Proxy Active'
+                      : health?.aiStatus === 'OFFLINE'
+                      ? 'Offline Heuristics Active'
+                      : '—'}
                   </div>
                 </div>
               </div>
@@ -329,7 +398,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  FieldOps MW incorporates a high-performance Express server (`server.ts`) hosting custom RESTful endpoints, state-machine transitions, telemetry caches, and secure proxy integrations. In development, it seamlessly mounts Vite dev middleware (`vite.middlewares`) with zero hot reload flicker, while in production it serves optimized bundles with strict security headers.
+                  FieldOps MW incorporates an enterprise Express backend with strict token-based custom claims RBAC, atomic batch synchronization, state-machine transitions, rate limiting, and an isolated Gemini API proxy where API keys remain exclusively on the server.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
@@ -375,7 +444,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                           setTestPayload(ep.sampleBody ? JSON.stringify(ep.sampleBody, null, 2) : '');
                           handleRunEndpointTest(ep.path, ep.method, ep.sampleBody);
                         }}
-                        className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all flex items-center justify-between ${
+                        className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all flex items-center justify-between min-h-[44px] ${
                           testEndpoint === ep.path
                             ? 'bg-cyan-950/60 border-cyan-500 text-white'
                             : 'bg-slate-950/40 border-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800/50'
@@ -421,7 +490,7 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                         )
                       }
                       disabled={testing}
-                      className="px-3 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-colors shadow-sm disabled:opacity-50"
+                      className="px-3 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-colors shadow-sm disabled:opacity-50 min-h-[44px]"
                     >
                       <Play className="w-3 h-3" />
                       <span>{testing ? 'Executing...' : 'Execute Request'}</span>
@@ -505,8 +574,8 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
                       </span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-slate-800">
-                      <span className="text-slate-400">Managed Collections:</span>
-                      <span className="text-cyan-400">work_orders, photos, inventory, tssr_approvals</span>
+                      <span className="text-slate-400">Tenant Isolation:</span>
+                      <span className="text-cyan-400">/orgs/{'{orgId}'}/* (Server Admin SDK only writer)</span>
                     </div>
                   </div>
                 </div>
@@ -624,13 +693,20 @@ export const BackendCloudModal: React.FC<BackendCloudModalProps> = ({
         {/* Modal Bottom Footer */}
         <div className="p-3 px-5 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs text-slate-400 shrink-0">
           <div className="flex items-center gap-2 font-mono text-[11px]">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>FieldOps MW Gateway 3.0.0 · Port 3000 · Firestore Connected</span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                health?.serverStatus === 'HEALTHY' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+              }`}
+            />
+            <span>
+              FieldOps MW Gateway {health?.apiVersion ? `v${health.apiVersion}` : ''} · Port 3000 ·{' '}
+              {health?.databaseStatus === 'UP' ? 'Database UP' : 'Database DOWN'}
+            </span>
           </div>
 
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs transition-colors"
+            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs transition-colors min-h-[44px]"
           >
             Close Console
           </button>

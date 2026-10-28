@@ -1,29 +1,7 @@
-import { GoogleGenAI } from '@google/genai';
+import { api } from './apiClient';
 import { Site, Hop, WorkOrder, ParsedTssrProjectData } from '../types/fieldops';
 
-// Safe initialization of GoogleGenAI
-const getApiKey = (): string => {
-  return (
-    (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) ||
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
-    ''
-  );
-};
-
 export class GeminiService {
-  private ai: GoogleGenAI | null = null;
-
-  constructor() {
-    const key = getApiKey();
-    if (key) {
-      try {
-        this.ai = new GoogleGenAI({ apiKey: key });
-      } catch (err) {
-        console.warn('Failed to initialize GoogleGenAI with key:', err);
-      }
-    }
-  }
-
   public async askFieldOps(
     query: string,
     context: {
@@ -32,62 +10,23 @@ export class GeminiService {
       workOrder?: WorkOrder;
     }
   ): Promise<string> {
-    const promptContext = `
-You are FieldOps AI, a specialized telecom microwave engineer assistant.
-Current Context:
-Hop: ${context.hop?.hopName || 'NS-TER25-A062 to NS-TER25-A035'}
-Link Type: ${context.hop?.linkType || 'NEW LINK'}
-Config: ${context.hop?.configuration || '4+0 CA XPIC'} (11 GHz)
-Site: ${context.site?.id || 'NS-TER25-A035'} (${context.site?.name || 'CATANGNAN_TourismRoad'})
-Approved ACL: ${context.site?.approvedAclHeightM || 40.7}m on ${context.site?.approvedAclLeg || 'Leg C'}
-Antenna: ${context.hop?.antennaModel || 'MA12U10W 1.2m'}
-Expected RSL: ${context.hop?.expectedRslDbm || -27.17} dBm
-Expected TX: ${context.hop?.expectedTxDbm || 20} dBm
-Grounding: IDU ${context.site?.cablePlan.groundingIduMm2 || 10}mm², ODU/LPA ${context.site?.cablePlan.groundingOduMm2 || 16}mm² to busbar at ${context.site?.cablePlan.busbarLocations[0] || '40.3m'}
-Tower: ${context.site?.tower.type || '3-legged SST tubular 45.1m'}
-Power: ZTE ER4850 Rectifier (5 modules), ZXESM 7x100Ah battery, -48V DC
-
-Rules:
-1. Answer concisely and practically for a technician up a tower or in the shelter with gloves on.
-2. Always cite specific TSSR sections or values (e.g. "Per TSSR Section 1.6 & Transport ACL approval, antenna height is 40.7 m on Leg C").
-3. Flag any discrepancies or safety hazards immediately.
-4. If asked about torque specs, standard MW M10/M12 U-bolt torque is 45-50 N·m, N-type connectors 1.5-2.0 N·m.
-`;
-
-    // 1. Attempt server-side proxy route (/api/ai/ask)
     try {
-      const res = await fetch('/api/ai/ask', {
+      const data = await api<{ answer: string }>('/api/ai/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           query,
           context: {
             siteId: context.site?.id,
             siteName: context.site?.name,
             hopName: context.hop?.hopName,
           },
-        }),
+        },
       });
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.data?.answer) {
-          return json.data.answer;
-        }
+      if (data?.answer) {
+        return data.answer;
       }
-    } catch {
-      // Fallback if offline or server route unreachable
-    }
-
-    if (this.ai) {
-      try {
-        const response = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: `${promptContext}\n\nTechnician Question: ${query}`,
-        });
-        return response.text || 'No response generated from AI.';
-      } catch (err: any) {
-        console.warn('Gemini API call failed, using intelligent telecom fallback:', err);
-      }
+    } catch (err) {
+      console.warn('Backend AI ask endpoint unreachable or failed, using telecom heuristic:', err);
     }
 
     // Intelligent telecom offline/fallback knowledge base
@@ -98,38 +37,24 @@ Rules:
     photoTitle: string,
     base64Image?: string
   ): Promise<{ verified: boolean; score: number; feedback: string }> {
-    if (this.ai && base64Image) {
+    if (base64Image) {
       try {
-        const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-        const response = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: [
-            {
-              text: `You are a strict QA telecom site audit inspector. Analyze this photo submitted for TSSR evidence category: "${photoTitle}".
-Verify:
-1. Is the equipment/feature clearly visible and in focus?
-2. Are grounding lugs, weatherproofing, or equipment tags legible if applicable?
-3. Are there safety violations or bad cabling practices?
-Format your answer with:
-PASSED or NEEDS_RETAKE, followed by a concise 2-sentence rationale and score out of 100.`,
+        const data = await api<{ verified: boolean; score: number; feedback: string }>(
+          '/api/ai/inspect-photo',
+          {
+            method: 'POST',
+            body: {
+              photoTitle,
+              imageBase64: base64Image,
+              mimeType: 'image/jpeg',
             },
-            {
-              inlineData: {
-                mimeType: 'image/jpeg',
-                data: cleanBase64,
-              },
-            },
-          ],
-        });
-        const text = response.text || '';
-        const passed = text.toUpperCase().includes('PASSED') || !text.toUpperCase().includes('NEEDS_RETAKE');
-        return {
-          verified: passed,
-          score: passed ? 94 : 45,
-          feedback: text,
-        };
+          }
+        );
+        if (data) {
+          return data;
+        }
       } catch (err) {
-        console.warn('Gemini photo inspection failed, using heuristic:', err);
+        console.warn('Backend AI inspect photo failed, using heuristic:', err);
       }
     }
 
@@ -146,38 +71,26 @@ PASSED or NEEDS_RETAKE, followed by a concise 2-sentence rationale and score out
     site: Site,
     hop: Hop
   ): Promise<{ summary: string; punchList: string[] }> {
-    if (this.ai) {
-      try {
-        const prompt = `
-Generate an executive As-Built Handover Summary and Punch List for:
-Work Order: ${workOrder.workOrderNumber}
-Site: ${site.id} (${site.name})
-Hop: ${hop.hopName}
-Completed Steps: ${JSON.stringify(workOrder.stepsData)}
-Approved ACL: ${site.approvedAclHeightM}m, Leg: ${site.approvedAclLeg}
-Target RSL: ${hop.expectedRslDbm} dBm
-
-Provide:
-1. A concise 3-paragraph executive handover statement.
-2. A list of 3-4 minor punch list items (e.g. cable tie trimming, touch-up cold galv paint, trash cleanup).
-`;
-        const res = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
-        });
-        const text = res.text || '';
-        return {
-          summary: text,
-          punchList: [
-            'Trim all outdoor UV-resistant cable ties flush to prevent snag hazard.',
-            'Apply cold-galvanizing zinc spray on minor scratch on AMB pipe clamp.',
-            'Verify all spare knockouts on NR9150 outdoor cabinet are sealed with IP67 blanking plugs.',
-            'Turn over site keys to EDOTCO warden Rommel and log compound gate exit.',
-          ],
-        };
-      } catch (e) {
-        console.warn('Gemini as-built summary generation failed, falling back:', e);
+    try {
+      const data = await api<{ summary: string; punchList: string[] }>(
+        '/api/ai/as-built-summary',
+        {
+          method: 'POST',
+          body: {
+            workOrderNumber: workOrder.workOrderNumber,
+            siteId: site.id,
+            hopName: hop.hopName,
+            completedSteps: workOrder.stepsData,
+            targetRslDbm: hop.expectedRslDbm,
+            approvedAclHeightM: site.approvedAclHeightM,
+          },
+        }
+      );
+      if (data?.summary) {
+        return data;
       }
+    } catch (err) {
+      console.warn('Backend AI as-built summary failed, using telecom fallback:', err);
     }
 
     return {
@@ -202,294 +115,271 @@ Provide:
     const defaultProjectCode = `PRJ-${Date.now().toString().slice(-6)}`;
     const nowIso = new Date().toISOString();
 
-    if (this.ai && rawText.trim().length > 20) {
+    if (rawText.trim().length >= 20) {
       try {
-        const prompt = `You are a Principal Telecom Transmission Engineer. Analyze this raw Technical Site Survey Report (TSSR) content from file "${fileName}":
-
-"""
-${rawText.slice(0, 8000)}
-"""
-
-Extract and return STRICT JSON ONLY (no markdown code blocks, no preamble) with this exact schema:
-{
-  "projectCode": "string",
-  "documentTitle": "string",
-  "hopName": "string",
-  "frequencyMHz": number,
-  "pathLengthKm": number,
-  "expectedRslDbm": number,
-  "radioModel": "string",
-  "antennaModel": "string",
-  "siteA": {
-    "id": "string",
-    "name": "string",
-    "lat": number,
-    "long": number,
-    "elevationM": number,
-    "towerType": "string",
-    "towerHeightM": number
-  },
-  "siteB": {
-    "id": "string",
-    "name": "string",
-    "lat": number,
-    "long": number,
-    "elevationM": number,
-    "towerType": "string",
-    "towerHeightM": number,
-    "approvedAclHeightM": number,
-    "approvedAclLeg": "string",
-    "ownerTowerProvider": "string"
-  }
-}`;
-
-        const res = await this.ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
+        const response = await api<{ parsed: any }>('/api/ai/parse-tssr', {
+          method: 'POST',
+          body: {
+            rawText,
+            fileName,
+          },
         });
 
-        const text = (res.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const parsed = JSON.parse(text);
-
-        const siteA_Id = parsed.siteA?.id || 'SITE-A-NEW';
-        const siteB_Id = parsed.siteB?.id || 'SITE-B-NEW';
-        const hopId = `hop-${parsed.projectCode || defaultProjectCode}`;
-
-        const siteA: Site = {
-          id: siteA_Id,
-          orgId: 'org-fieldops',
-          name: parsed.siteA?.name || 'Site A Terminal',
-          role: 'A',
-          ownerTowerProvider: 'EDOTCO',
-          ownerContact: 'NOC Desk (+63 2 8888 3368)',
-          siteType: 'GREENFIELD',
-          address: `${parsed.siteA?.name || 'Site A'}, Regional Transmission Route`,
-          lat: Number(parsed.siteA?.lat) || 9.78502,
-          long: Number(parsed.siteA?.long) || 126.12431,
-          latDms: `${Number(parsed.siteA?.lat || 9.785).toFixed(4)}° N`,
-          longDms: `${Number(parsed.siteA?.long || 126.124).toFixed(4)}° E`,
-          elevationM: Number(parsed.siteA?.elevationM) || 32,
-          keyholder: 'Site Security Lead',
-          keyholderContact: '+63 917 111 2233',
-          securityNotes: 'Compound entry authorized for certified telecom crew.',
-          accessRoad: {
-            available: true,
-            type: 'CONCRETE',
-            distanceToMainRoadM: 15,
-            haulingMethod: 'VEHICLE',
-          },
-          commercialPower: { available: true, mcbConnected: true, remarks: 'Main AC active' },
-          tower: {
-            isNew: false,
-            type: parsed.siteA?.towerType || '3-legged SST tubular',
-            steelType: 'Galvanized High-Tensile Steel',
-            heightM: Number(parsed.siteA?.towerHeightM) || 35.0,
-            cableTrayAvailable: true,
-            spaceAvailable: true,
-            groundingAvailable: true,
-            legSizes: '220mm upper / 300mm lower',
-          },
-          power: {
-            dcpdb: 'DCPDB-01',
-            voltage: -48,
-            breakerCapacityA: 63,
-            outdoorCabinetNeeded: false,
-            rectifierBrand: 'ZTE ER4850',
-            rectifierModulesCount: 4,
-            rectifierModuleRatingA: 50,
-            rectifierEnergized: true,
-            batteryBrand: 'ZXESM R312',
-            batteryAh: 100,
-            batteryBanksCount: 4,
-          },
-          antennaLoads: [],
-          cablePlan: {
-            mainPowerM: 4,
-            rdntPowerM: 4,
-            ifCableM: 45,
-            cpriCableM: 45,
-            focCableM: 0,
-            groundingIduM: 8,
-            groundingIduMm2: 10,
-            groundingLpaM: 8,
-            groundingLpaMm2: 16,
-            groundingOduM: 8,
-            groundingOduMm2: 16,
-            busbarLocations: ['Main Ground Bar'],
-          },
-        };
-
-        const siteB: Site = {
-          id: siteB_Id,
-          orgId: 'org-fieldops',
-          name: parsed.siteB?.name || 'Site B Hub',
-          role: 'B',
-          ownerTowerProvider: parsed.siteB?.ownerTowerProvider || 'LDIC',
-          ownerContact: 'Regional Operations (+63 86 826 9100)',
-          siteType: 'ELEVATED_GREENFIELD',
-          address: `${parsed.siteB?.name || 'Site B'}, Primary Repeater Station`,
-          lat: Number(parsed.siteB?.lat) || 9.80251,
-          long: Number(parsed.siteB?.long) || 126.15602,
-          latDms: `${Number(parsed.siteB?.lat || 9.802).toFixed(4)}° N`,
-          longDms: `${Number(parsed.siteB?.long || 126.156).toFixed(4)}° E`,
-          elevationM: Number(parsed.siteB?.elevationM) || 18,
-          keyholder: 'Tower Warden',
-          keyholderContact: '+63 928 776 5432',
-          securityNotes: 'Key card access required at gate.',
-          accessRoad: {
-            available: true,
-            type: 'GRAVEL',
-            distanceToMainRoadM: 25,
-            haulingMethod: 'VEHICLE',
-          },
-          commercialPower: { available: true, mcbConnected: false, remarks: 'Pending commercial breaker energization' },
-          tower: {
-            isNew: false,
-            type: parsed.siteB?.towerType || '3-legged SST tubular',
-            steelType: 'Galvanized High-Tensile Steel',
-            heightM: Number(parsed.siteB?.towerHeightM) || 45.0,
-            cableTrayAvailable: true,
-            spaceAvailable: true,
-            groundingAvailable: true,
-            legSizes: '190mm upper / 330mm lower',
-          },
-          power: {
-            dcpdb: 'DCPDB-02',
-            voltage: -48,
-            breakerCapacityA: 63,
-            outdoorCabinetNeeded: true,
-            rectifierBrand: 'ZTE ER4850',
-            rectifierModulesCount: 5,
-            rectifierModuleRatingA: 50,
-            rectifierEnergized: false,
-            batteryBrand: 'ZXESM R312',
-            batteryAh: 100,
-            batteryBanksCount: 7,
-          },
-          antennaLoads: [],
-          cablePlan: {
-            mainPowerM: 3,
-            rdntPowerM: 3,
-            ifCableM: 57,
-            cpriCableM: 57,
-            focCableM: 0,
-            groundingIduM: 6,
-            groundingIduMm2: 10,
-            groundingLpaM: 6,
-            groundingLpaMm2: 16,
-            groundingOduM: 6,
-            groundingOduMm2: 16,
-            busbarLocations: ['40.3 m upper busbar', '1.3 m base busbar'],
-          },
-          approvedAclHeightM: Number(parsed.siteB?.approvedAclHeightM) || 40.7,
-          approvedAclLeg: parsed.siteB?.approvedAclLeg || 'Leg C',
-          approvedAclRemarks: `Transport Engineering Approved ACL: Install MW at ${parsed.siteB?.approvedAclHeightM || 40.7}m on ${parsed.siteB?.approvedAclLeg || 'Leg C'}.`,
-        };
-
-        const hop: Hop = {
-          id: hopId,
-          orgId: 'org-fieldops',
-          projectId: parsed.projectCode || defaultProjectCode,
-          regionId: 'reg-telecom',
-          hopName: parsed.hopName || `${siteA_Id} to ${siteB_Id}`,
-          siteAId: siteA_Id,
-          siteBId: siteB_Id,
-          linkType: 'NEW LINK',
-          configuration: '4+0 CA XPIC',
-          pathLengthKm: Number(parsed.pathLengthKm) || 3.99,
-          frequencyMHz: Number(parsed.frequencyMHz) || 11000,
-          subBand: `${(Number(parsed.frequencyMHz) || 11000) / 1000} GHz High Sub-band`,
-          radioModel: parsed.radioModel || 'G11H3DD2-3-B-AM',
-          idu: 'NR9150',
-          antennaModel: parsed.antennaModel || 'MA12U10W 40.2 dBi',
-          antennaSizeM: 1.2,
-          expectedTxDbm: 20,
-          expectedRslDbm: Number(parsed.expectedRslDbm) || -27.17,
-          freeSpaceLossDb: 125.31,
-          thermalFadeMarginDb: 26.83,
-          polarization: 'Dual',
-          modulationTable: [
-            { scheme: 'QPSK', throughputMbps: 85, rxThresholdDbm: -86.0 },
-            { scheme: '16QAM', throughputMbps: 185, rxThresholdDbm: -81.5 },
-            { scheme: '64QAM', throughputMbps: 290, rxThresholdDbm: -75.0 },
-            { scheme: '256QAM', throughputMbps: 410, rxThresholdDbm: -68.5 },
-            { scheme: '1024QAM', throughputMbps: 540, rxThresholdDbm: -62.0 },
-            { scheme: '4096QAM', throughputMbps: 690, rxThresholdDbm: -54.0 },
-          ],
-        };
-
-        const generatedWorkOrders: WorkOrder[] = [
-          {
-            id: `wo-${parsed.projectCode || defaultProjectCode}-b`,
-            orgId: 'org-fieldops',
-            workOrderNumber: `WO-${parsed.projectCode || defaultProjectCode}-B`,
-            type: 'INSTALLATION',
-            projectId: parsed.projectCode || defaultProjectCode,
-            regionId: 'reg-telecom',
-            hopId,
-            siteId: siteB_Id,
-            siteRole: 'B',
-            assigneeIds: ['user-tech-1', 'user-climber-1'],
-            status: 'IN_PROGRESS',
-            scheduledDate: nowIso.split('T')[0],
-            startedAt: nowIso,
-            tssrSnapshotVersion: `${parsed.projectCode || defaultProjectCode}-REV-1`,
-            currentStepIndex: 0,
-            stepsData: {},
-            history: [
-              {
-                timestamp: nowIso,
-                userId: 'user-pm-1',
-                userName: 'Project Manager',
-                action: 'AI_TSSR_INGESTION_CREATED',
-                note: `Generated automatically via Gemini AI ingestion of TSSR file "${fileName}".`,
-              },
-            ],
-          },
-          {
-            id: `wo-${parsed.projectCode || defaultProjectCode}-a`,
-            orgId: 'org-fieldops',
-            workOrderNumber: `WO-${parsed.projectCode || defaultProjectCode}-A`,
-            type: 'INSTALLATION',
-            projectId: parsed.projectCode || defaultProjectCode,
-            regionId: 'reg-telecom',
-            hopId,
-            siteId: siteA_Id,
-            siteRole: 'A',
-            assigneeIds: ['user-tech-1'],
-            status: 'SCHEDULED',
-            scheduledDate: nowIso.split('T')[0],
-            tssrSnapshotVersion: `${parsed.projectCode || defaultProjectCode}-REV-1`,
-            currentStepIndex: 0,
-            stepsData: {},
-            history: [],
-          },
-        ];
-
-        return {
-          documentTitle: parsed.documentTitle || `TSSR Microwave Dossier (${siteA_Id} ↔ ${siteB_Id})`,
-          projectCode: parsed.projectCode || defaultProjectCode,
-          uploadedAt: nowIso,
-          uploadedBy: 'Project Manager',
-          hop,
-          siteA,
-          siteB,
-          generatedWorkOrders,
-          summary: {
-            totalDistanceKm: hop.pathLengthKm,
-            requiredACLHeightM: siteB.approvedAclHeightM || 40.7,
-            targetRslDbm: hop.expectedRslDbm,
-            frequencyGHz: hop.frequencyMHz / 1000,
-            totalMilestones: generatedWorkOrders.length,
-          },
-        };
+        if (response?.parsed) {
+          return this.buildProjectDataFromParsed(
+            response.parsed,
+            fileName,
+            defaultProjectCode,
+            nowIso
+          );
+        }
       } catch (err) {
-        console.warn('Gemini TSSR parse JSON failed, using intelligent telecom heuristic parser:', err);
+        console.warn('Backend AI parse-tssr failed, using intelligent telecom heuristic parser:', err);
       }
     }
 
     // Heuristic / Regex Extraction Fallback for real telecom survey files
     return this.fallbackParseTssr(rawText, fileName, defaultProjectCode, nowIso);
+  }
+
+  private buildProjectDataFromParsed(
+    parsed: any,
+    fileName: string,
+    defaultProjectCode: string,
+    nowIso: string
+  ): ParsedTssrProjectData {
+    const siteA_Id = parsed.siteA?.id || 'SITE-A-NEW';
+    const siteB_Id = parsed.siteB?.id || 'SITE-B-NEW';
+    const hopId = `hop-${parsed.projectCode || defaultProjectCode}`;
+
+    const siteA: Site = {
+      id: siteA_Id,
+      orgId: 'org-fieldops',
+      name: parsed.siteA?.name || 'Site A Terminal',
+      role: 'A',
+      ownerTowerProvider: 'EDOTCO',
+      ownerContact: 'NOC Desk (+63 2 8888 3368)',
+      siteType: 'GREENFIELD',
+      address: `${parsed.siteA?.name || 'Site A'}, Regional Transmission Route`,
+      lat: Number(parsed.siteA?.lat) || 9.78502,
+      long: Number(parsed.siteA?.long) || 126.12431,
+      latDms: `${Number(parsed.siteA?.lat || 9.785).toFixed(4)}° N`,
+      longDms: `${Number(parsed.siteA?.long || 126.124).toFixed(4)}° E`,
+      elevationM: Number(parsed.siteA?.elevationM) || 32,
+      keyholder: 'Site Security Lead',
+      keyholderContact: '+63 917 111 2233',
+      securityNotes: 'Compound entry authorized for certified telecom crew.',
+      accessRoad: {
+        available: true,
+        type: 'CONCRETE',
+        distanceToMainRoadM: 15,
+        haulingMethod: 'VEHICLE',
+      },
+      commercialPower: { available: true, mcbConnected: true, remarks: 'Main AC active' },
+      tower: {
+        isNew: false,
+        type: parsed.siteA?.towerType || '3-legged SST tubular',
+        steelType: 'Galvanized High-Tensile Steel',
+        heightM: Number(parsed.siteA?.towerHeightM) || 35.0,
+        cableTrayAvailable: true,
+        spaceAvailable: true,
+        groundingAvailable: true,
+        legSizes: '220mm upper / 300mm lower',
+      },
+      power: {
+        dcpdb: 'DCPDB-01',
+        voltage: -48,
+        breakerCapacityA: 63,
+        outdoorCabinetNeeded: false,
+        rectifierBrand: 'ZTE ER4850',
+        rectifierModulesCount: 4,
+        rectifierModuleRatingA: 50,
+        rectifierEnergized: true,
+        batteryBrand: 'ZXESM R312',
+        batteryAh: 100,
+        batteryBanksCount: 4,
+      },
+      antennaLoads: [],
+      cablePlan: {
+        mainPowerM: 4,
+        rdntPowerM: 4,
+        ifCableM: 45,
+        cpriCableM: 45,
+        focCableM: 0,
+        groundingIduM: 8,
+        groundingIduMm2: 10,
+        groundingLpaM: 8,
+        groundingLpaMm2: 16,
+        groundingOduM: 8,
+        groundingOduMm2: 16,
+        busbarLocations: ['Main Ground Bar'],
+      },
+    };
+
+    const siteB: Site = {
+      id: siteB_Id,
+      orgId: 'org-fieldops',
+      name: parsed.siteB?.name || 'Site B Hub',
+      role: 'B',
+      ownerTowerProvider: parsed.siteB?.ownerTowerProvider || 'LDIC',
+      ownerContact: 'Regional Operations (+63 86 826 9100)',
+      siteType: 'ELEVATED_GREENFIELD',
+      address: `${parsed.siteB?.name || 'Site B'}, Primary Repeater Station`,
+      lat: Number(parsed.siteB?.lat) || 9.80251,
+      long: Number(parsed.siteB?.long) || 126.15602,
+      latDms: `${Number(parsed.siteB?.lat || 9.802).toFixed(4)}° N`,
+      longDms: `${Number(parsed.siteB?.long || 126.156).toFixed(4)}° E`,
+      elevationM: Number(parsed.siteB?.elevationM) || 18,
+      keyholder: 'Tower Warden',
+      keyholderContact: '+63 928 776 5432',
+      securityNotes: 'Key card access required at gate.',
+      accessRoad: {
+        available: true,
+        type: 'GRAVEL',
+        distanceToMainRoadM: 25,
+        haulingMethod: 'VEHICLE',
+      },
+      commercialPower: { available: true, mcbConnected: false, remarks: 'Pending commercial breaker energization' },
+      tower: {
+        isNew: false,
+        type: parsed.siteB?.towerType || '3-legged SST tubular',
+        steelType: 'Galvanized High-Tensile Steel',
+        heightM: Number(parsed.siteB?.towerHeightM) || 45.0,
+        cableTrayAvailable: true,
+        spaceAvailable: true,
+        groundingAvailable: true,
+        legSizes: '190mm upper / 330mm lower',
+      },
+      power: {
+        dcpdb: 'DCPDB-02',
+        voltage: -48,
+        breakerCapacityA: 63,
+        outdoorCabinetNeeded: true,
+        rectifierBrand: 'ZTE ER4850',
+        rectifierModulesCount: 5,
+        rectifierModuleRatingA: 50,
+        rectifierEnergized: false,
+        batteryBrand: 'ZXESM R312',
+        batteryAh: 100,
+        batteryBanksCount: 7,
+      },
+      antennaLoads: [],
+      cablePlan: {
+        mainPowerM: 3,
+        rdntPowerM: 3,
+        ifCableM: 57,
+        cpriCableM: 57,
+        focCableM: 0,
+        groundingIduM: 6,
+        groundingIduMm2: 10,
+        groundingLpaM: 6,
+        groundingLpaMm2: 16,
+        groundingOduM: 6,
+        groundingOduMm2: 16,
+        busbarLocations: ['40.3 m upper busbar', '1.3 m base busbar'],
+      },
+      approvedAclHeightM: Number(parsed.siteB?.approvedAclHeightM) || 40.7,
+      approvedAclLeg: parsed.siteB?.approvedAclLeg || 'Leg C',
+      approvedAclRemarks: `Transport Engineering Approved ACL: Install MW at ${parsed.siteB?.approvedAclHeightM || 40.7}m on ${parsed.siteB?.approvedAclLeg || 'Leg C'}.`,
+    };
+
+    const hop: Hop = {
+      id: hopId,
+      orgId: 'org-fieldops',
+      projectId: parsed.projectCode || defaultProjectCode,
+      regionId: 'reg-telecom',
+      hopName: parsed.hopName || `${siteA_Id} to ${siteB_Id}`,
+      siteAId: siteA_Id,
+      siteBId: siteB_Id,
+      linkType: 'NEW LINK',
+      configuration: '4+0 CA XPIC',
+      pathLengthKm: Number(parsed.pathLengthKm) || 3.99,
+      frequencyMHz: Number(parsed.frequencyMHz) || 11000,
+      subBand: `${(Number(parsed.frequencyMHz) || 11000) / 1000} GHz High Sub-band`,
+      radioModel: parsed.radioModel || 'G11H3DD2-3-B-AM',
+      idu: 'NR9150',
+      antennaModel: parsed.antennaModel || 'MA12U10W 40.2 dBi',
+      antennaSizeM: 1.2,
+      expectedTxDbm: 20,
+      expectedRslDbm: Number(parsed.expectedRslDbm) || -27.17,
+      freeSpaceLossDb: 125.31,
+      thermalFadeMarginDb: 26.83,
+      polarization: 'Dual',
+      modulationTable: [
+        { scheme: 'QPSK', throughputMbps: 85, rxThresholdDbm: -86.0 },
+        { scheme: '16QAM', throughputMbps: 185, rxThresholdDbm: -81.5 },
+        { scheme: '64QAM', throughputMbps: 290, rxThresholdDbm: -75.0 },
+        { scheme: '256QAM', throughputMbps: 410, rxThresholdDbm: -68.5 },
+        { scheme: '1024QAM', throughputMbps: 540, rxThresholdDbm: -62.0 },
+        { scheme: '4096QAM', throughputMbps: 690, rxThresholdDbm: -54.0 },
+      ],
+    };
+
+    const generatedWorkOrders: WorkOrder[] = [
+      {
+        id: `wo-${parsed.projectCode || defaultProjectCode}-b`,
+        orgId: 'org-fieldops',
+        workOrderNumber: `WO-${parsed.projectCode || defaultProjectCode}-B`,
+        type: 'INSTALLATION',
+        projectId: parsed.projectCode || defaultProjectCode,
+        regionId: 'reg-telecom',
+        hopId,
+        siteId: siteB_Id,
+        siteRole: 'B',
+        assigneeIds: ['user-tech-1', 'user-climber-1'],
+        status: 'IN_PROGRESS',
+        scheduledDate: nowIso.split('T')[0],
+        startedAt: nowIso,
+        tssrSnapshotVersion: `${parsed.projectCode || defaultProjectCode}-REV-1`,
+        currentStepIndex: 0,
+        stepsData: {},
+        history: [
+          {
+            timestamp: nowIso,
+            userId: 'user-pm-1',
+            userName: 'Project Manager',
+            action: 'AI_TSSR_INGESTION_CREATED',
+            note: `Generated automatically via Gemini AI ingestion of TSSR file "${fileName}".`,
+          },
+        ],
+      },
+      {
+        id: `wo-${parsed.projectCode || defaultProjectCode}-a`,
+        orgId: 'org-fieldops',
+        workOrderNumber: `WO-${parsed.projectCode || defaultProjectCode}-A`,
+        type: 'INSTALLATION',
+        projectId: parsed.projectCode || defaultProjectCode,
+        regionId: 'reg-telecom',
+        hopId,
+        siteId: siteA_Id,
+        siteRole: 'A',
+        assigneeIds: ['user-tech-1'],
+        status: 'SCHEDULED',
+        scheduledDate: nowIso.split('T')[0],
+        tssrSnapshotVersion: `${parsed.projectCode || defaultProjectCode}-REV-1`,
+        currentStepIndex: 0,
+        stepsData: {},
+        history: [],
+      },
+    ];
+
+    return {
+      documentTitle: parsed.documentTitle || `TSSR Microwave Dossier (${siteA_Id} ↔ ${siteB_Id})`,
+      projectCode: parsed.projectCode || defaultProjectCode,
+      uploadedAt: nowIso,
+      uploadedBy: 'Project Manager',
+      hop,
+      siteA,
+      siteB,
+      generatedWorkOrders,
+      summary: {
+        totalDistanceKm: hop.pathLengthKm,
+        requiredACLHeightM: siteB.approvedAclHeightM || 40.7,
+        targetRslDbm: hop.expectedRslDbm,
+        frequencyGHz: hop.frequencyMHz / 1000,
+        totalMilestones: generatedWorkOrders.length,
+      },
+    };
   }
 
   private fallbackParseTssr(
