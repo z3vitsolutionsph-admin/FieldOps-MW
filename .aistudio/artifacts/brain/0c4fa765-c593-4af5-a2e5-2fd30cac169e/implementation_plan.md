@@ -156,6 +156,21 @@ The application streamlines the complete lifecycle of microwave link deployments
     - Automated "Auto-Match Top Crew" algorithm that selects the optimal pairing (e.g. Lead Certified Climber + Commissioning Specialist).
   - **Search & Multi-Role Filtering**: Real-time filtering by role (`TOWER_CLIMBER`, `TECHNICIAN`, `TEAM_LEADER`, `SUPERVISOR`), availability (`AVAILABLE`, `ON_DUTY`), or freeform name/specialization search.
 
+### 3.5 Mobile Drawer Navigation & Viewport Space Optimization (COMPLETED)
+- **Status**: Implemented, tested, and verified.
+- **Capabilities**:
+  - **Mobile Slide-Over Drawer (`lg:hidden`)**:
+    - Replaces fixed/blank left sidebar space on mobile and tablet screen sizes with an animated slide-over drawer (`w-80 max-w-[85vw]`).
+    - Full-screen backdrop overlay with dark blur (`bg-black/75 backdrop-blur-sm`).
+    - Designated drawer header with brand logo, `DRAWER` badge, and touch-ergonomic close button (`X`) meeting minimum 44x44px touch targets.
+    - Preserves all enterprise navigation, microwave link telemetry cards, role-based user flow stepper (PM and Team Leader flows), and quick system consoles.
+    - Auto-closes on navigation tab/modal selection, backdrop tap, or `Escape` key press.
+  - **Dual Triggering Architecture**:
+    - Top Header hamburger menu button (`<button onClick={onToggleDrawer}>`) next to the brand.
+    - Thumb-accessible floating quick-drawer trigger on mobile screen sizes (`fixed bottom-16 left-3`).
+  - **Desktop Workspace Collapse (`hidden lg:flex`)**:
+    - Allows desktop and laptop users to collapse the left sidebar (`w-0 border-none overflow-hidden`) via a top collapse button (`PanelLeftClose`) or header hamburger, granting 100% of the viewport width to wide TSSR dossiers, GIS maps, and Fresnel diagrams.
+
 ---
 
 ## 4. Verification & Testing Matrix
@@ -172,6 +187,9 @@ The application streamlines the complete lifecycle of microwave link deployments
 | **Resource Allocation** | Visualizes field crew workload & status | Live deployment, standby status, and licenses displayed | Yes |
 | **Skill Matching** | Score crew against work order requirements | Computes 0–100% score based on role, certs, and license | Yes |
 | **Crew Assignment** | 1-click assign or auto-match crew | Updates work order assigneeIds, saves to storage, logs audit | Yes |
+| **Mobile Drawer** | Slide-over drawer on mobile screen sizes | Drawer slides in from left with backdrop, frees 100% space when closed | Yes |
+| **Drawer Triggers** | Header button & floating FAB | Toggles drawer open/close, auto-closes on nav selection | Yes |
 | **Type Check** | `npm run lint` (`tsc --noEmit`) | 0 TypeScript errors | Yes |
 | **Build Check** | `npm run build` | Production bundle compiled successfully | Yes |
+
 

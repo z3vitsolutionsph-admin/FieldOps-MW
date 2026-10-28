@@ -24,6 +24,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Compass,
+  Menu,
 } from 'lucide-react';
 import { storage } from '../../services/storageService';
 import { deviceBatteryService } from '../../services/deviceBatteryService';
@@ -46,6 +47,8 @@ interface HeaderProps {
   siteA?: Site;
   siteB?: Site;
   hop?: Hop;
+  onToggleDrawer?: () => void;
+  isDrawerOpen?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -64,6 +67,8 @@ export const Header: React.FC<HeaderProps> = ({
   siteA,
   siteB,
   hop,
+  onToggleDrawer,
+  isDrawerOpen = false,
 }) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showBatteryModal, setShowBatteryModal] = useState(false);
@@ -223,8 +228,23 @@ export const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <div className="w-full px-3 sm:px-4 lg:px-6 py-2 flex items-center justify-between gap-3">
-        {/* Left Section: Enterprise Brand & Sidebar Alignment Footprint */}
-        <div className="w-auto lg:w-64 xl:w-72 shrink-0 flex items-center justify-between lg:border-r border-slate-800/80 lg:pr-4">
+        {/* Left Section: Enterprise Brand & Drawer/Sidebar Toggle Trigger */}
+        <div className="flex items-center gap-2 shrink-0">
+          {onToggleDrawer && (
+            <button
+              onClick={onToggleDrawer}
+              aria-label={isDrawerOpen ? 'Close Navigation Drawer' : 'Open Navigation Drawer'}
+              title="Toggle Navigation & Telemetry Drawer"
+              className={`p-2 -ml-1 rounded-xl transition-all flex items-center justify-center min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isDrawerOpen
+                  ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+              }`}
+            >
+              <Menu className="w-5 h-5 text-cyan-400" />
+            </button>
+          )}
+
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-md shadow-cyan-950/40 shrink-0">
               <Radio className="w-4 h-4 stroke-[2.2]" />
@@ -245,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Telecom Status Pill (Desktop only) */}
-          <div className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+          <div className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 ml-2 pl-2 border-l border-slate-800/80">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[9px] font-bold">11GHz XPIC</span>
           </div>

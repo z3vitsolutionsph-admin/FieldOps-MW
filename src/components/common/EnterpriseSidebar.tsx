@@ -22,11 +22,14 @@ import {
   Database,
   ArrowRight,
   AlertTriangle,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { ActiveTab } from './BottomNav';
 import { UserProfile, Site, Hop } from '../../types/fieldops';
 
-interface EnterpriseSidebarProps {
+export interface EnterpriseSidebarProps {
   activeTab: ActiveTab;
   onChangeTab: (tab: ActiveTab) => void;
   activeUser: UserProfile;
@@ -42,6 +45,11 @@ interface EnterpriseSidebarProps {
   siteA?: Site | null;
   siteB?: Site | null;
   hop?: Hop | null;
+  // Drawer & Collapse Props
+  isMobileDrawerOpen?: boolean;
+  onCloseDrawer?: () => void;
+  isDesktopCollapsed?: boolean;
+  onToggleDesktopCollapse?: () => void;
 }
 
 export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
@@ -60,8 +68,17 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   siteA,
   siteB,
   hop,
+  isMobileDrawerOpen = false,
+  onCloseDrawer,
+  isDesktopCollapsed = false,
+  onToggleDesktopCollapse,
 }) => {
-  const navItems: { id: ActiveTab; label: string; icon: React.ComponentType<{ className?: string }>; section: string }[] = [
+  const navItems: {
+    id: ActiveTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    section: string;
+  }[] = [
     { id: 'DASHBOARD', label: 'Operations Overview', icon: BarChart3, section: 'MISSION CONTROL' },
     { id: 'JOBS', label: 'Work Orders & Rigging', icon: Briefcase, section: 'MISSION CONTROL' },
     { id: 'TOOLS', label: 'Antenna Alignment HUD', icon: Wrench, section: 'TOWER TOOLS' },
@@ -70,14 +87,23 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     { id: 'AI', label: 'AI RF Diagnostics', icon: Bot, section: 'ENGINEERING' },
   ];
 
-  return (
-    <aside
-      className={`hidden lg:flex flex-col w-64 xl:w-72 shrink-0 border-r transition-colors select-none ${
-        sunlightMode
-          ? 'bg-amber-100/90 border-amber-300 text-neutral-900'
-          : 'bg-slate-950/95 border-slate-800 text-slate-100'
-      }`}
-    >
+  const handleNavClick = (tab: ActiveTab) => {
+    onChangeTab(tab);
+    if (onCloseDrawer) {
+      onCloseDrawer();
+    }
+  };
+
+  const handleModalClick = (modalOpener: () => void) => {
+    modalOpener();
+    if (onCloseDrawer) {
+      onCloseDrawer();
+    }
+  };
+
+  // Reusable Sidebar Body Content
+  const renderSidebarContent = () => (
+    <>
       {/* Decorative Enterprise Microwave Link Telemetry Card */}
       <div className="p-3.5 border-b border-slate-800/80 space-y-2.5">
         <div className="flex items-center justify-between font-mono text-[11px]">
@@ -144,11 +170,11 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               Previous TSSR data cleared. Upload a new TSSR to bind hop geometry.
             </p>
             <button
-              onClick={() => onChangeTab('TSSR')}
-              className="w-full py-1.5 px-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 font-bold text-[10px] flex items-center justify-center gap-1 transition-colors"
+              onClick={() => handleNavClick('TSSR')}
+              className="w-full py-2 px-2.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors min-h-[44px]"
             >
               <span>Upload TSSR (PM)</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -165,31 +191,37 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             RBAC
           </span>
         </div>
-        <div className="space-y-1 text-[10px]">
+        <div className="space-y-1 text-[11px]">
           {activeUser.role === 'PROJECT_MANAGER' ? (
             <>
               <button
-                onClick={() => onChangeTab('TSSR')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'TSSR' ? 'bg-blue-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('TSSR')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'TSSR'
+                    ? 'bg-blue-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>1. Upload TSSR (Hop Data)</span>
                 <span>➔</span>
               </button>
               <button
-                onClick={() => onChangeTab('DASHBOARD')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'DASHBOARD' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('DASHBOARD')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'DASHBOARD'
+                    ? 'bg-cyan-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>2. Dashboard & Crew Allocation</span>
                 <span>➔</span>
               </button>
               <button
-                onClick={() => onChangeTab('JOBS')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'JOBS' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('JOBS')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'JOBS'
+                    ? 'bg-cyan-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>3. Jobs Schedule & Steps</span>
@@ -199,27 +231,33 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ) : (
             <>
               <button
-                onClick={() => onChangeTab('DASHBOARD')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'DASHBOARD' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('DASHBOARD')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'DASHBOARD'
+                    ? 'bg-cyan-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>1. Dashboard & Weather</span>
                 <span>➔</span>
               </button>
               <button
-                onClick={() => onChangeTab('JOBS')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'JOBS' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('JOBS')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'JOBS'
+                    ? 'bg-cyan-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>2. Assigned Jobs & Rigging</span>
                 <span>➔</span>
               </button>
               <button
-                onClick={() => onChangeTab('TOOLS')}
-                className={`w-full text-left px-2 py-1 rounded-md flex items-center justify-between transition-colors ${
-                  activeTab === 'TOOLS' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                onClick={() => handleNavClick('TOOLS')}
+                className={`w-full text-left px-2.5 py-2 rounded-md flex items-center justify-between transition-colors min-h-[44px] ${
+                  activeTab === 'TOOLS'
+                    ? 'bg-cyan-600 text-white font-bold shadow'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <span>3. Antenna HUD & Battery</span>
@@ -246,8 +284,8 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onChangeTab(item.id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all text-left ${
+                    onClick={() => handleNavClick(item.id)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-mono font-bold transition-all text-left min-h-[44px] focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                       isActive
                         ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/40 translate-x-0.5'
                         : 'text-slate-400 hover:text-white hover:bg-slate-900'
@@ -269,11 +307,11 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             SYSTEM CONSOLES
           </div>
           <button
-            onClick={onOpenSyncModal}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+            onClick={() => handleModalClick(onOpenSyncModal)}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-cyan-400"
           >
             <span className="flex items-center gap-2">
-              <Database className="w-3.5 h-3.5 text-cyan-400" />
+              <Database className="w-4 h-4 text-cyan-400" />
               <span>Offline Sync Queue</span>
             </span>
             {queuedCount > 0 ? (
@@ -286,22 +324,22 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           </button>
 
           <button
-            onClick={onOpenBlueprint}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+            onClick={() => handleModalClick(onOpenBlueprint)}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-cyan-400"
           >
             <span className="flex items-center gap-2">
-              <Activity className="w-3.5 h-3.5 text-cyan-400" />
+              <Activity className="w-4 h-4 text-cyan-400" />
               <span>Blueprint & Changelog</span>
             </span>
             <span className="text-[10px] text-slate-400">v3.6</span>
           </button>
 
           <button
-            onClick={onOpenBackendCloud}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+            onClick={() => handleModalClick(onOpenBackendCloud)}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-900 transition-colors min-h-[44px] focus-visible:ring-2 focus-visible:ring-cyan-400"
           >
             <span className="flex items-center gap-2">
-              <Zap className="w-3.5 h-3.5 text-purple-400" />
+              <Zap className="w-4 h-4 text-purple-400" />
               <span>Backend & Cloud APIs</span>
             </span>
             <span className="text-[10px] text-purple-400">Cloud Run</span>
@@ -310,7 +348,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Decorative Sidebar Footer: Active Operator Profile & Toggles */}
-      <div className="p-3 border-t border-slate-800/80 space-y-2.5 bg-slate-950/80">
+      <div className="p-3 border-t border-slate-800/80 space-y-2.5 bg-slate-950/80 shrink-0">
         {/* User Card */}
         <div className="p-2 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-cyan-700 text-white font-bold text-xs flex items-center justify-center shrink-0">
@@ -329,27 +367,122 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
           <button
             onClick={onToggleSunlight}
-            className={`p-1.5 rounded-lg border flex items-center justify-center gap-1 transition-colors ${
+            className={`p-2 rounded-lg border flex items-center justify-center gap-1 transition-colors min-h-[44px] ${
               sunlightMode
                 ? 'bg-yellow-400 text-slate-950 border-yellow-500 font-bold'
                 : 'bg-slate-900 text-slate-300 border-slate-800 hover:text-yellow-400'
             }`}
             title="Toggle High-Contrast Sunlight Mode for 45m Tower"
           >
-            <Sun className="w-3 h-3" />
+            <Sun className="w-3.5 h-3.5" />
             <span>{sunlightMode ? 'Sunlight' : 'Tactical'}</span>
           </button>
 
           <button
             onClick={onToggleLanguage}
-            className="p-1.5 rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:text-white flex items-center justify-center gap-1 transition-colors"
+            className="p-2 rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:text-white flex items-center justify-center gap-1 transition-colors min-h-[44px]"
             title="Switch Language (EN / Filipino)"
           >
-            <Globe className="w-3 h-3 text-cyan-400" />
+            <Globe className="w-3.5 h-3.5 text-cyan-400" />
             <span>{language}</span>
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* 1. MOBILE SLIDE-OVER DRAWER OVERLAY & PANEL (Screens < lg) */}
+      <div
+        className={`fixed inset-0 bg-black/75 backdrop-blur-sm z-50 transition-opacity duration-300 lg:hidden ${
+          isMobileDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onCloseDrawer}
+        aria-hidden="true"
+      />
+
+      <aside
+        className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${
+          sunlightMode
+            ? 'bg-amber-100 border-r border-amber-300 text-neutral-900'
+            : 'bg-slate-950 border-r border-slate-800 text-slate-100'
+        }`}
+        aria-label="Mobile Navigation & Telemetry Drawer"
+        role="dialog"
+        aria-modal={isMobileDrawerOpen}
+      >
+        {/* Drawer Header Banner */}
+        <div className="p-3.5 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0 bg-slate-900/80">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-md shrink-0">
+              <Radio className="w-4 h-4 stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-sm uppercase text-cyan-400">
+                  FieldOps
+                </span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                  MW
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-mono">
+                Navigation & Telemetry Drawer
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onCloseDrawer}
+            aria-label="Close navigation drawer"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-cyan-400 min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Drawer Body */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
+          {renderSidebarContent()}
+        </div>
+      </aside>
+
+      {/* 2. DESKTOP DOCKED SIDEBAR (Screens >= lg) */}
+      <aside
+        className={`hidden lg:flex flex-col shrink-0 border-r transition-all duration-300 select-none ${
+          isDesktopCollapsed ? 'w-0 overflow-hidden border-none' : 'w-64 xl:w-72'
+        } ${
+          sunlightMode
+            ? 'bg-amber-100/90 border-amber-300 text-neutral-900'
+            : 'bg-slate-950/95 border-slate-800 text-slate-100'
+        }`}
+        aria-label="Enterprise Telemetry & Operations Sidebar"
+      >
+        {/* Desktop Sidebar Collapse Header */}
+        <div className="p-2.5 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-slate-950/60">
+          <span className="text-[10px] font-mono text-slate-400 tracking-wider uppercase px-2 font-bold truncate">
+            Sidebar Navigation
+          </span>
+          {onToggleDesktopCollapse && (
+            <button
+              onClick={onToggleDesktopCollapse}
+              aria-label="Collapse sidebar to maximize workspace"
+              title="Collapse sidebar to maximize workspace"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center justify-center min-h-[32px] min-w-[32px]"
+            >
+              <PanelLeftClose className="w-4 h-4 text-slate-400 hover:text-cyan-400 transition-colors" />
+            </button>
+          )}
+        </div>
+
+        {/* Desktop Scrollable Body */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
+          {renderSidebarContent()}
+        </div>
+      </aside>
+    </>
   );
 };

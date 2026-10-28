@@ -100,6 +100,20 @@ Provides Project Managers with live field crew deployment metrics, certified cli
   - "Auto-Match Top Crew" smart button automatically identifies and dispatches the optimal pair of certified crew members.
   - Role-based and availability filtering plus full-text candidate search.
 
+### 2.5 Mobile Drawer Navigation & Viewport Space Optimization
+Maximizes screen real estate on mobile devices (< lg viewport) while preserving instant access to microwave link telemetry, role workflows, and diagnostic consoles.
+
+- **Responsive Slide-Over Drawer (`EnterpriseSidebar.tsx`)**:
+  - Hidden on mobile viewports by default, freeing up 100% of the screen width for GIS maps, antenna geometry diagrams, and TSSR data tables.
+  - Smooth slide-out transition (`translate-x-0` vs `-translate-x-full`) overlaying content with a darkened backdrop blur (`bg-black/75 backdrop-blur-sm`).
+  - Mobile header features the FieldOps MW brand emblem, "DRAWER" badge indicator, and an ergonomic touch-friendly close button (`min-h-[44px] min-w-[44px]`).
+  - Automatically dismisses upon tab navigation, workflow step selection, console modal opening, backdrop tap, or `Escape` key press.
+- **Ergonomic Drawer Triggers**:
+  - **Header Toggle (`Header.tsx`)**: Touch-accessible hamburger menu button (`min-h-[44px] min-w-[44px]`) positioned adjacent to the logo with clear visual state indicators and ARIA attributes.
+  - **Floating Action Button (`App.tsx`)**: Thumb-accessible floating drawer trigger (`fixed bottom-16 left-3 lg:hidden`) styled in tactical emerald/cyan, elevated above tab bars for one-handed operation in the field.
+- **Desktop Sidebar Collapse Support**:
+  - On desktop (`lg+`), the sidebar can be toggled between docked standard view and collapsed state (`w-0 overflow-hidden border-none`), allowing transmission planners and PMs to expand GIS maps and TSSR dossiers to 100% full desktop monitor width.
+
 ---
 
 ## 3. RBAC Privilege Matrix

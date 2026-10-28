@@ -39,7 +39,7 @@ import {
   SEED_TSSR_APPROVALS,
   SEED_USERS,
 } from './data/seedData';
-import { WifiOff, AlertTriangle, ArrowRight, ShieldCheck, UserCheck, Lock, FileText, Clock, Upload } from 'lucide-react';
+import { WifiOff, AlertTriangle, ArrowRight, ShieldCheck, UserCheck, Lock, FileText, Clock, Upload, Menu } from 'lucide-react';
 import { ShiftHandoverModal } from './components/installation/ShiftHandoverModal';
 
 export default function App() {
@@ -74,6 +74,21 @@ export default function App() {
     code: string;
     title: string;
   } | null>(null);
+
+  // Mobile Drawer & Desktop Sidebar Collapse States
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState<boolean>(false);
+
+  // Close mobile drawer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Subscribe to storage changes
   useEffect(() => {
@@ -162,6 +177,14 @@ export default function App() {
         siteA={siteA}
         siteB={siteB}
         hop={currentHop}
+        onToggleDrawer={() => {
+          if (window.innerWidth < 1024) {
+            setIsMobileDrawerOpen((prev) => !prev);
+          } else {
+            setIsDesktopCollapsed((prev) => !prev);
+          }
+        }}
+        isDrawerOpen={isMobileDrawerOpen}
       />
 
       {/* Offline Alert Strip */}
@@ -219,10 +242,13 @@ export default function App() {
 
       {/* Main Enterprise Desktop & Mobile Layout Container */}
       <div className="flex-1 flex w-full">
-        {/* Enterprise Decorative Branding & Telemetry Sidebar (Desktop) */}
+        {/* Enterprise Decorative Branding & Telemetry Sidebar (Desktop Dock & Mobile Drawer) */}
         <EnterpriseSidebar
           activeTab={activeTab}
-          onChangeTab={setActiveTab}
+          onChangeTab={(tab) => {
+            setActiveTab(tab);
+            setIsMobileDrawerOpen(false);
+          }}
           activeUser={activeUser}
           isOnline={isOnline}
           queuedCount={queue.length}
@@ -230,12 +256,25 @@ export default function App() {
           language={language}
           onToggleSunlight={handleToggleSunlight}
           onToggleLanguage={handleToggleLanguage}
-          onOpenSyncModal={() => setShowSyncModal(true)}
-          onOpenBlueprint={() => setShowBlueprintModal(true)}
-          onOpenBackendCloud={() => setShowBackendCloudModal(true)}
+          onOpenSyncModal={() => {
+            setShowSyncModal(true);
+            setIsMobileDrawerOpen(false);
+          }}
+          onOpenBlueprint={() => {
+            setShowBlueprintModal(true);
+            setIsMobileDrawerOpen(false);
+          }}
+          onOpenBackendCloud={() => {
+            setShowBackendCloudModal(true);
+            setIsMobileDrawerOpen(false);
+          }}
           siteA={siteA}
           siteB={siteB}
           hop={currentHop}
+          isMobileDrawerOpen={isMobileDrawerOpen}
+          onCloseDrawer={() => setIsMobileDrawerOpen(false)}
+          isDesktopCollapsed={isDesktopCollapsed}
+          onToggleDesktopCollapse={() => setIsDesktopCollapsed((prev) => !prev)}
         />
 
         {/* Main Content Viewport */}
@@ -447,11 +486,27 @@ export default function App() {
         )}
       </main>
       </div>
+      {/* Mobile Floating Quick-Drawer Button (Thumb-accessible for tower riggers) */}
+      <button
+        onClick={() => setIsMobileDrawerOpen(true)}
+        aria-label="Open Navigation & Telemetry Drawer"
+        title="Open Navigation & Telemetry Drawer"
+        className={`fixed bottom-16 left-3 z-30 lg:hidden w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90 border focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+          sunlightMode
+            ? 'bg-amber-400 text-slate-950 border-amber-600 shadow-amber-950/40'
+            : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-400/50 shadow-cyan-950/70'
+        }`}
+      >
+        <Menu className="w-5 h-5" />
+      </button>
 
       {/* Mobile-First Bottom Navigation Bar */}
       <BottomNav
         activeTab={activeTab}
-        onChangeTab={setActiveTab}
+        onChangeTab={(tab) => {
+          setActiveTab(tab);
+          setIsMobileDrawerOpen(false);
+        }}
         sunlightMode={sunlightMode}
       />
 
