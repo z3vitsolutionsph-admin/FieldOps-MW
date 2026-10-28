@@ -19,6 +19,9 @@ export interface UserProfile {
   phone?: string;
   certifications?: string[]; // e.g. "Working at Heights - Level 2", "RF Safety"
   climberLicenseNo?: string;
+  status?: 'AVAILABLE' | 'ON_DUTY' | 'REST_DAY' | 'IN_TRANSIT';
+  yearsExperience?: number;
+  specialization?: string;
 }
 
 export interface ParsedTssrProjectData {

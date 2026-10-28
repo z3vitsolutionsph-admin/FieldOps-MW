@@ -183,7 +183,7 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   activeTab === 'DASHBOARD' ? 'bg-cyan-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                <span>2. Dashboard Directory</span>
+                <span>2. Dashboard & Crew Allocation</span>
                 <span>➔</span>
               </button>
               <button

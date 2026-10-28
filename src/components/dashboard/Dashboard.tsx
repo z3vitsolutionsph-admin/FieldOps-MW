@@ -25,6 +25,7 @@ import {
   UserCheck,
   FileText,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import {
   WorkOrder,
@@ -45,6 +46,7 @@ import { SiteMapLeaflet } from './SiteMapLeaflet';
 import { RfFresnelDiagram } from './RfFresnelDiagram';
 import { OfflineDataAudit } from './OfflineDataAudit';
 import { WeatherForecastWidget } from '../weather/WeatherForecastWidget';
+import { ResourceAllocationWidget } from './ResourceAllocationWidget';
 
 interface DashboardProps {
   workOrders: WorkOrder[];
@@ -78,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   sunlightMode,
 }) => {
   const [filterType, setFilterType] = useState<string>('ALL');
-  const [dashboardTab, setDashboardTab] = useState<'OVERVIEW' | 'OFFLINE_AUDIT'>('OVERVIEW');
+  const [dashboardTab, setDashboardTab] = useState<'OVERVIEW' | 'RESOURCES' | 'OFFLINE_AUDIT'>('OVERVIEW');
   const [queueStats, setQueueStats] = useState<{ total: number; failed: number; pending: number }>({
     total: 0,
     failed: 0,
@@ -176,6 +178,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             <Activity className="w-3.5 h-3.5" />
             Operations Overview
+          </button>
+
+          <button
+            onClick={() => setDashboardTab('RESOURCES')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1.5 ${
+              dashboardTab === 'RESOURCES'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Resource Allocation</span>
+            {activeUser?.role === 'PROJECT_MANAGER' && (
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-800 font-bold ml-0.5">
+                PM
+              </span>
+            )}
           </button>
 
           <button
@@ -418,6 +437,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <OfflineDataAudit
           sunlightMode={sunlightMode}
           onNavigateToOverview={() => setDashboardTab('OVERVIEW')}
+        />
+      ) : dashboardTab === 'RESOURCES' ? (
+        <ResourceAllocationWidget
+          workOrders={workOrders}
+          sites={allSites}
+          hops={allHops}
+          sunlightMode={sunlightMode}
+          onSelectWorkOrder={onSelectWorkOrder}
+          onNavigateToJobs={onNavigateToJobs}
         />
       ) : (
         <>
@@ -730,6 +758,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
       </div>
+
+      {/* Project Manager Resource Allocation & Skill-Based Crew Matching Widget */}
+      {activeUser?.role === 'PROJECT_MANAGER' && (
+        <ResourceAllocationWidget
+          workOrders={workOrders}
+          sites={allSites}
+          hops={allHops}
+          sunlightMode={sunlightMode}
+          onSelectWorkOrder={onSelectWorkOrder}
+          onNavigateToJobs={onNavigateToJobs}
+        />
+      )}
 
       {/* Work Orders List with Filter */}
       <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
